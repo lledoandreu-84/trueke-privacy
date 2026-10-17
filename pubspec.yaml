@@ -21,13 +21,14 @@ dependencies:
   geolocator: ^14.1.1
   flutter_map: ^8.3.2
   latlong2: ^0.10.1
-  firebase_core: ^4.14.0
-  firebase_messaging: ^16.6.0
+  firebase_core: ^5.0.0
+  firebase_messaging: ^17.0.0
   freezed_annotation: ^3.1.0
   json_annotation: ^4.12.0
   intl: ^0.20.3
   http: ^1.6.0
   google_maps_flutter: ^2.18.1
+  app_links: ^6.3.5
 
 dev_dependencies:
   flutter_test:

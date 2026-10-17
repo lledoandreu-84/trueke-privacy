@@ -53,6 +53,7 @@ class FirebaseNotificationService implements NotificationService {
   @override
   Future<String?> getDeviceToken() async {
     try {
+      // ignore: deprecated_member_use
       return await _messaging.getToken();
     } catch (_) {
       return null;
@@ -60,6 +61,7 @@ class FirebaseNotificationService implements NotificationService {
   }
 
   @override
+  // ignore: deprecated_member_use
   Stream<String> get onTokenRefresh => _messaging.onTokenRefresh;
 
   @override
