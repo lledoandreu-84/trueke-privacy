@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Configuración canónica oficial blindada - TRUEKE v4 -->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/splash_bg_color" />
+    <foreground android:drawable="@mipmap/ic_launcher" />
+</adaptive-icon>

@@ -1,0 +1,13 @@
+analyzer:
+  exclude:
+    - "build/**"
+    - ".dart_tool/**"
+    - "ios/**"
+    - "backups/**"
+
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    - prefer_const_constructors
+    - always_declare_return_types

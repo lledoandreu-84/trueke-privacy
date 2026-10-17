@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "964122110714",
+    "project_id": "trueke-mvp",
+    "storage_bucket": "trueke-mvp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:964122110714:android:0f249d71a4d0ea34fa3743",
+        "android_client_info": {
+          "package_name": "com.davidlledo.trueke"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "964122110714-4j557bca8bbbnquecnvh004po860nas4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpjzTco8SZgtYv2ZHWtwuOTgKDY5nZsn4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "964122110714-4j557bca8bbbnquecnvh004po860nas4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:964122110714:android:356e6c7b1ae863e4fa3743",
+        "android_client_info": {
+          "package_name": "com.davidlledo.truekev4"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "964122110714-4j557bca8bbbnquecnvh004po860nas4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpjzTco8SZgtYv2ZHWtwuOTgKDY5nZsn4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "964122110714-4j557bca8bbbnquecnvh004po860nas4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
