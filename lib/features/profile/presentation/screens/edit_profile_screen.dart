@@ -6,6 +6,7 @@ import '../../models/user_profile.dart';
 import '../../providers/profile_provider.dart';
 import '../../../../core/services/storage_service.dart';
 import '../../../../core/supabase/supabase_client.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
   final UserProfile profile;
@@ -87,14 +88,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error al actualizar: ${mutationState.error}'),
-            backgroundColor: Colors.redAccent,
+            backgroundColor: AppColors.error,
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Perfil guardado correctamente'),
-            backgroundColor: Colors.green,
+            backgroundColor: AppColors.primary,
           ),
         );
         Navigator.pop(context);
@@ -104,7 +105,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error: ${e.toString()}'),
-            backgroundColor: Colors.redAccent,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -131,22 +132,22 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         scrolledUnderElevation: 0,
         title: const Text(
           'Editar Perfil',
           style: TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.bold,
             fontSize: 18,
             letterSpacing: -0.4,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black87),
+          icon: const Icon(Icons.close_rounded, color: AppColors.textPrimary),
           onPressed: isLoading ? null : () => Navigator.pop(context),
         ),
         actions: [
@@ -158,14 +159,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     height: 16,
                     child: CircularProgressIndicator.adaptive(
                       strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.black87),
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
                     ),
                   )
                 : const Text(
                     'Guardar',
                     style: TextStyle(
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
                       fontSize: 15,
                     ),
                   ),
@@ -173,7 +174,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(color: Colors.black12, height: 0.5),
+          child: Container(color: AppColors.border, height: 1),
         ),
       ),
       body: GestureDetector(
@@ -195,8 +196,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           width: 96,
                           height: 96,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF5F5F7),
+                            color: AppColors.surfaceMint,
                             shape: BoxShape.circle,
+                            border: Border.all(color: AppColors.primary, width: 2),
                             image: avatarImage != null
                                 ? DecorationImage(
                                     image: avatarImage,
@@ -206,78 +208,64 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           ),
                           child: avatarImage == null
                               ? const Icon(
-                                  Icons.person_outline,
-                                  size: 44,
-                                  color: Colors.black45,
+                                  Icons.person_outline_rounded,
+                                  size: 48,
+                                  color: AppColors.primary,
                                 )
                               : null,
                         ),
-                        if (isLoading)
-                          const SizedBox(
-                            width: 96,
-                            height: 96,
-                            child: CircularProgressIndicator(
-                              color: Colors.black26,
-                              strokeWidth: 3,
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: const BoxDecoration(
+                              color: AppColors.primary,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.camera_alt_rounded,
+                              size: 16,
+                              color: Colors.white,
                             ),
                           ),
-                        if (!isLoading)
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
-                                color: Colors.black87,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.camera_alt,
-                                size: 14,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
+                        ),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 32),
                 const Text(
-                  'Nombre público',
+                  'Nombre de usuario',
                   style: TextStyle(
-                    fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black54,
+                    color: AppColors.textPrimary,
+                    fontSize: 14,
                   ),
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _displayNameController,
                   enabled: !isLoading,
-                  maxLength: 50,
+                  style: const TextStyle(color: AppColors.textPrimary),
                   decoration: InputDecoration(
-                    hintText: 'Tu nombre o alias',
-                    counterText: '',
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
+                    hintText: 'Tu nombre o apodo',
+                    hintStyle: TextStyle(color: AppColors.textSecondary.withValues(alpha: 0.7)),
+                    filled: true,
+                    fillColor: AppColors.surfaceMint.withValues(alpha: 0.3),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Colors.black12),
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Colors.black12),
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: const BorderSide(color: AppColors.border, width: 1),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(
-                        color: Colors.black87,
-                        width: 1.2,
-                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: const BorderSide(color: AppColors.primary, width: 2),
                     ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
@@ -286,13 +274,13 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
                 const Text(
-                  'Biografía',
+                  'Biografía / Descripción',
                   style: TextStyle(
-                    fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black54,
+                    color: AppColors.textPrimary,
+                    fontSize: 14,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -300,24 +288,59 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   controller: _bioController,
                   enabled: !isLoading,
                   maxLines: 4,
-                  maxLength: 160,
+                  style: const TextStyle(color: AppColors.textPrimary),
                   decoration: InputDecoration(
-                    hintText: 'Cuéntale a la comunidad sobre ti...',
-                    contentPadding: const EdgeInsets.all(16),
+                    hintText: 'Cuéntanos un poco sobre ti y lo que sueles ofrecer para trueque...',
+                    hintStyle: TextStyle(color: AppColors.textSecondary.withValues(alpha: 0.7)),
+                    filled: true,
+                    fillColor: AppColors.surfaceMint.withValues(alpha: 0.3),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Colors.black12),
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Colors.black12),
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: const BorderSide(color: AppColors.border, width: 1),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(
-                        color: Colors.black87,
-                        width: 1.2,
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                    ),
+                    contentPadding: const EdgeInsets.all(16),
+                  ),
+                ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [AppColors.primary, AppColors.petrolBlue],
                       ),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      onPressed: isLoading ? null : _submit,
+                      child: isLoading
+                          ? const CircularProgressIndicator.adaptive(
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            )
+                          : const Text(
+                              'Guardar Cambios',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
                     ),
                   ),
                 ),
