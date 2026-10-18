@@ -5,63 +5,35 @@ class TruekeLogoPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paintEmerald = Paint()
-      ..color = const Color(0xFF059669)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.5
-      ..strokeCap = StrokeCap.round;
+    final double radius = size.width / 2;
+    final Offset center = Offset(size.width / 2, size.height / 2);
 
-    final paintMint = Paint()
-      ..color = const Color(0xFF10B981)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.5
-      ..strokeCap = StrokeCap.round;
-
-    final pathLeftHand = Path();
-    // Mano izquierda (Línea curva fluida que abraza el centro)
-    pathLeftHand.moveTo(size.width * 0.25, size.height * 0.5);
-    pathLeftHand.quadraticBezierTo(
-      size.width * 0.35,
-      size.height * 0.25,
-      size.width * 0.5,
-      size.height * 0.35,
-    );
-    pathLeftHand.quadraticBezierTo(
-      size.width * 0.6,
-      size.height * 0.45,
-      size.width * 0.45,
-      size.height * 0.6,
-    );
-    pathLeftHand.lineTo(size.width * 0.35, size.height * 0.6);
-
-    final pathRightHand = Path();
-    // Mano derecha (Se entrelaza de forma simétrica inversa)
-    pathRightHand.moveTo(size.width * 0.75, size.height * 0.5);
-    pathRightHand.quadraticBezierTo(
-      size.width * 0.65,
-      size.height * 0.75,
-      size.width * 0.5,
-      size.height * 0.65,
-    );
-    pathRightHand.quadraticBezierTo(
-      size.width * 0.4,
-      size.height * 0.55,
-      size.width * 0.55,
-      size.height * 0.4,
-    );
-    pathRightHand.lineTo(size.width * 0.65, size.height * 0.4);
-
-    canvas.drawPath(pathLeftHand, paintEmerald);
-    canvas.drawPath(pathRightHand, paintMint);
-
-    // Punto central de unión que simboliza el trato cerrado (Trueke)
-    final paintNode = Paint()
-      ..color = const Color(0xFF10B981)
+    // Fondo verde circular corporativo
+    final Paint bgPaint = Paint()
+      ..color = const Color(0xFF00A86B)
       ..style = PaintingStyle.fill;
-    canvas.drawCircle(
-      Offset(size.width * 0.5, size.height * 0.5),
-      4,
-      paintNode,
+    canvas.drawCircle(center, radius, bgPaint);
+
+    // Dibujo vectorial/icono de manos entrelazadas (Handshake) en blanco
+    final TextPainter textPainter = TextPainter(
+      textDirection: TextDirection.ltr,
+      text: TextSpan(
+        text: String.fromCharCode(Icons.handshake_rounded.codePoint),
+        style: TextStyle(
+          fontSize: size.width * 0.58,
+          fontFamily: Icons.handshake_rounded.fontFamily,
+          package: Icons.handshake_rounded.fontPackage,
+          color: Colors.white,
+        ),
+      ),
+    );
+    textPainter.layout();
+    textPainter.paint(
+      canvas,
+      Offset(
+        center.dx - (textPainter.width / 2),
+        center.dy - (textPainter.height / 2),
+      ),
     );
   }
 
