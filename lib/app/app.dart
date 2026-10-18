@@ -13,7 +13,7 @@ import 'package:trueke/features/auth/auth_service.dart';
 import 'package:trueke/features/auth/auth_page.dart';
 import 'package:trueke/features/chat/presentation/screens/chat_screen.dart';
 import 'package:trueke/core/theme/app_theme.dart';
-import 'package:trueke/features/home/widgets/trueke_logo_painter.dart';
+
 
 final appNotificationServiceProvider = Provider<NotificationService>((ref) {
   return ref.watch(notificationServiceProvider);
@@ -178,10 +178,10 @@ class _MyAppState extends ConsumerState<MyApp> {
                     ),
                   ],
                 ),
-                child: const Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: CustomPaint(painter: TruekeLogoPainter()),
-                ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
+                  ),
               ),
               const SizedBox(height: 24),
               const CircularProgressIndicator.adaptive(
@@ -195,12 +195,12 @@ class _MyAppState extends ConsumerState<MyApp> {
       homeWidget = Scaffold(
         backgroundColor: Colors.white,
         body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
             child: Text(
               'Error de autenticación: ${authStateAsync.error}',
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.black54, fontSize: 14),
+                style: const TextStyle(color: Colors.black54, fontSize: 14),
             ),
           ),
         ),

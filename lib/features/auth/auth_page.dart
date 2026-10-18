@@ -83,22 +83,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  width: 86,
-                  height: 86,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        theme.colorScheme.primary,
-                        theme.colorScheme.secondary,
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Image.asset('assets/images/logo.png', width: 75, height: 75, fit: BoxFit.contain),
-                ),
+                    Image.asset('assets/images/logo.png', width: 80, height: 80, fit: BoxFit.contain),
                 const SizedBox(height: 20),
                 Text(
                   'Trueke',
