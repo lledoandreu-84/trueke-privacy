@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
-import 'trueke_logo_painter.dart';
+
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({super.key});
@@ -24,7 +24,7 @@ class HomeHeader extends StatelessWidget {
                 width: 1,
               ),
             ),
-            child: const CustomPaint(painter: TruekeLogoPainter()),
+            child: Image.asset('assets/images/logo.png', width: 38, height: 38, fit: BoxFit.contain),
           ),
           const SizedBox(width: 12),
           const Expanded(

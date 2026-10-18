@@ -1,4 +1,4 @@
-import '../home/widgets/trueke_logo_painter.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'auth_service.dart';
@@ -97,7 +97,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                     ),
                     shape: BoxShape.circle,
                   ),
-                  child: const CustomPaint(painter: TruekeLogoPainter(), size: Size(64, 64)),
+                  child: Image.asset('assets/images/logo.png', width: 75, height: 75, fit: BoxFit.contain),
                 ),
                 const SizedBox(height: 20),
                 Text(
