@@ -1,4 +1,3 @@
-import '../../../features/home/widgets/trueke_logo_painter.dart'; // Solo para referencia de color si se usa
 
 class MockProduct {
   final String id;
