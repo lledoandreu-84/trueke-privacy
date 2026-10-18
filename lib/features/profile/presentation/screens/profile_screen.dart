@@ -1,3 +1,4 @@
+import "../../../auth/providers/auth_provider.dart";
 import 'package:trueke/features/products/providers/products_provider.dart';
 import 'package:trueke/features/truekes/presentation/screens/truekes_history_screen.dart';
 import 'package:flutter/material.dart';
@@ -252,6 +253,52 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ),
                           );
                         },
+                      ),
+                      const Divider(height: 1, thickness: 0.5, indent: 16, endIndent: 16),
+                      // Botón de Cierre de Sesión
+                      InkWell(
+                        onTap: () async {
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Cerrar sesión'),
+                              content: const Text('¿Estás seguro de que deseas salir de tu cuenta?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, false),
+                                  child: const Text('Cancelar'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, true),
+                                  style: TextButton.styleFrom(foregroundColor: theme.colorScheme.error),
+                                  child: const Text('Cerrar sesión'),
+                                ),
+                              ],
+                            ),
+                          );
+
+                          if (confirm == true && context.mounted) {
+                            await ref.read(authServiceProvider).signOut();
+                          }
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          child: Row(
+                            children: [
+                              Icon(Icons.logout_rounded, color: theme.colorScheme.error, size: 22),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Text(
+                                  'Cerrar sesión',
+                                  style: theme.textTheme.bodyLarge?.copyWith(
+                                    color: theme.colorScheme.error,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ],
                   ),
