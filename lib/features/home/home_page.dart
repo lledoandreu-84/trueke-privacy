@@ -22,13 +22,7 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   final ScrollController _scrollController = ScrollController();
 
-  static const Map<String, IconData> _categories = {
-    'Electrónica': Icons.devices_rounded,
-    'Moda': Icons.checkroom_rounded,
-    'Hogar': Icons.chair_rounded,
-    'Gaming': Icons.sports_esports_rounded,
-    'Deporte': Icons.sports_soccer_rounded,
-  };
+  
 
   @override
   void initState() {
@@ -123,78 +117,81 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
             ),
 
-            SliverToBoxAdapter(
-              child: SizedBox(
-                height: 58,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: _categories.length,
-                  separatorBuilder: (_, _) => const SizedBox(width: 10),
-                  itemBuilder: (context, index) {
-                    final category = _categories.keys.elementAt(index);
-                    final icon = _categories.values.elementAt(index);
-                    final selected = filters.category == category;
+            SliverPadding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        sliver: SliverGrid(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 1.4,
+          ),
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              const categoriesData = [
+                {"name": "Electrónica", "icon": Icons.devices_rounded, "color": Color(0xFF3B82F6)},
+                {"name": "Moda", "icon": Icons.checkroom_rounded, "color": Color(0xFFEC4899)},
+                {"name": "Hogar", "icon": Icons.chair_rounded, "color": Color(0xFFF59E0B)},
+                {"name": "Gaming", "icon": Icons.sports_esports_rounded, "color": Color(0xFF8B5CF6)},
+                {"name": "Deporte", "icon": Icons.sports_soccer_rounded, "color": Color(0xFF10B981)},
+                {"name": "Otros", "icon": Icons.widgets_rounded, "color": Color(0xFF6B7280)},
+              ];
+              final cat = categoriesData[index];
+              final String name = cat["name"] as String;
+              final IconData icon = cat["icon"] as IconData;
+              final Color catColor = cat["color"] as Color;
+              final bool isSelected = filters.category == name;
 
-                    return AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.easeOut,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: selected
-                            ? [
-                                BoxShadow(
-                                  color: AppColors.primary.withValues(
-                                    alpha: 0.16,
-                                  ),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ]
-                            : const [],
+              return InkWell(
+                onTap: () {
+                  ref.read(productFiltersProvider.notifier).toggleCategory(name);
+                },
+                borderRadius: BorderRadius.circular(16),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  decoration: BoxDecoration(
+                    color: isSelected ? catColor : catColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: isSelected ? catColor : catColor.withValues(alpha: 0.3),
+                      width: isSelected ? 2 : 1,
+                    ),
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: catColor.withValues(alpha: 0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
+                            )
+                          ]
+                        : [],
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        icon,
+                        size: 22,
+                        color: isSelected ? Colors.white : catColor,
                       ),
-                      child: ChoiceChip(
-                        avatar: Icon(
-                          icon,
-                          size: 18,
-                          color: selected ? Colors.white : AppColors.petrolBlue,
+                      const SizedBox(height: 4),
+                      Text(
+                        name,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                          color: isSelected ? Colors.white : AppColors.textPrimary,
                         ),
-                        label: Text(category),
-                        selected: selected,
-                        onSelected: (_) {
-                          ref
-                              .read(productFiltersProvider.notifier)
-                              .toggleCategory(category);
-                        },
-                        showCheckmark: false,
-                        labelStyle: TextStyle(
-                          color: selected ? Colors.white : AppColors.petrolBlue,
-                          fontSize: 13,
-                          fontWeight: selected
-                              ? FontWeight.w700
-                              : FontWeight.w600,
-                        ),
-                        selectedColor: AppColors.primary,
-                        backgroundColor: AppColors.surfaceMint,
-                        side: BorderSide(
-                          color: selected
-                              ? AppColors.primary
-                              : AppColors.mint.withValues(alpha: 0.30),
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        materialTapTargetSize: MaterialTapTargetSize.padded,
                       ),
-                    );
-                  },
+                    ],
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
+            childCount: 6,
+          ),
+        ),
+      ),
 
             SliverToBoxAdapter(
               child: _SectionHeading(
