@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/product_search_provider.dart';
 import '../../../home/widgets/product_card.dart';
 import '../../../../models/product.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class ProductSearchScreen extends ConsumerStatefulWidget {
   const ProductSearchScreen({super.key});
@@ -58,32 +59,31 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
     String label,
     VoidCallback onDelete,
   ) {
-    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: theme.colorScheme.outlineVariant, width: 0.5),
+        color: AppColors.surfaceMint,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.3), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
-              color: theme.colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w500,
+              color: AppColors.primary,
+              fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(width: 6),
           GestureDetector(
             onTap: onDelete,
-            child: Icon(
+            child: const Icon(
               Icons.close_rounded,
               size: 14,
-              color: theme.colorScheme.onSurfaceVariant.withAlpha(180),
+              color: AppColors.primary,
             ),
           ),
         ],
@@ -165,14 +165,13 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setModalState) {
-            final theme = Theme.of(context);
             return Padding(
               padding: EdgeInsets.only(
                 top: 24,
@@ -187,23 +186,26 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         'Filtros Avanzados',
-                        style: theme.textTheme.titleLarge?.copyWith(
+                        style: TextStyle(
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.close_rounded),
+                        icon: const Icon(Icons.close_rounded, color: AppColors.textPrimary),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Text(
+                  const Text(
                     'Rango de Precio',
-                    style: theme.textTheme.bodyLarge?.copyWith(
+                    style: TextStyle(
                       fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                   RangeSlider(
@@ -215,8 +217,8 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       '${state.minPrice.round()}€',
                       '${state.maxPrice.round()}€',
                     ),
-                    activeColor: theme.colorScheme.primary,
-                    inactiveColor: theme.colorScheme.primary.withAlpha(50),
+                    activeColor: AppColors.primary,
+                    inactiveColor: AppColors.surfaceMint,
                     onChanged: (RangeValues values) {
                       setModalState(() {
                         notifier.updatePriceRange(values.start, values.end);
@@ -226,8 +228,9 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                   const SizedBox(height: 16),
                   Text(
                     'Radio de Búsqueda (${state.maxRadiusKm.round()} km)',
-                    style: theme.textTheme.bodyLarge?.copyWith(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                   Slider(
@@ -236,7 +239,8 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                     max: 100.0,
                     divisions: 99,
                     label: '${state.maxRadiusKm.round()} km',
-                    activeColor: theme.colorScheme.primary,
+                    activeColor: AppColors.primary,
+                    inactiveColor: AppColors.surfaceMint,
                     onChanged: (value) {
                       setModalState(() {
                         notifier.updateRadius(value);
@@ -247,19 +251,27 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  Text(
+                  const Text(
                     'Tipo de Trato',
-                    style: theme.textTheme.bodyLarge?.copyWith(
+                    style: TextStyle(
                       fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
                     children: TradeType.values.map((type) {
+                      final isSelected = state.selectedTradeType == type;
                       return ChoiceChip(
                         label: Text(_getTradeTypeLabel(type)),
-                        selected: state.selectedTradeType == type,
+                        selected: isSelected,
+                        selectedColor: AppColors.surfaceMint,
+                        backgroundColor: AppColors.background,
+                        labelStyle: TextStyle(
+                          color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        ),
                         onSelected: (selected) {
                           setModalState(() {
                             notifier.updateTradeType(selected ? type : null);
@@ -271,15 +283,32 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                   const SizedBox(height: 24),
                   SizedBox(
                     width: double.infinity,
-                    height: 48,
-                    child: FilledButton(
-                      style: FilledButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                    height: 52,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [AppColors.primary, AppColors.petrolBlue],
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          'Aplicar Filtros',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                       ),
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Aplicar Filtros'),
                     ),
                   ),
                 ],
@@ -303,13 +332,13 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                   Icon(
                     Icons.search_off_rounded,
                     size: 48,
-                    color: Colors.black26,
+                    color: AppColors.textSecondary,
                   ),
                   SizedBox(height: 12),
                   Text(
                     'No hemos encontrado artículos',
                     style: TextStyle(
-                      color: Colors.black45,
+                      color: AppColors.textSecondary,
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
                     ),
@@ -336,7 +365,9 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
       loading: () => const Center(
         child: Padding(
           padding: EdgeInsets.only(top: 80),
-          child: CircularProgressIndicator.adaptive(),
+          child: CircularProgressIndicator.adaptive(
+            valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+          ),
         ),
       ),
       error: (err, stack) => Center(
@@ -344,7 +375,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
           padding: const EdgeInsets.only(top: 80),
           child: Text(
             'Error: $err',
-            style: const TextStyle(color: Colors.redAccent),
+            style: const TextStyle(color: AppColors.error),
           ),
         ),
       ),
@@ -355,25 +386,26 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
   Widget build(BuildContext context) {
     final searchState = ref.watch(productSearchNotifierProvider);
     final searchNotifier = ref.read(productSearchNotifierProvider.notifier);
-    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         scrolledUnderElevation: 0,
-        title: Text(
+        title: const Text(
           'Explorar',
-          style: theme.textTheme.titleLarge?.copyWith(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: AppColors.textPrimary,
             letterSpacing: -0.5,
           ),
         ),
         centerTitle: false,
         actions: [
           IconButton(
-            icon: Icon(Icons.tune_rounded, color: theme.colorScheme.primary),
+            icon: const Icon(Icons.tune_rounded, color: AppColors.primary),
             onPressed: () =>
                 _showFilterBottomSheet(context, searchState, searchNotifier),
           ),
@@ -382,7 +414,13 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
               _searchController.clear();
               searchNotifier.clearAllFilters();
             },
-            child: const Text('Limpiar'),
+            child: const Text(
+              'Limpiar',
+              style: TextStyle(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
@@ -393,16 +431,16 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
           TextField(
             controller: _searchController,
             onChanged: (value) => _onSearchChanged(value, searchNotifier),
-            style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 15),
+            style: const TextStyle(color: AppColors.textPrimary, fontSize: 15),
             decoration: InputDecoration(
               hintText: '¿Qué estás buscando?',
               hintStyle: TextStyle(
-                color: theme.colorScheme.onSurfaceVariant.withAlpha(150),
+                color: AppColors.textSecondary.withValues(alpha: 0.7),
                 fontSize: 15,
               ),
-              prefixIcon: Icon(
+              prefixIcon: const Icon(
                 Icons.search_rounded,
-                color: theme.colorScheme.onSurfaceVariant,
+                color: AppColors.primary,
                 size: 22,
               ),
               suffixIcon: _searchController.text.isNotEmpty
@@ -415,16 +453,24 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       },
                       child: const Icon(
                         Icons.clear_rounded,
-                        color: Colors.black45,
+                        color: AppColors.textSecondary,
                         size: 18,
                       ),
                     )
                   : null,
               filled: true,
-              fillColor: theme.colorScheme.surfaceContainerLow,
+              fillColor: AppColors.surfaceMint.withValues(alpha: 0.3),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: AppColors.border, width: 1),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: AppColors.primary, width: 2),
               ),
               contentPadding: const EdgeInsets.symmetric(vertical: 12),
             ),
