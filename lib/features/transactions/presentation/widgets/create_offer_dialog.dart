@@ -34,7 +34,6 @@ class _CreateOfferDialogState extends ConsumerState<CreateOfferDialog> {
       _priceController.text.trim().replaceAll(',', '.'),
     );
 
-    // Validación defensiva de seguridad: Si el trato requiere dinero, blindar el valor mayor a cero
     if ((widget.product.tradeType == TradeType.tradeAndMoney ||
             widget.product.tradeType == TradeType.sale) &&
         (proposedPrice == null || proposedPrice <= 0)) {
@@ -44,7 +43,6 @@ class _CreateOfferDialogState extends ConsumerState<CreateOfferDialog> {
             'Introduce una compensación económica válida mayor que 0 €.',
           ),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.black87,
         ),
       );
       return;
@@ -69,7 +67,6 @@ class _CreateOfferDialogState extends ConsumerState<CreateOfferDialog> {
     );
 
     try {
-      // Invocación al método original correcto que procesa ProductTransaction en tu notifier
       await ref
           .read(userTransactionsProvider.notifier)
           .createOffer(transaction);
@@ -85,7 +82,6 @@ class _CreateOfferDialogState extends ConsumerState<CreateOfferDialog> {
           SnackBar(
             content: Text('Error al enviar propuesta: $e'),
             behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.black87,
           ),
         );
       }
@@ -94,17 +90,19 @@ class _CreateOfferDialogState extends ConsumerState<CreateOfferDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return AlertDialog(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.colorScheme.surface,
       surfaceTintColor: Colors.transparent,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: const Text(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      title: Text(
         'Proponer Trueke',
         style: TextStyle(
           fontWeight: FontWeight.w600,
-          fontSize: 18,
-          color: Colors.black87,
-          letterSpacing: -0.4,
+          fontSize: 20,
+          color: theme.colorScheme.onSurface,
+          letterSpacing: -0.5,
         ),
       ),
       content: SingleChildScrollView(
@@ -114,8 +112,8 @@ class _CreateOfferDialogState extends ConsumerState<CreateOfferDialog> {
           children: [
             Text(
               '¿Quieres proponer un intercambio por ${widget.product.title}?',
-              style: const TextStyle(
-                color: Colors.black54,
+              style: TextStyle(
+                color: theme.colorScheme.onSurfaceVariant,
                 fontSize: 14,
                 height: 1.4,
                 letterSpacing: -0.1,
@@ -123,38 +121,41 @@ class _CreateOfferDialogState extends ConsumerState<CreateOfferDialog> {
             ),
             if (widget.product.tradeType == TradeType.tradeAndMoney ||
                 widget.product.tradeType == TradeType.sale) ...[
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               TextField(
                 controller: _priceController,
-                style: const TextStyle(color: Colors.black87, fontSize: 15),
+                style: TextStyle(
+                  color: theme.colorScheme.onSurface,
+                  fontSize: 15,
+                ),
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
                 decoration: InputDecoration(
                   hintText: 'Compensación económica (€)',
-                  hintStyle: const TextStyle(
-                    color: Colors.black38,
+                  hintStyle: TextStyle(
+                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                     fontSize: 14,
                   ),
                   filled: true,
-                  fillColor: const Color(0xFFF5F5F7),
+                  fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
                   contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 12,
+                    horizontal: 16,
+                    vertical: 14,
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
                     borderSide: BorderSide.none,
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
                     borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Colors.black12,
-                      width: 1,
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.primary,
+                      width: 1.5,
                     ),
                   ),
                 ),
@@ -163,7 +164,7 @@ class _CreateOfferDialogState extends ConsumerState<CreateOfferDialog> {
           ],
         ),
       ),
-      actionsPadding: const EdgeInsets.only(right: 16, bottom: 16, left: 16),
+      actionsPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
       actions: [
         Row(
           children: [
@@ -173,10 +174,10 @@ class _CreateOfferDialogState extends ConsumerState<CreateOfferDialog> {
                     ? null
                     : () => Navigator.of(context).pop(),
                 style: TextButton.styleFrom(
-                  foregroundColor: Colors.black54,
-                  minimumSize: const Size.fromHeight(42),
+                  foregroundColor: theme.colorScheme.onSurfaceVariant,
+                  minimumSize: const Size.fromHeight(44),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(14),
                   ),
                 ),
                 child: const Text(
@@ -185,27 +186,27 @@ class _CreateOfferDialogState extends ConsumerState<CreateOfferDialog> {
                 ),
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 12),
             Expanded(
-              child: TextButton(
+              child: FilledButton(
                 onPressed: _isSubmitting ? null : _submitOffer,
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.black87,
-                  foregroundColor: Colors.white,
-                  disabledBackgroundColor: Colors.black38,
-                  minimumSize: const Size.fromHeight(42),
+                style: FilledButton.styleFrom(
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
+                  minimumSize: const Size.fromHeight(44),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(14),
                   ),
+                  elevation: 0,
                 ),
                 child: _isSubmitting
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
+                    ? SizedBox(
+                        width: 18,
+                        height: 18,
                         child: CircularProgressIndicator.adaptive(
-                          strokeWidth: 2,
+                          strokeWidth: 2.2,
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.white,
+                            theme.colorScheme.onPrimary,
                           ),
                         ),
                       )
