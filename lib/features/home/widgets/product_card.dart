@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:trueke/models/product.dart';
 import 'package:trueke/core/theme/app_colors.dart';
+import 'package:trueke/core/widgets/favorite_button.dart';
 
 class ProductCard extends StatelessWidget {
   const ProductCard({super.key, required this.product});
@@ -9,7 +10,7 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasImg = product.images.isNotEmpty && product.images.first.isNotEmpty;
-    final productImg = hasImg ? product.images.first : '';
+    final productImg = hasImg ? product.images.first : "";
 
     return Container(
       decoration: BoxDecoration(
@@ -78,6 +79,11 @@ class ProductCard extends StatelessWidget {
                     ),
                   ),
                 ),
+                const Positioned(
+                  top: 8,
+                  right: 8,
+                  child: FavoriteButton(),
+                ),
               ],
             ),
           ),
@@ -111,57 +117,8 @@ class ProductCard extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          color: AppColors.petrolBlue,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        product.price != null
-                            ? '${product.price!.toStringAsFixed(0)}€'
-                            : 'TRUEQUE PURO',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: product.price != null
-                              ? AppColors.primary
-                              : AppColors.amber,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Flexible(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.surfaceMint,
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                            color: AppColors.mint.withValues(alpha: 0.25),
-                            width: 1,
-                          ),
-                        ),
-                        child: Text(
-                          product.condition,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: AppColors.primary,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                          ),
+                          color: AppColors.textSecondary,
+                          fontSize: 12,
                         ),
                       ),
                     ),
