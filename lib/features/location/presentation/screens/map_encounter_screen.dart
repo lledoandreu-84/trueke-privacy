@@ -94,7 +94,7 @@ class _MapEncounterScreenState extends ConsumerState<MapEncounterScreen> {
                 color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(
+                  side: BorderSide(
                     color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
                     width: 1,
                   ),
