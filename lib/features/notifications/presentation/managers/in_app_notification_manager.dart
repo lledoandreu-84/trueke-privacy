@@ -94,7 +94,7 @@ class InAppNotificationBanner {
             Text(
               title,
               style: TextStyle(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w600,
                 color: theme.colorScheme.onInverseSurface,
                 fontSize: 14,
               ),
@@ -104,7 +104,7 @@ class InAppNotificationBanner {
               message,
               style: TextStyle(
                 fontSize: 12,
-                color: theme.colorScheme.onInverseSurface.withAlpha(200),
+                color: theme.colorScheme.onInverseSurface.withValues(alpha: 0.8),
               ),
             ),
           ],
@@ -112,8 +112,9 @@ class InAppNotificationBanner {
         backgroundColor: theme.colorScheme.inverseSurface,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 3),
-        margin: const EdgeInsets.all(12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        elevation: 0,
       ),
     );
   }
