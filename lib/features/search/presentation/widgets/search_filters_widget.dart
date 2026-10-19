@@ -1,13 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../providers/search_provider.dart';
+import 'package:trueke/features/products/providers/product_filters_provider.dart';
 
 class SearchFiltersWidget extends ConsumerWidget {
   const SearchFiltersWidget({super.key});
 
+  String _mapSortOptionToString(ProductSortOption option) {
+    switch (option) {
+      case ProductSortOption.priceAsc:
+        return 'Precio: más bajo';
+      case ProductSortOption.priceDesc:
+        return 'Precio: más alto';
+      case ProductSortOption.recent:
+      default:
+        return 'Más recientes';
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final filters = ref.watch(searchFiltersProvider);
+    final currentSort = ref.watch(productSortNotifierProvider);
     final theme = Theme.of(context);
 
     return Container(
@@ -34,7 +46,8 @@ class SearchFiltersWidget extends ConsumerWidget {
               ),
               TextButton(
                 onPressed: () {
-                  ref.read(searchFiltersProvider.notifier).resetFilters();
+                  ref.read(productSortNotifierProvider.notifier).setSortOption(ProductSortOption.recent);
+                  Navigator.pop(context);
                 },
                 child: Text(
                   'Limpiar',
@@ -64,15 +77,13 @@ class SearchFiltersWidget extends ConsumerWidget {
             children: [
               ChoiceChip(
                 label: const Text('Más recientes'),
-                selected: filters.sortBy == SearchSortBy.recent,
+                selected: currentSort == ProductSortOption.recent,
                 onSelected: (selected) {
-                  ref
-                      .read(searchFiltersProvider.notifier)
-                      .setSortBy(SearchSortBy.recent);
+                  ref.read(productSortNotifierProvider.notifier).setSortOption(ProductSortOption.recent);
                 },
                 selectedColor: theme.colorScheme.primaryContainer,
                 labelStyle: TextStyle(
-                  color: filters.sortBy == SearchSortBy.recent
+                  color: currentSort == ProductSortOption.recent
                       ? theme.colorScheme.onPrimaryContainer
                       : theme.colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w500,
@@ -83,15 +94,13 @@ class SearchFiltersWidget extends ConsumerWidget {
               ),
               ChoiceChip(
                 label: const Text('Precio: más bajo'),
-                selected: filters.sortBy == SearchSortBy.priceAsc,
+                selected: currentSort == ProductSortOption.priceAsc,
                 onSelected: (selected) {
-                  ref
-                      .read(searchFiltersProvider.notifier)
-                      .setSortBy(SearchSortBy.priceAsc);
+                  ref.read(productSortNotifierProvider.notifier).setSortOption(ProductSortOption.priceAsc);
                 },
                 selectedColor: theme.colorScheme.primaryContainer,
                 labelStyle: TextStyle(
-                  color: filters.sortBy == SearchSortBy.priceAsc
+                  color: currentSort == ProductSortOption.priceAsc
                       ? theme.colorScheme.onPrimaryContainer
                       : theme.colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w500,
@@ -102,15 +111,13 @@ class SearchFiltersWidget extends ConsumerWidget {
               ),
               ChoiceChip(
                 label: const Text('Precio: más alto'),
-                selected: filters.sortBy == SearchSortBy.priceDesc,
+                selected: currentSort == ProductSortOption.priceDesc,
                 onSelected: (selected) {
-                  ref
-                      .read(searchFiltersProvider.notifier)
-                      .setSortBy(SearchSortBy.priceDesc);
+                  ref.read(productSortNotifierProvider.notifier).setSortOption(ProductSortOption.priceDesc);
                 },
                 selectedColor: theme.colorScheme.primaryContainer,
                 labelStyle: TextStyle(
-                  color: filters.sortBy == SearchSortBy.priceDesc
+                  color: currentSort == ProductSortOption.priceDesc
                       ? theme.colorScheme.onPrimaryContainer
                       : theme.colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w500,
