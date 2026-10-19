@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../products/providers/products_provider.dart';
 import '../../../home/widgets/product_card.dart';
-import '../../../../core/theme/app_colors.dart';
 
 class MyPublishedProductsScreen extends ConsumerWidget {
   const MyPublishedProductsScreen({super.key});
@@ -11,47 +10,48 @@ class MyPublishedProductsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final myProductsAsync = ref.watch(myProductsProvider);
     final width = MediaQuery.of(context).size.width;
+    final theme = Theme.of(context);
 
     final int crossAxisCount = width < 700 ? 2 : (width < 1000 ? 3 : 4);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Mis Productos Publicados',
           style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-            color: AppColors.textPrimary,
-            letterSpacing: -0.5,
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+            color: theme.colorScheme.onSurface,
+            letterSpacing: -0.4,
           ),
         ),
-        backgroundColor: AppColors.surface,
+        backgroundColor: theme.colorScheme.surface,
         elevation: 0,
         scrolledUnderElevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
+        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
       ),
       body: myProductsAsync.when(
         data: (products) {
           if (products.isEmpty) {
-            return const Center(
+            return Center(
               child: Padding(
-                padding: EdgeInsets.all(32.0),
+                padding: const EdgeInsets.all(32.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
                       Icons.storefront_outlined,
                       size: 64,
-                      color: AppColors.textSecondary,
+                      color: theme.colorScheme.outline,
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Text(
                       'Aún no has publicado ningún artículo.\n¡Sube tu primer producto para empezar a hacer truekes!',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 15,
-                        color: AppColors.textSecondary,
+                        fontSize: 14.5,
+                        color: theme.colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w500,
                         height: 1.4,
                       ),
@@ -77,17 +77,15 @@ class MyPublishedProductsScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(
-          child: CircularProgressIndicator.adaptive(
-            valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-          ),
+          child: CircularProgressIndicator.adaptive(),
         ),
         error: (error, _) => Center(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: Text(
               'Error cargando tus productos: $error',
-              style: const TextStyle(
-                color: AppColors.error,
+              style: TextStyle(
+                color: theme.colorScheme.error,
                 fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.center,
