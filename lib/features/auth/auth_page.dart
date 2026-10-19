@@ -10,6 +10,8 @@ class AuthPage extends ConsumerStatefulWidget {
 }
 
 class _AuthPageState extends ConsumerState<AuthPage> {
+  // ignore: prefer_final_fields
+  bool _obscurePassword = true;
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -166,7 +168,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                       ),
                     ),
                   ),
-                  obscureText: true,
+                  obscureText: _obscurePassword,
                   validator: (val) => val == null || val.length < 6
                       ? 'La contraseña debe tener al menos 6 caracteres.'
                       : null,

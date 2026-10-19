@@ -1,4 +1,4 @@
-import 'package:trueke/features/auth/auth_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:trueke/features/auth/auth_page.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -58,7 +58,16 @@ class _MyAppState extends ConsumerState<MyApp> {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-      home: AuthService.currentUser == null ? const AuthPage() : const MainShell(),
+      home: StreamBuilder<AuthState>(
+        stream: Supabase.instance.client.auth.onAuthStateChange,
+        builder: (context, snapshot) {
+          final session = Supabase.instance.client.auth.currentSession;
+          if (session != null) {
+            return const MainShell();
+          }
+          return const AuthPage();
+        },
+      ),
       onGenerateRoute: (settings) {
         if (settings.name == 'product' || settings.name == '/product') {
           final product = settings.arguments as Product;
