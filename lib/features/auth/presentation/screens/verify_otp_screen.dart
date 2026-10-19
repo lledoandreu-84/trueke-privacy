@@ -29,7 +29,6 @@ class _VerifyOtpScreenState extends ConsumerState<VerifyOtpScreen> {
     setState(() => _isVerifying = true);
 
     try {
-      // Invocación nativa al cliente de Supabase para verificar el token OTP de registro
       await Supabase.instance.client.auth.verifyOTP(
         email: widget.email,
         token: _otpController.text.trim(),
@@ -40,10 +39,15 @@ class _VerifyOtpScreenState extends ConsumerState<VerifyOtpScreen> {
         return;
       }
 
+      final theme = Theme.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('¡Cuenta verificada con éxito!'),
+        SnackBar(
+          content: const Text('¡Cuenta verificada con éxito!'),
+          backgroundColor: theme.colorScheme.primary,
           behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
       Navigator.pop(context, true);
@@ -51,20 +55,30 @@ class _VerifyOtpScreenState extends ConsumerState<VerifyOtpScreen> {
       if (!mounted) {
         return;
       }
+      final theme = Theme.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(error.message),
+          backgroundColor: theme.colorScheme.error,
           behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
     } catch (_) {
       if (!mounted) {
         return;
       }
+      final theme = Theme.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Código inválido o expirado. Inténtalo de nuevo.'),
+        SnackBar(
+          content: const Text('Código inválido o expirado. Inténtalo de nuevo.'),
+          backgroundColor: theme.colorScheme.error,
           behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
     } finally {
@@ -87,8 +101,10 @@ class _VerifyOtpScreenState extends ConsumerState<VerifyOtpScreen> {
           'Verificar Cuenta',
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
+            color: theme.colorScheme.onSurface,
           ),
         ),
+        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
       ),
       body: SafeArea(
         child: Center(
@@ -113,6 +129,7 @@ class _VerifyOtpScreenState extends ConsumerState<VerifyOtpScreen> {
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -137,16 +154,24 @@ class _VerifyOtpScreenState extends ConsumerState<VerifyOtpScreen> {
                       decoration: InputDecoration(
                         hintText: '000000',
                         hintStyle: TextStyle(
-                          color: theme.colorScheme.onSurfaceVariant.withAlpha(
-                            100,
+                          color: theme.colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.4,
                           ),
                           letterSpacing: 8,
                         ),
                         filled: true,
-                        fillColor: theme.colorScheme.surfaceContainerLow,
+                        fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide(
+                            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide(
+                            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                          ),
                         ),
                       ),
                       validator: (value) {
@@ -162,18 +187,22 @@ class _VerifyOtpScreenState extends ConsumerState<VerifyOtpScreen> {
                     const SizedBox(height: 24),
                     FilledButton(
                       style: FilledButton.styleFrom(
-                        minimumSize: const Size.fromHeight(48),
+                        minimumSize: const Size.fromHeight(52),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                         ),
+                        elevation: 0,
                       ),
                       onPressed: _isVerifying ? null : _verifyCode,
                       child: _isVerifying
-                          ? const SizedBox(
+                          ? SizedBox(
                               width: 20,
                               height: 20,
                               child: CircularProgressIndicator.adaptive(
                                 strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  theme.colorScheme.onPrimary,
+                                ),
                               ),
                             )
                           : const Text(
