@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../providers/reviews_provider.dart';
+import '../providers/reviews_provider.dart';
 
 class LeaveReviewDialog extends ConsumerStatefulWidget {
-  final String truekeId;
-  final String reviewedId;
-  final String reviewerId;
+  final String transactionId;
+  final String targetUserId;
 
   const LeaveReviewDialog({
     super.key,
-    required this.truekeId,
-    required this.reviewedId,
-    required this.reviewerId,
+    required this.transactionId,
+    required this.targetUserId,
   });
 
   @override
@@ -47,9 +45,8 @@ class _LeaveReviewDialogState extends ConsumerState<LeaveReviewDialog> {
 
     try {
       await ref.read(reviewsNotifierProvider.notifier).createReview(
-            truekeId: widget.truekeId,
-            reviewedId: widget.reviewedId,
-            reviewerId: widget.reviewerId,
+            transactionId: widget.transactionId,
+            targetUserId: widget.targetUserId,
             rating: _rating.toDouble(),
             comment: comment,
           );
