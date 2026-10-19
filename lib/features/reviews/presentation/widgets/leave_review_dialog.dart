@@ -96,6 +96,7 @@ class _LeaveReviewDialogState extends ConsumerState<LeaveReviewDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return AlertDialog(
       backgroundColor: theme.colorScheme.surface,
       surfaceTintColor: Colors.transparent,
@@ -154,7 +155,7 @@ class _LeaveReviewDialogState extends ConsumerState<LeaveReviewDialog> {
               enabled: !_isSubmitting,
               decoration: InputDecoration(
                 hintText: "Escribe un comentario opcional...",
-                hintStyle: const TextStyle(color: Colors.grey, fontSize: 13),
+                hintStyle: TextStyle(color: Colors.grey, fontSize: 13),
                 filled: true,
                 fillColor: Colors.grey.shade50,
                 counterText: "",
@@ -174,7 +175,7 @@ class _LeaveReviewDialogState extends ConsumerState<LeaveReviewDialog> {
                   ),
                 ),
               ),
-              style: const TextStyle(fontSize: 14),
+              style: TextStyle(fontSize: 14),
             ),
           ],
         ),
@@ -184,7 +185,7 @@ class _LeaveReviewDialogState extends ConsumerState<LeaveReviewDialog> {
           onPressed: _isSubmitting ? null : () => Navigator.of(context).pop(),
           style: TextButton.styleFrom(
             foregroundColor: Colors.black54,
-            textStyle: const TextStyle(
+            textStyle: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 13,
             ),
@@ -200,7 +201,7 @@ class _LeaveReviewDialogState extends ConsumerState<LeaveReviewDialog> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(28),
             ),
-            textStyle: const TextStyle(
+            textStyle: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 13,
             ),

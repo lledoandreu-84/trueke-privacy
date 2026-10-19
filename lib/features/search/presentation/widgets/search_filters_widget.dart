@@ -36,7 +36,7 @@ class SearchFiltersWidget extends ConsumerWidget {
       padding: const EdgeInsets.only(bottom: 10.0, top: 18.0),
       child: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
           color: theme.colorScheme.onSurface,
@@ -48,6 +48,7 @@ class SearchFiltersWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final filters = ref.watch(productFiltersProvider);
     final filtersNotifier = ref.read(productFiltersProvider.notifier);
     final hasLocation =
@@ -108,7 +109,7 @@ class SearchFiltersWidget extends ConsumerWidget {
                   ),
                   dropdownColor: Colors.white,
                   borderRadius: BorderRadius.circular(12),
-                  style: const TextStyle(color: theme.colorScheme.onSurface, fontSize: 14),
+                  style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 14),
                   items: [
                     const DropdownMenuItem(
                       value: 'recent',
@@ -174,7 +175,7 @@ class SearchFiltersWidget extends ConsumerWidget {
               const SizedBox(height: 10),
               Text(
                 'Distancia Máxima: ${filters.radiusInKm.round()} km',
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 13,
                   color: theme.colorScheme.onSurfaceVariant,
@@ -243,11 +244,11 @@ class SearchFiltersWidget extends ConsumerWidget {
                 children: [
                   Text(
                     '${(filters.minPrice ?? 0.0).round()}€',
-                    style: const TextStyle(fontSize: 12, color: Colors.black45),
+                    style: TextStyle(fontSize: 12, color: Colors.black45),
                   ),
                   Text(
                     '${(filters.maxPrice ?? 1000.0).round()}€',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       color: Colors.black45,
                       fontWeight: FontWeight.w600,
