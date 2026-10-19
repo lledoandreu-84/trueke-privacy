@@ -152,7 +152,7 @@ class SellerCard extends ConsumerWidget {
         profileAsync.when(
           data: (profile) {
             final displayName = profile.displayName.isNotEmpty ? profile.displayName : fallbackName;
-            final rating = liveRatingAsync.valueOrNull ?? profile.averageRating;
+            final rating = liveRatingAsync.asData?.value ?? profile.averageRating;
             return _buildSellerContent(
               context,
               name: displayName,
@@ -161,7 +161,7 @@ class SellerCard extends ConsumerWidget {
               userId: profile.id,
             );
           },
-          error: (_, __) => _buildSellerContent(
+          error: (err, stack) => _buildSellerContent(
             context,
             name: fallbackName,
             rating: 0.0,
