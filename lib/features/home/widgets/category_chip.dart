@@ -1,71 +1,62 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_spacing.dart';
-
 class CategoryChip extends StatelessWidget {
-  final IconData icon;
   final String label;
-  final bool selected;
-  final VoidCallback? onTap;
+  final IconData icon;
+  final bool isSelected;
+  final VoidCallback onTap;
 
   const CategoryChip({
     super.key,
-    required this.icon,
     required this.label,
-    this.selected = false,
-    this.onTap,
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final Color backgroundColor = selected
-        ? AppColors.primary
-        : AppColors.surfaceMint;
+    final theme = Theme.of(context);
 
-    final Color iconColor = selected ? Colors.white : AppColors.petrolBlue;
-
-    final Color labelColor = selected
-        ? AppColors.primary
-        : AppColors.textSecondary;
-
-    return SizedBox(
-      width: 80,
-      child: Padding(
-        padding: const EdgeInsets.only(right: AppSpacing.sm),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(40),
-          onTap: onTap,
-          child: Column(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? theme.colorScheme.primary
+                : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isSelected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+              width: 1.0,
+            ),
+          ),
+          child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                curve: Curves.easeOut,
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: backgroundColor,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: selected
-                        ? AppColors.primary
-                        : AppColors.mint.withValues(alpha: 0.35),
-                    width: 1,
-                  ),
-                ),
-                child: Icon(icon, color: iconColor, size: 24),
+              Icon(
+                icon,
+                size: 18,
+                color: isSelected
+                    ? theme.colorScheme.onPrimary
+                    : theme.colorScheme.onSurfaceVariant,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(width: 8),
               Text(
                 label,
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  color: labelColor,
-                  fontSize: 12,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  color: isSelected
+                      ? theme.colorScheme.onPrimary
+                      : theme.colorScheme.onSurface,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                  fontSize: 14,
                 ),
               ),
             ],

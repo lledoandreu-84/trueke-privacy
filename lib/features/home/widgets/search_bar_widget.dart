@@ -1,43 +1,58 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:trueke/features/products/presentation/screens/product_search_screen.dart';
 
-class SearchBarWidget extends ConsumerWidget {
-  const SearchBarWidget({super.key});
+class SearchBarWidget extends StatelessWidget {
+  final ValueChanged<String>? onChanged;
+  final VoidCallback? onTap;
+  final TextEditingController? controller;
+  final bool readOnly;
+
+  const SearchBarWidget({
+    super.key,
+    this.onChanged,
+    this.onTap,
+    this.controller,
+    this.readOnly = false,
+  });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const ProductSearchScreen(),
-            ),
-          );
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 14),
-          decoration: BoxDecoration(
-            color: const Color(0xFFF5F5F7),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: const Row(
-            children: [
-              Icon(Icons.search_rounded, color: Colors.black45, size: 20),
-              SizedBox(width: 10),
-              Text(
-                'Buscar artículos...',
-                style: TextStyle(
-                  color: Colors.black38,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                  letterSpacing: -0.1,
-                ),
-              ),
-            ],
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return TextField(
+      controller: controller,
+      onChanged: onChanged,
+      onTap: onTap,
+      readOnly: readOnly,
+      style: TextStyle(
+        color: theme.colorScheme.onSurface,
+        fontSize: 15,
+      ),
+      decoration: InputDecoration(
+        hintText: '¿Qué estás buscando hoy?',
+        hintStyle: TextStyle(
+          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+          fontSize: 14,
+        ),
+        prefixIcon: Icon(
+          Icons.search_rounded,
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+        filled: true,
+        fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide(
+            color: theme.colorScheme.primary,
+            width: 1.5,
           ),
         ),
       ),
