@@ -27,9 +27,15 @@ class _SendTradeOfferPageState extends ConsumerState<SendTradeOfferPage> {
 
   Future<void> _submitOffer() async {
     if (_messageController.text.trim().isEmpty) {
+      final theme = Theme.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Por favor, introduce un mensaje para tu propuesta.'),
+        SnackBar(
+          content: const Text('Por favor, introduce un mensaje para tu propuesta.'),
+          backgroundColor: theme.colorScheme.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
       return;
@@ -47,17 +53,31 @@ class _SendTradeOfferPageState extends ConsumerState<SendTradeOfferPage> {
           );
 
       if (!mounted) return;
+      final theme = Theme.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('¡Propuesta de trueque enviada con éxito!'),
+        SnackBar(
+          content: const Text('¡Propuesta de trueque enviada con éxito!'),
+          backgroundColor: theme.colorScheme.primary,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
       Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error al enviar la oferta: $e')));
+      final theme = Theme.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al enviar la oferta: $e'),
+          backgroundColor: theme.colorScheme.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -69,30 +89,39 @@ class _SendTradeOfferPageState extends ConsumerState<SendTradeOfferPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
-        title: const Text(
+        backgroundColor: theme.colorScheme.surface,
+        title: Text(
           'Proponer Trueque',
           style: TextStyle(
             fontWeight: FontWeight.w600,
-            fontSize: 20,
-            letterSpacing: -0.5,
+            fontSize: 18,
+            letterSpacing: -0.4,
+            color: theme.colorScheme.onSurface,
           ),
         ),
+        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
         centerTitle: false,
         elevation: 0,
+        scrolledUnderElevation: 0,
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator.adaptive())
+          ? Center(
+              child: CircularProgressIndicator.adaptive(
+                valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+              ),
+            )
           : ListView(
               padding: const EdgeInsets.all(24),
               children: [
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(24),
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+                      color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
                     ),
                   ),
                   child: Column(
@@ -130,10 +159,12 @@ class _SendTradeOfferPageState extends ConsumerState<SendTradeOfferPage> {
                 ),
                 const SizedBox(height: 12),
                 productsAsync.when(
-                  loading: () => const Center(
+                  loading: () => Center(
                     child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: CircularProgressIndicator.adaptive(),
+                      padding: const EdgeInsets.all(16.0),
+                      child: CircularProgressIndicator.adaptive(
+                        valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+                      ),
                     ),
                   ),
                   error: (err, _) => Container(
@@ -159,6 +190,9 @@ class _SendTradeOfferPageState extends ConsumerState<SendTradeOfferPage> {
                         decoration: BoxDecoration(
                           color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
                           borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                          ),
                         ),
                         child: Row(
                           children: [
@@ -180,15 +214,16 @@ class _SendTradeOfferPageState extends ConsumerState<SendTradeOfferPage> {
                     return Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.surface,
+                        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: theme.colorScheme.outlineVariant,
+                          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
                         ),
                       ),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButtonFormField<Product>(
                           initialValue: _selectedMyProduct,
+                          dropdownColor: theme.colorScheme.surfaceContainerHigh,
                           decoration: const InputDecoration(
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.zero,
@@ -234,25 +269,26 @@ class _SendTradeOfferPageState extends ConsumerState<SendTradeOfferPage> {
                 TextField(
                   controller: _messageController,
                   maxLines: 4,
+                  style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 14),
                   decoration: InputDecoration(
                     hintText:
                         'Ej: Hola, te cambio mi artículo por el tuyo y puedo aportar la diferencia si te interesa...',
                     hintStyle: TextStyle(
-                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                       fontSize: 14,
                     ),
                     filled: true,
-                    fillColor: theme.colorScheme.surface,
+                    fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
                       borderSide: BorderSide(
-                        color: theme.colorScheme.outlineVariant,
+                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
                       borderSide: BorderSide(
-                        color: theme.colorScheme.outlineVariant,
+                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -271,7 +307,7 @@ class _SendTradeOfferPageState extends ConsumerState<SendTradeOfferPage> {
                   style: FilledButton.styleFrom(
                     backgroundColor: theme.colorScheme.primary,
                     foregroundColor: theme.colorScheme.onPrimary,
-                    padding: const EdgeInsets.all(18),
+                    minimumSize: const Size.fromHeight(52),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
