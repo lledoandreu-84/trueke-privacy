@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'auth_service.dart';
@@ -15,7 +14,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
-  bool _isSignUp = false; // Alternador síncrono de modo Login/Registro
+  bool _isSignUp = false;
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -31,9 +30,13 @@ class _AuthPageState extends ConsumerState<AuthPage> {
             );
         if (success && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('¡Cuenta creada con éxito! Iniciando sesión...'),
-              backgroundColor: Colors.green,
+            SnackBar(
+              content: const Text('¡Cuenta creada con éxito! Iniciando sesión...'),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           );
         }
@@ -47,13 +50,17 @@ class _AuthPageState extends ConsumerState<AuthPage> {
       }
     } catch (e) {
       if (mounted) {
+        final theme = Theme.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
               'Error: ${e.toString().replaceAll('Exception: ', '')}',
             ),
-            backgroundColor: Colors.redAccent,
+            backgroundColor: theme.colorScheme.error,
             behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
         );
       }
@@ -74,7 +81,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: theme.colorScheme.surface,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -83,7 +90,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                    Image.asset('assets/images/logo.png', width: 80, height: 80, fit: BoxFit.contain),
+                Image.asset('assets/images/logo.png', width: 80, height: 80, fit: BoxFit.contain),
                 const SizedBox(height: 20),
                 Text(
                   'Trueke',
@@ -100,20 +107,29 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                       ? 'Crea tu cuenta en un instante'
                       : 'Intercambio Inteligente & Seguro',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: const Color(0xFF64748B),
+                    color: theme.colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 40),
                 TextFormField(
                   controller: _emailController,
-                  style: const TextStyle(
-                    color: Color(0xFF0F172A),
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurface,
                     fontSize: 15,
                   ),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Correo electrónico',
-                    prefixIcon: Icon(Icons.email_outlined),
+                    prefixIcon: Icon(Icons.email_outlined, color: theme.colorScheme.onSurfaceVariant),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                      ),
+                    ),
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (val) {
@@ -129,13 +145,22 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                 const SizedBox(height: 18),
                 TextFormField(
                   controller: _passwordController,
-                  style: const TextStyle(
-                    color: Color(0xFF0F172A),
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurface,
                     fontSize: 15,
                   ),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Contraseña',
-                    prefixIcon: Icon(Icons.lock_outline_rounded),
+                    prefixIcon: Icon(Icons.lock_outline_rounded, color: theme.colorScheme.onSurfaceVariant),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                      ),
+                    ),
                   ),
                   obscureText: true,
                   validator: (val) => val == null || val.length < 6
@@ -146,17 +171,23 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                 SizedBox(
                   width: double.infinity,
                   height: 52,
-                  child: ElevatedButton(
+                  child: FilledButton(
                     onPressed: _isLoading ? null : _submit,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: Colors.white,
+                    style: FilledButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
                       ),
+                      elevation: 0,
                     ),
                     child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: theme.colorScheme.onPrimary,
+                              strokeWidth: 2,
+                            ),
+                          )
                         : Text(
                             _isSignUp
                                 ? 'Registrarse y Entrar'
@@ -169,7 +200,6 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                // BOTÓN CREAR CUENTA COMPATIBLE CON EL MVP
                 TextButton(
                   onPressed: () => setState(() => _isSignUp = !_isSignUp),
                   child: Text(
