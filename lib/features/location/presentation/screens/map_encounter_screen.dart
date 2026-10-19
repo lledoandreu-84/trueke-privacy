@@ -27,7 +27,6 @@ class _MapEncounterScreenState extends ConsumerState<MapEncounterScreen> {
   @override
   void initState() {
     super.initState();
-    // Inyección limpia y desacoplada del cliente de Supabase respetando el contrato de PostGIS
     _locationService = PostgisLocationService(
       supabase: ref.read(supabaseClientProvider),
     );
@@ -76,10 +75,13 @@ class _MapEncounterScreenState extends ConsumerState<MapEncounterScreen> {
         title: Text(
           'Punto de Encuentro',
           style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            letterSpacing: -0.5,
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+            letterSpacing: -0.4,
+            color: theme.colorScheme.onSurface,
           ),
         ),
+        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
       ),
       body: SafeArea(
         child: Padding(
@@ -89,12 +91,12 @@ class _MapEncounterScreenState extends ConsumerState<MapEncounterScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Card(
-                color: theme.colorScheme.surfaceContainerLow,
+                color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  side: BorderSide(
-                    color: theme.colorScheme.outlineVariant,
-                    width: 0.5,
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    width: 1,
                   ),
                 ),
                 elevation: 0,
@@ -108,7 +110,7 @@ class _MapEncounterScreenState extends ConsumerState<MapEncounterScreen> {
                             : Icons.fmd_bad_rounded,
                         size: 64,
                         color: isWithinRange
-                            ? Colors.green
+                            ? theme.colorScheme.primary
                             : theme.colorScheme.error,
                       ),
                       const SizedBox(height: 16),
@@ -118,7 +120,8 @@ class _MapEncounterScreenState extends ConsumerState<MapEncounterScreen> {
                             : 'Distancia actual: ${_currentDistance.toStringAsFixed(1)} metros',
                         textAlign: TextAlign.center,
                         style: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -140,23 +143,27 @@ class _MapEncounterScreenState extends ConsumerState<MapEncounterScreen> {
               FilledButton.icon(
                 icon: const Icon(Icons.refresh_rounded),
                 label: _isCalculating
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator.adaptive(
                           strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            theme.colorScheme.onPrimary,
+                          ),
                         ),
                       )
                     : const Text(
                         'Verificar Cercanía Realtime',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                 onPressed: _isCalculating ? null : _calculateMeetingDistance,
                 style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(48),
+                  minimumSize: const Size.fromHeight(52),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
                   ),
+                  elevation: 0,
                 ),
               ),
             ],
