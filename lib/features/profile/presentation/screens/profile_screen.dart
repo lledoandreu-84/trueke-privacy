@@ -1,3 +1,4 @@
+import '../../../../core/theme/app_colors.dart';
 import "../../../auth/providers/auth_provider.dart";
 import 'package:trueke/features/products/providers/products_provider.dart';
 import 'package:trueke/features/truekes/presentation/screens/truekes_history_screen.dart';
@@ -92,7 +93,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.star_rounded, color: Colors.amber, size: 18),
+          const Icon(Icons.star_rounded, color: AppColors.amber, size: 18),
           const SizedBox(width: 4),
           Text(
             rating.toStringAsFixed(1),

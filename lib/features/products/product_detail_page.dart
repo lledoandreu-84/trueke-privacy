@@ -35,7 +35,7 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
         const SnackBar(
           content: Text('No puedes chatear contigo mismo.'),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.black87,
+          backgroundColor: AppColors.textPrimary,
         ),
       );
       return;
@@ -47,7 +47,7 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
         const SnackBar(
           content: Text('Inicia sesión para poder chatear.'),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.black87,
+          backgroundColor: AppColors.textPrimary,
         ),
       );
       return;
@@ -64,7 +64,7 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
               'No se puede iniciar el chat porque el anuncio no identifica al vendedor.',
             ),
             behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.black87,
+            backgroundColor: AppColors.textPrimary,
           ),
         );
         if (mounted) {
@@ -80,7 +80,7 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
           const SnackBar(
             content: Text('No puedes chatear con tu propio anuncio.'),
             behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.black87,
+            backgroundColor: AppColors.textPrimary,
           ),
         );
         setState(() => _isStartingChat = false);
@@ -116,7 +116,7 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
         SnackBar(
           content: Text('Error al iniciar chat: $e'),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.black87,
+          backgroundColor: AppColors.textPrimary,
         ),
       );
     } finally {
@@ -132,7 +132,7 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
         const SnackBar(
           content: Text('Este anuncio es tuyo.'),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.black87,
+          backgroundColor: AppColors.textPrimary,
         ),
       );
       return;
@@ -149,7 +149,7 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
           const SnackBar(
             content: Text('¡Oferta de trueke enviada con éxito!'),
             behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.black87,
+            backgroundColor: AppColors.textPrimary,
           ),
         );
       }
@@ -187,21 +187,21 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
                   const Divider(
                     height: 32,
                     thickness: 0.5,
-                    color: Colors.black12,
+                    color: AppColors.border,
                   ),
                   ProductDescription(product: widget.product),
                   if (widget.product.wanted.isNotEmpty) ...[
                     const Divider(
                       height: 32,
                       thickness: 0.5,
-                      color: Colors.black12,
+                      color: AppColors.border,
                     ),
                     TradeInfo(product: widget.product),
                   ],
                   const Divider(
                     height: 32,
                     thickness: 0.5,
-                    color: Colors.black12,
+                    color: AppColors.border,
                   ),
                   SellerCard(product: widget.product),
                   const SizedBox(height: 40),
@@ -243,7 +243,7 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
                                 'Inicia sesión para guardar favoritos.',
                               ),
                               behavior: SnackBarBehavior.floating,
-                              backgroundColor: Colors.black87,
+                              backgroundColor: AppColors.textPrimary,
                             ),
                           );
                           return;
@@ -274,7 +274,7 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
                   error: (_, stackTrace) {
                     return const Icon(
                       Icons.favorite_border_rounded,
-                      color: Colors.black26,
+                      color: AppColors.textSecondary,
                       size: 20,
                     );
                   },
@@ -294,7 +294,7 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
                   child: _isStartingChat
                       ? const CircularProgressIndicator.adaptive(
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.black87,
+                            AppColors.primary,
                           ),
                         )
                       : const Text(

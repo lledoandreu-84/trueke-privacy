@@ -1,3 +1,4 @@
+import 'package:trueke/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/features/transactions/providers/reviews_provider.dart';
@@ -121,7 +122,7 @@ class _WriteReviewPageState extends ConsumerState<WriteReviewPage> {
                               : Icons.star_border_rounded,
                           size: 40,
                           color: isSelected
-                              ? Colors.amber
+                              ? AppColors.amber
                               : theme.colorScheme.outlineVariant,
                         ),
                         onPressed: () =>

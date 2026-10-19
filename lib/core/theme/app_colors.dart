@@ -1,50 +1,27 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  AppColors._();
+  // Semillas M3
+  static const Color primarySeed = Color(0xFF6750A4);
+  static const Color secondarySeed = Color(0xFF625B71);
+  static const Color tertiarySeed = Color(0xFF7D5260);
 
-  // Identidad principal de TRUEKE: esmeralda y petróleo.
-  static const Color primary = Color(0xFF059669);
-  static const Color secondary = Color(0xFF155E75);
+  // Constantes de compatibilidad con el proyecto original
+  static const Color primary = Color(0xFF6750A4);
+  static const Color secondary = Color(0xFF625B71);
+  static const Color surface = Colors.white;
+  static const Color background = Color(0xFFF8F9FA);
+  static const Color textPrimary = Color(0xFF1D1B20);
+  static const Color textSecondary = Color(0xFF49454F);
+  static const Color surfaceMint = Color(0xFFE8F5E9);
+  static const Color border = Color(0xFFE0E0E0);
+  static const Color coral = Color(0xFFFF6F61);
+  static const Color petrolBlue = Color(0xFF005B5C);
+  static const Color error = Color(0xFFB3261E);
 
-  // Paleta de acentos avanzada.
-  static const Color emerald = Color(0xFF059669);
-  static const Color mint = Color(0xFF10B981);
-  static const Color mintLight = Color(0xFFECFDF5);
-  static const Color petrolBlue = Color(0xFF155E75);
-  static const Color indigo = Color(0xFF4F46E5);
-  static const Color skyBlue = Color(0xFF38BDF8);
-  static const Color amber = Color(0xFFF59E0B);
-  static const Color coral = Color(0xFFF97373);
-
-  // Fondos y superficies.
-  static const Color background = Color(0xFFF8FAFC);
-  static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceMint = Color(0xFFECFDF5);
-
-  // Tipografía y legibilidad.
-  static const Color textPrimary = Color(0xFF1F2937);
-  static const Color textSecondary = Color(0xFF64748B);
-
-  // Estados semánticos.
-  static const Color success = Color(0xFF10B981);
-  static const Color error = Color(0xFFEF4444);
-  static const Color warning = Color(0xFFF59E0B);
-  static const Color info = Color(0xFF155E75);
-
-  // Bordes y divisores.
-  static const Color border = Color(0xFFE2E8F0);
-
-  // Degradados de alta gama para TRUEKE
-  static const LinearGradient primaryGradient = LinearGradient(
-    colors: [Color(0xFF059669), Color(0xFF10B981)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
-
-  static const LinearGradient accentGradient = LinearGradient(
-    colors: [Color(0xFF155E75), Color(0xFF4F46E5)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
+  // Getters solicitados por pantallas existentes
+  static const Color mint = Color(0xFF4CAF50);
+  static const Color mintLight = Color(0xFFC8E6C9);
+  static const Color amber = Color(0xFFFFC107);
+  static const Color success = Color(0xFF2E7D32);
 }

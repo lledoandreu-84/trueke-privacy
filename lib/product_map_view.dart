@@ -1,3 +1,4 @@
+import 'package:trueke/core/theme/app_colors.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -85,7 +86,7 @@ class ProductMapView extends ConsumerWidget {
                                 product.description,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(color: Colors.grey),
+                                style: const TextStyle(color: AppColors.textSecondary),
                               ),
                             ],
                           ),
@@ -117,7 +118,7 @@ class ProductMapView extends ConsumerWidget {
           },
           child: const Icon(
             Icons.location_on,
-            color: Colors.redAccent,
+            color: AppColors.error,
             size: 40,
           ),
         ),

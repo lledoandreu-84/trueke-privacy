@@ -1,3 +1,4 @@
+import 'package:trueke/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/presentation/providers/trade_offer_provider.dart';
@@ -39,7 +40,7 @@ class TradeOfferCardWidget extends ConsumerWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(errorMessage),
-              backgroundColor: Colors.redAccent,
+              backgroundColor: AppColors.error,
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -69,8 +70,8 @@ class TradeOfferCardWidget extends ConsumerWidget {
                             targetLng: targetLongitude,
                           ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
-                  disabledBackgroundColor: Colors.teal.withValues(alpha: 0.3),
+                  backgroundColor: AppColors.success,
+                  disabledBackgroundColor: AppColors.success.withValues(alpha: 0.3),
                 ),
                 child: tradeState.isLoading
                     ? const SizedBox(

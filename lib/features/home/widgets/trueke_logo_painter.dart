@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trueke/core/theme/app_colors.dart';
 
 class TruekeLogoPainter extends CustomPainter {
   const TruekeLogoPainter();
@@ -10,7 +11,7 @@ class TruekeLogoPainter extends CustomPainter {
 
     // Fondo verde circular corporativo
     final Paint bgPaint = Paint()
-      ..color = const Color(0xFF00A86B)
+      ..color = AppColors.primary
       ..style = PaintingStyle.fill;
     canvas.drawCircle(center, radius, bgPaint);
 

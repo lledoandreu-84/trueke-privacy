@@ -1,3 +1,4 @@
+import '../../../../core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/features/truekes/data/repositories/trueke_repository.dart';
@@ -10,11 +11,11 @@ class EscrowBadgeWidget extends ConsumerWidget {
   Color _getEscrowColor(EscrowStatus status) {
     switch (status) {
       case EscrowStatus.released:
-        return Colors.teal;
+        return AppColors.success;
       case EscrowStatus.held:
-        return Colors.amber.shade800;
+        return AppColors.amber;
       case EscrowStatus.refunded:
-        return Colors.blueGrey;
+        return AppColors.textSecondary;
     }
   }
 

@@ -1,3 +1,4 @@
+import 'package:trueke/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/features/transactions/providers/reviews_provider.dart';
@@ -19,7 +20,7 @@ class ReviewsPage extends ConsumerWidget {
         } else {
           icon = Icons.star_border_rounded;
         }
-        return Icon(icon, color: Colors.amber, size: 16);
+        return Icon(icon, color: AppColors.amber, size: 16);
       }),
     );
   }
