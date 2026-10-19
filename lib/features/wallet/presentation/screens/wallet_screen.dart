@@ -8,10 +8,17 @@ class WalletScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final currentUser = ref.watch(currentUserProvider);
     if (currentUser == null) {
-      return const Scaffold(
-        body: Center(child: Text('Inicia sesión para ver tu cartera')),
+      return Scaffold(
+        backgroundColor: theme.colorScheme.surface,
+        body: Center(
+          child: Text(
+            'Inicia sesión para ver tu cartera',
+            style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+          ),
+        ),
       );
     }
 
@@ -19,33 +26,44 @@ class WalletScreen extends ConsumerWidget {
     final mutationState = ref.watch(walletMutationProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.colorScheme.surface,
         elevation: 0,
         scrolledUnderElevation: 0,
-        title: const Text(
+        title: Text(
           'Mi Cartera',
-          style: TextStyle(
-            color: Colors.black87,
+          style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.w600,
             fontSize: 18,
             letterSpacing: -0.4,
+            color: theme.colorScheme.onSurface,
           ),
         ),
-        iconTheme: const IconThemeData(color: Colors.black87),
+        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(color: Colors.black12, height: 0.5),
+          child: Container(
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+            height: 0.5,
+          ),
         ),
       ),
       body: walletAsync.when(
-        loading: () => const Center(
+        loading: () => Center(
           child: CircularProgressIndicator.adaptive(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.black87),
+            valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
           ),
         ),
-        error: (err, _) => Center(child: Text('Error al cargar saldos: $err')),
+        error: (err, _) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Text(
+              'Error al cargar saldos: $err',
+              style: TextStyle(color: theme.colorScheme.error),
+            ),
+          ),
+        ),
         data: (wallet) => ListView(
           padding: const EdgeInsets.all(24.0),
           children: [
@@ -53,17 +71,20 @@ class WalletScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: const Color(0xFFF5F5F7),
+                color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.black12, width: 0.5),
+                border: Border.all(
+                  color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                  width: 1,
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Saldo disponible',
                     style: TextStyle(
-                      color: Colors.black54,
+                      color: theme.colorScheme.onSurfaceVariant,
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                     ),
@@ -71,8 +92,8 @@ class WalletScreen extends ConsumerWidget {
                   const SizedBox(height: 8),
                   Text(
                     '${wallet.balance.toStringAsFixed(2)} €',
-                    style: const TextStyle(
-                      color: Colors.black87,
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface,
                       fontSize: 32,
                       fontWeight: FontWeight.w700,
                       letterSpacing: -1,
@@ -86,21 +107,28 @@ class WalletScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.black12, width: 0.5),
+                border: Border.all(
+                  color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                  width: 1,
+                ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Row(
+                  Row(
                     children: [
-                      Icon(Icons.lock_outline, size: 18, color: Colors.black45),
-                      SizedBox(width: 8),
+                      Icon(
+                        Icons.lock_outline_rounded,
+                        size: 18,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 8),
                       Text(
                         'Depósito en garantía (Tratos)',
                         style: TextStyle(
-                          color: Colors.black54,
+                          color: theme.colorScheme.onSurfaceVariant,
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                         ),
@@ -109,8 +137,8 @@ class WalletScreen extends ConsumerWidget {
                   ),
                   Text(
                     '${wallet.escrowBalance.toStringAsFixed(2)} €',
-                    style: const TextStyle(
-                      color: Colors.black87,
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface,
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                     ),
@@ -121,7 +149,7 @@ class WalletScreen extends ConsumerWidget {
 
             const SizedBox(height: 32),
             // Botón de Recarga Virtual Rápida (Simulador de Pasarela de Pagos)
-            ElevatedButton(
+            FilledButton(
               onPressed: mutationState.isLoading
                   ? null
                   : () async {
@@ -131,38 +159,44 @@ class WalletScreen extends ConsumerWidget {
                       if (context.mounted) {
                         if (success) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
+                            SnackBar(
+                              content: const Text(
                                 'Se han añadido 50.00 € correctamente',
                               ),
-                              backgroundColor: Colors.green,
+                              backgroundColor: theme.colorScheme.primary,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
                           );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('No se pudo procesar el pago'),
-                              backgroundColor: Colors.redAccent,
+                            SnackBar(
+                              content: const Text('No se pudo procesar el pago'),
+                              backgroundColor: theme.colorScheme.error,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
                           );
                         }
                       }
                     },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black87,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(52),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                 ),
+                elevation: 0,
               ),
               child: mutationState.isLoading
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
-                        color: Colors.white,
+                        color: theme.colorScheme.onPrimary,
                         strokeWidth: 2,
                       ),
                     )
