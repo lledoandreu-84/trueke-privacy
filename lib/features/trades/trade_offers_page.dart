@@ -8,18 +8,33 @@ class TradeOffersPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final offersAsync = ref.watch(tradeOffersProvider);
 
     return DefaultTabController(
       length: 2,
       child: Scaffold(
+        backgroundColor: theme.colorScheme.surface,
         appBar: AppBar(
-          title: const Text(
+          backgroundColor: theme.colorScheme.surface,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          title: Text(
             'Propuestas de Trueke',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+              fontSize: 18,
+              letterSpacing: -0.4,
+              color: theme.colorScheme.onSurface,
+            ),
           ),
-          bottom: const TabBar(
-            tabs: [
+          iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
+          bottom: TabBar(
+            labelColor: theme.colorScheme.primary,
+            unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
+            indicatorColor: theme.colorScheme.primary,
+            dividerColor: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+            tabs: const [
               Tab(text: 'Recibidas'),
               Tab(text: 'Enviadas'),
             ],
@@ -37,9 +52,21 @@ class TradeOffersPage extends ConsumerWidget {
               ],
             );
           },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, stack) =>
-              Center(child: Text('Error al cargar ofertas: $err')),
+          loading: () => Center(
+            child: CircularProgressIndicator.adaptive(
+              valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+            ),
+          ),
+          error: (err, stack) => Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Text(
+                'Error al cargar ofertas: $err',
+                style: TextStyle(color: theme.colorScheme.error),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -52,14 +79,14 @@ class _OffersList extends ConsumerWidget {
 
   const _OffersList({required this.offers, required this.isIncomingTab});
 
-  Color _getStatusColor(TradeOfferStatus status) {
+  Color _getStatusColor(ColorScheme colorScheme, TradeOfferStatus status) {
     switch (status) {
       case TradeOfferStatus.sent:
-        return Colors.orange;
+        return colorScheme.tertiary;
       case TradeOfferStatus.accepted:
-        return Colors.green;
+        return colorScheme.primary;
       case TradeOfferStatus.rejected:
-        return Colors.red;
+        return colorScheme.error;
     }
   }
 
@@ -76,26 +103,47 @@ class _OffersList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+
     if (offers.isEmpty) {
       return Center(
-        child: Text(
-          isIncomingTab
-              ? 'No has recibido ninguna propuesta.'
-              : 'No has enviado ninguna propuesta.',
-          style: const TextStyle(color: Colors.grey, fontSize: 16),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Text(
+            isIncomingTab
+                ? 'No has recibido ninguna propuesta.'
+                : 'No has enviado ninguna propuesta.',
+            style: TextStyle(
+              color: theme.colorScheme.onSurfaceVariant,
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+          ),
         ),
       );
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(24),
       itemCount: offers.length,
       itemBuilder: (context, index) {
         final offer = offers[index];
+        final statusColor = _getStatusColor(theme.colorScheme, offer.status);
+
         return Card(
-          margin: const EdgeInsets.only(bottom: 12),
+          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+          elevation: 0,
+          margin: const EdgeInsets.only(bottom: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+              width: 1,
+            ),
+          ),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -105,41 +153,56 @@ class _OffersList extends ConsumerWidget {
                     Expanded(
                       child: Text(
                         'Producto: ${offer.productTitle}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
                           fontSize: 16,
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
                     ),
-                    Chip(
-                      label: Text(
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
                         _getStatusLabel(offer.status),
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: statusColor,
                           fontSize: 12,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      backgroundColor: _getStatusColor(offer.status),
                     ),
                   ],
                 ),
                 if (offer.offeredProductTitle != null) ...[
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 8),
                   Text(
                     'A cambio de: ${offer.offeredProductTitle}',
                     style: TextStyle(
-                      color: Colors.blue.shade800,
+                      color: theme.colorScheme.primary,
                       fontWeight: FontWeight.w500,
+                      fontSize: 14,
                     ),
                   ),
                 ],
                 const SizedBox(height: 8),
                 Text(
                   'Mensaje: ${offer.message}',
-                  style: const TextStyle(fontStyle: FontStyle.italic),
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontSize: 14,
+                  ),
                 ),
                 if (isIncomingTab && offer.isPending) ...[
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -151,21 +214,25 @@ class _OffersList extends ConsumerWidget {
                               status: TradeOfferStatus.rejected,
                             ),
                         style: TextButton.styleFrom(
-                          foregroundColor: Colors.red,
+                          foregroundColor: theme.colorScheme.error,
                         ),
                         child: const Text('Rechazar'),
                       ),
                       const SizedBox(width: 8),
-                      ElevatedButton(
+                      FilledButton(
                         onPressed: () => ref
                             .read(tradeOffersProvider.notifier)
                             .respondToOffer(
                               offer: offer,
                               status: TradeOfferStatus.accepted,
                             ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: theme.colorScheme.primary,
+                          foregroundColor: theme.colorScheme.onPrimary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
                         ),
                         child: const Text('Aceptar'),
                       ),
