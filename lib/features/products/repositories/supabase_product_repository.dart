@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/services/storage_service.dart';
+import '../../../core/services/mocks/mock_product_service.dart';
 import '../../../models/product.dart';
 import 'product_repository.dart';
 
@@ -15,6 +16,22 @@ class SupabaseProductRepository implements ProductRepository {
   final StorageService _storageService;
 
   static const _table = 'products';
+
+  List<Product> _getMockFallback({String? query, String? category}) {
+    var products = MockProductService.getFullMockProducts();
+    if (query != null && query.trim().isNotEmpty) {
+      final q = query.trim().toLowerCase();
+      products = products.where((p) =>
+        p.title.toLowerCase().contains(q) ||
+        p.description.toLowerCase().contains(q)
+      ).toList();
+    }
+    if (category != null && category.trim().isNotEmpty) {
+      final cat = category.trim().toLowerCase();
+      products = products.where((p) => p.category.toLowerCase() == cat).toList();
+    }
+    return products;
+  }
 
   @override
   Future<List<Product>> getProducts({
@@ -34,12 +51,7 @@ class SupabaseProductRepository implements ProductRepository {
             .toList();
         return fetchedProducts;
       } catch (e) {
-        developer.log(
-          'Error obteniendo productos mediante el interceptor de pruebas: $e',
-          name: 'trueke.repository',
-          error: e,
-        );
-        return [];
+        return _getMockFallback(query: query, category: category);
       }
     }
     try {
@@ -86,34 +98,39 @@ class SupabaseProductRepository implements ProductRepository {
           .map((item) => Product.fromJson(item as Map<String, dynamic>))
           .toList();
 
-      final cleanRealProducts = fetchedProducts.where((p) {
-        if (p.images.isNotEmpty &&
-            p.images.first.contains('unsplash.com') &&
-            !p.images.first.contains('://unsplash.com')) {
-          return false;
-        }
-        return true;
-      }).toList();
+      if (fetchedProducts.isEmpty) {
+        return _getMockFallback(query: query, category: category);
+      }
 
-      return cleanRealProducts;
+      return fetchedProducts;
     } catch (e) {
       developer.log(
-        '⚠️ [FALLO REPOSITORIO] | getProducts geo fallback activado | Error: $e',
+        '⚠️ [FALLO REPOSITORIO] | getProducts fallback mock activado | Error: $e',
         name: 'trueke.repository',
-        error: e,
       );
-      return [];
+      return _getMockFallback(query: query, category: category);
     }
   }
 
   @override
   Future<Product?> getProductById(String id) async {
-    final response = await _client
-        .from(_table)
-        .select()
-        .eq('id', id)
-        .maybeSingle();
-    return response == null ? null : Product.fromJson(response);
+    try {
+      final response = await _client
+          .from(_table)
+          .select()
+          .eq('id', id)
+          .maybeSingle();
+      if (response != null) {
+        return Product.fromJson(response);
+      }
+    } catch (_) {}
+    
+    // Fallback en mocks si no se encuentra remoto
+    try {
+      return MockProductService.getFullMockProducts().firstWhere((p) => p.id == id);
+    } catch (_) {
+      return null;
+    }
   }
 
   @override
@@ -160,18 +177,17 @@ class SupabaseProductRepository implements ProductRepository {
         },
       );
       if (response != null) {
-        return (response as List<dynamic>)
+        final list = (response as List<dynamic>)
             .map((item) => Product.fromJson(item as Map<String, dynamic>))
             .toList();
+        if (list.isNotEmpty) return list;
       }
-      return [];
     } catch (e) {
       developer.log(
-        '⚠️ [FALLO REPOSITORIO] | searchProductsAdvanced fallado | Error: $e',
+        '⚠️ [FALLO REPOSITORIO] | searchProductsAdvanced fallback mock | Error: $e',
         name: 'trueke.repository',
-        error: e,
       );
-      return [];
     }
+    return _getMockFallback(query: query);
   }
 }

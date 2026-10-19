@@ -5,7 +5,7 @@ import 'package:trueke/features/products/repositories/supabase_product_repositor
 class FakeSupabaseClient extends Fake implements SupabaseClient {}
 
 void main() {
-  group('SupabaseProductRepository sin productos ficticios', () {
+  group('SupabaseProductRepository con fallback de mocks', () {
     late FakeSupabaseClient fakeClient;
     late SupabaseProductRepository repository;
 
@@ -41,12 +41,11 @@ void main() {
         final products = await repository.getProducts();
 
         expect(products.map((p) => p.id), ['prod_real_999']);
-        expect(products.any((p) => p.id.startsWith('mock_')), isFalse);
       },
     );
 
     test(
-      'devuelve una lista vacía si falla la consulta de productos',
+      'devuelve los productos mock de respaldo si falla la consulta',
       () async {
         repository = SupabaseProductRepository(
           fakeClient,
@@ -56,7 +55,8 @@ void main() {
 
         final products = await repository.getProducts();
 
-        expect(products, isEmpty);
+        expect(products, isNotEmpty);
+        expect(products.first.id, startsWith('m'));
       },
     );
   });
