@@ -164,7 +164,8 @@ class SearchFiltersWidget extends ConsumerWidget {
                 ),
                 Switch.adaptive(
                   value: hasLocation,
-                  activeColor: theme.colorScheme.primary,
+                  activeThumbColor: theme.colorScheme.primary,
+                  activeTrackColor: theme.colorScheme.primaryContainer,
                   onChanged: (value) {
                     if (value) {
                       filtersNotifier.updateLocation(40.416775, -3.703790);
