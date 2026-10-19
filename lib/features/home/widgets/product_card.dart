@@ -1,76 +1,108 @@
-import 'package:trueke/core/providers/favorites_provider.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/models/product.dart';
-import 'package:trueke/core/widgets/favorite_button.dart';
+import 'package:trueke/features/products/product_detail_page.dart';
+import 'package:trueke/core/providers/favorites_provider.dart';
 
 class ProductCard extends ConsumerWidget {
-  const ProductCard({super.key, required this.product});
+  const ProductCard({
+    super.key,
+    required this.product,
+  });
 
   final Product product;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final favoritesAsync = ref.watch(favoritesProvider);
+    final isFavorite = favoritesAsync.maybeWhen(
+      data: (favorites) => favorites.any((p) => p.id == product.id),
+      orElse: () => false,
+    );
 
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
-          width: 1,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push<void>(
+          context,
+          MaterialPageRoute<void>(
+            builder: (context) => ProductDetailPage(product: product),
+          ),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: theme.colorScheme.shadow.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () {},
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               flex: 5,
               child: Stack(
-                fit: StackFit.expand,
                 children: [
-                  product.imageUrl.isNotEmpty
-                      ? Image.network(
-                          product.imageUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => Container(
-                            color: theme.colorScheme.surfaceContainerHighest,
-                            child: Icon(
-                              Icons.image_not_supported_rounded,
-                              color: theme.colorScheme.onSurfaceVariant,
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                    ),
+                    child: product.imageUrl.isNotEmpty
+                        ? ClipRRect(
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                            child: Image.network(
+                              product.imageUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) => Icon(
+                                Icons.image_not_supported_rounded,
+                                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                              ),
                             ),
-                          ),
-                        )
-                      : Container(
-                          color: theme.colorScheme.surfaceContainerHighest,
-                          child: Icon(
+                          )
+                        : Icon(
                             Icons.image_rounded,
-                            color: theme.colorScheme.onSurfaceVariant,
+                            color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                           ),
-                        ),
+                  ),
                   Positioned(
                     top: 8,
                     right: 8,
-                    child: Consumer(
-                    builder: (context, ref, child) {
-                      final favoritesAsync = ref.watch(favoritesProvider);
-                      final isFav = favoritesAsync.maybeWhen(
-                        data: (list) => list.any((p) => p.id == product.id),
-                        orElse: () => false,
-                      );
-                      return FavoriteButton(
-                        productId: product.id,
-                        isFavorite: isFav,
-                        onTap: () {
-                          ref.read(favoritesProvider.notifier).toggleFavorite(product);
-                        },
-                      );
-                    },
-                  ),
+                    child: GestureDetector(
+                      onTap: () {
+                        ref.read(favoritesProvider.notifier).toggleFavorite(product);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surface.withValues(alpha: 0.9),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: theme.colorScheme.shadow.withValues(alpha: 0.1),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                          size: 18,
+                          color: isFavorite ? Colors.red : theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -78,45 +110,50 @@ class ProductCard extends ConsumerWidget {
             Expanded(
               flex: 4,
               child: Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(10.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: Text(
-                        product.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: theme.colorScheme.onSurface,
-                        ),
+                    Text(
+                      product.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.onSurface,
+                        letterSpacing: -0.2,
                       ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          product.price != null ? '${product.price!.round()}€' : 'Intercambio',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: theme.colorScheme.primary,
+                        Flexible(
+                          child: Text(
+                            product.price != null ? '${product.price!.round()}€' : 'Intercambio',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: theme.colorScheme.primary,
+                            ),
                           ),
                         ),
+                        const SizedBox(width: 4),
                         if (product.condition.isNotEmpty)
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
                               product.condition,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                fontSize: 11,
+                                fontSize: 10,
                                 fontWeight: FontWeight.w500,
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),

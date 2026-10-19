@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/routes/app_routes.dart';
@@ -10,7 +9,6 @@ import 'products_map_page.dart';
 import 'widgets/home_header.dart';
 import 'widgets/product_card.dart';
 import 'widgets/promo_banner.dart';
-import 'widgets/search_bar_widget.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -21,8 +19,6 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage> {
   final ScrollController _scrollController = ScrollController();
-
-  
 
   @override
   void initState() {
@@ -106,7 +102,6 @@ class _HomePageState extends ConsumerState<HomePage> {
             const SliverToBoxAdapter(
               child: ColoredBox(color: AppColors.surface, child: HomeHeader()),
             ),
-            const SliverToBoxAdapter(child: SearchBarWidget()),
             const SliverToBoxAdapter(child: PromoBanner()),
 
             const SliverToBoxAdapter(
@@ -118,80 +113,80 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
 
             SliverPadding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        sliver: SliverGrid(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            childAspectRatio: 1.4,
-          ),
-          delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              const categoriesData = [
-                {"name": "Electrónica", "icon": Icons.devices_rounded, "color": Color(0xFF3B82F6)},
-                {"name": "Moda", "icon": Icons.checkroom_rounded, "color": Color(0xFFEC4899)},
-                {"name": "Hogar", "icon": Icons.chair_rounded, "color": Color(0xFFF59E0B)},
-                {"name": "Gaming", "icon": Icons.sports_esports_rounded, "color": Color(0xFF8B5CF6)},
-                {"name": "Deporte", "icon": Icons.sports_soccer_rounded, "color": Color(0xFF10B981)},
-                {"name": "Otros", "icon": Icons.widgets_rounded, "color": Color(0xFF6B7280)},
-              ];
-              final cat = categoriesData[index];
-              final String name = cat["name"] as String;
-              final IconData icon = cat["icon"] as IconData;
-              final Color catColor = cat["color"] as Color;
-              final bool isSelected = filters.category == name;
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: 1.4,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    const categoriesData = [
+                      {"name": "Electrónica", "icon": Icons.devices_rounded, "color": Color(0xFF3B82F6)},
+                      {"name": "Moda", "icon": Icons.checkroom_rounded, "color": Color(0xFFEC4899)},
+                      {"name": "Hogar", "icon": Icons.chair_rounded, "color": Color(0xFFF59E0B)},
+                      {"name": "Gaming", "icon": Icons.sports_esports_rounded, "color": Color(0xFF8B5CF6)},
+                      {"name": "Deporte", "icon": Icons.sports_soccer_rounded, "color": Color(0xFF10B981)},
+                      {"name": "Otros", "icon": Icons.widgets_rounded, "color": Color(0xFF6B7280)},
+                    ];
+                    final cat = categoriesData[index];
+                    final String name = cat["name"] as String;
+                    final IconData icon = cat["icon"] as IconData;
+                    final Color catColor = cat["color"] as Color;
+                    final bool isSelected = filters.category == name;
 
-              return InkWell(
-                onTap: () {
-                  ref.read(productFiltersProvider.notifier).toggleCategory(name);
-                },
-                borderRadius: BorderRadius.circular(16),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  decoration: BoxDecoration(
-                    color: isSelected ? catColor : catColor.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: isSelected ? catColor : catColor.withValues(alpha: 0.3),
-                      width: isSelected ? 2 : 1,
-                    ),
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(
-                              color: catColor.withValues(alpha: 0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 3),
-                            )
-                          ]
-                        : [],
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        icon,
-                        size: 22,
-                        color: isSelected ? Colors.white : catColor,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        name,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                          color: isSelected ? Colors.white : AppColors.textPrimary,
+                    return InkWell(
+                      onTap: () {
+                        ref.read(productFiltersProvider.notifier).toggleCategory(name);
+                      },
+                      borderRadius: BorderRadius.circular(16),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        decoration: BoxDecoration(
+                          color: isSelected ? catColor : catColor.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isSelected ? catColor : catColor.withValues(alpha: 0.3),
+                            width: isSelected ? 2 : 1,
+                          ),
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                    color: catColor.withValues(alpha: 0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 3),
+                                  )
+                                ]
+                              : [],
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              icon,
+                              size: 22,
+                              color: isSelected ? Colors.white : catColor,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              name,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                                color: isSelected ? Colors.white : AppColors.textPrimary,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    );
+                  },
+                  childCount: 6,
                 ),
-              );
-            },
-            childCount: 6,
-          ),
-        ),
-      ),
+              ),
+            ),
 
             SliverToBoxAdapter(
               child: _SectionHeading(
