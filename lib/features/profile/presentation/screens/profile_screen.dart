@@ -111,6 +111,61 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+    if (widget.userId.isEmpty) {
+      return Scaffold(
+        backgroundColor: theme.colorScheme.surface,
+        appBar: AppBar(
+          backgroundColor: theme.colorScheme.surface,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          title: Text(
+            'Mi Cuenta',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 20,
+              color: theme.colorScheme.onSurface,
+              letterSpacing: -0.5,
+            ),
+          ),
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.account_circle_outlined,
+                  size: 80,
+                  color: theme.colorScheme.primary.withValues(alpha: 0.5),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Inicia sesión para ver tu perfil',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Accede a tus productos publicados, valoraciones y configuración de cuenta.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     final profileAsync = ref.watch(userProfileProvider(widget.userId));
     final liveRatingAsync = ref.watch(userRatingAverageProvider(widget.userId));
     final myProductsAsync = ref.watch(myProductsProvider);
