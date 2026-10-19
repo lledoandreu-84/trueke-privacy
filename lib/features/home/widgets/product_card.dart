@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:trueke/models/product.dart';
-import 'package:trueke/core/theme/app_colors.dart';
 import 'package:trueke/core/widgets/favorite_button.dart';
 
 class ProductCard extends StatelessWidget {
@@ -23,9 +22,7 @@ class ProductCard extends StatelessWidget {
       ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () {
-          // Navegación al detalle del producto manejada externamente o por ruta
-        },
+        onTap: () {},
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -58,7 +55,7 @@ class ProductCard extends StatelessWidget {
                     right: 8,
                     child: FavoriteButton(
                       productId: product.id,
-                      isFavorite: false, // Se gestiona reactivamente mediante estado/proveedor si aplica
+                      isFavorite: false,
                     ),
                   ),
                 ],
@@ -86,7 +83,7 @@ class ProductCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '${product.estimatedValue.round()}€',
+                          product.price != null ? '${product.price!.round()}€' : 'Intercambio',
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
