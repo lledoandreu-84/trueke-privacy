@@ -1,6 +1,6 @@
+import '../../search/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:trueke/core/providers/shell_index_provider.dart';
 
 import '../../../core/theme/app_colors.dart';
 
@@ -75,7 +75,12 @@ class PromoBanner extends ConsumerWidget {
           const SizedBox(height: 22),
           ElevatedButton(
             onPressed: () {
-              ref.read(shellIndexProvider.notifier).setIndex(1);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SearchPage(),
+                ),
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
