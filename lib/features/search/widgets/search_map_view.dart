@@ -18,6 +18,7 @@ class SearchMapView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final defaultCenter = LatLng(
       centerLatitude ?? 40.416775,
       centerLongitude ?? -3.703790,
@@ -39,7 +40,11 @@ class SearchMapView extends StatelessWidget {
                   ),
                 );
               },
-              child: const Icon(Icons.location_on, color: Colors.red, size: 40),
+              child: Icon(
+                Icons.location_on_rounded,
+                color: theme.colorScheme.primary,
+                size: 40,
+              ),
             ),
           ),
         )
