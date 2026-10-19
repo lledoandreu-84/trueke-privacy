@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/features/offers/presentation/screens/trade_offers_screen.dart';
 import 'package:trueke/features/profile/providers/profile_provider.dart';
 import 'package:trueke/features/reviews/providers/reviews_provider.dart';
-import '../../../../core/theme/app_colors.dart';
 import 'my_published_products_screen.dart';
 import 'edit_profile_screen.dart';
 
@@ -25,6 +24,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     required String subtitle,
     required VoidCallback onTap,
   }) {
+    final theme = Theme.of(context);
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -35,10 +35,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.surfaceMint,
+                color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: AppColors.primary, size: 22),
+              child: Icon(icon, color: theme.colorScheme.primary, size: 22),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -47,27 +47,27 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.onSurface,
                       letterSpacing: -0.2,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.textSecondary,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.arrow_forward_ios_rounded,
-              color: AppColors.border,
+              color: theme.colorScheme.outline,
               size: 14,
             ),
           ],
@@ -76,13 +76,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildLiveRatingBadge(double rating) {
+  Widget _buildLiveRatingBadge(BuildContext context, double rating) {
+    final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.surfaceMint,
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2), width: 1),
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: 0.2),
+          width: 1,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -92,10 +96,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           const SizedBox(width: 4),
           Text(
             rating.toStringAsFixed(1),
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 14,
-              color: AppColors.textPrimary,
+              color: theme.colorScheme.onPrimaryContainer,
             ),
           ),
         ],
@@ -105,31 +109,32 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final profileAsync = ref.watch(userProfileProvider(widget.userId));
     final liveRatingAsync = ref.watch(userRatingAverageProvider(widget.userId));
     final myProductsAsync = ref.watch(myProductsProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
+        backgroundColor: theme.colorScheme.surface,
         elevation: 0,
         scrolledUnderElevation: 0,
-        title: const Text(
+        title: Text(
           'Mi Cuenta',
           style: TextStyle(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
             fontSize: 20,
-            color: AppColors.textPrimary,
+            color: theme.colorScheme.onSurface,
             letterSpacing: -0.5,
           ),
         ),
         actions: [
           profileAsync.maybeWhen(
             data: (profile) => IconButton(
-              icon: const Icon(
+              icon: Icon(
                 Icons.edit_outlined,
-                color: AppColors.primary,
+                color: theme.colorScheme.primary,
               ),
               onPressed: () {
                 Navigator.push(
@@ -162,17 +167,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.primary, width: 2),
+                      border: Border.all(color: theme.colorScheme.primary, width: 2),
                     ),
                     child: CircleAvatar(
                       radius: 44,
-                      backgroundColor: AppColors.surfaceMint,
+                      backgroundColor: theme.colorScheme.surfaceContainerHighest,
                       backgroundImage: hasAvatar ? NetworkImage(url) : null,
                       child: !hasAvatar
-                          ? const Icon(
+                          ? Icon(
                               Icons.person_outline_rounded,
                               size: 40,
-                              color: AppColors.primary,
+                              color: theme.colorScheme.primary,
                             )
                           : null,
                     ),
@@ -180,27 +185,27 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   const SizedBox(height: 12),
                   Text(
                     resolvedName,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      color: theme.colorScheme.onSurface,
                       letterSpacing: -0.3,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     profile.email,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
-                      color: AppColors.textSecondary,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 10),
                   liveRatingAsync.when(
-                    data: (rating) => _buildLiveRatingBadge(rating),
+                    data: (rating) => _buildLiveRatingBadge(context, rating),
                     error: (err, stack) =>
-                        _buildLiveRatingBadge(profile.averageRating),
-                    loading: () => _buildLiveRatingBadge(profile.averageRating),
+                        _buildLiveRatingBadge(context, profile.averageRating),
+                    loading: () => _buildLiveRatingBadge(context, profile.averageRating),
                   ),
                 ],
               ),
@@ -210,15 +215,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(20),
+                    color: theme.colorScheme.surface,
+                    borderRadius: BorderRadius.circular(24),
                     border: Border.all(
-                      color: AppColors.border,
+                      color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
                       width: 1,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.03),
+                        color: theme.colorScheme.shadow.withValues(alpha: 0.03),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -241,10 +246,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           );
                         },
                       ),
-                      const Divider(
+                      Divider(
                         height: 1,
                         thickness: 1,
-                        color: AppColors.border,
+                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
                         indent: 16,
                         endIndent: 16,
                       ),
@@ -268,10 +273,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           );
                         },
                       ),
-                      const Divider(
+                      Divider(
                         height: 1,
                         thickness: 1,
-                        color: AppColors.border,
+                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
                         indent: 16,
                         endIndent: 16,
                       ),
@@ -290,27 +295,52 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           );
                         },
                       ),
-                      const Divider(height: 1, thickness: 1, color: AppColors.border, indent: 16, endIndent: 16),
-                      // Botón de Cierre de Sesión
+                      Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                        indent: 16,
+                        endIndent: 16,
+                      ),
                       InkWell(
                         onTap: () async {
                           final confirm = await showDialog<bool>(
                             context: context,
-                            builder: (context) => AlertDialog(
+                            builder: (dialogCtx) => AlertDialog(
+                              backgroundColor: theme.colorScheme.surface,
+                              surfaceTintColor: Colors.transparent,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(28),
                               ),
-                              title: const Text('Cerrar sesión'),
-                              content: const Text('¿Estás seguro de que deseas salir de tu cuenta?'),
+                              title: Text(
+                                'Cerrar sesión',
+                                style: TextStyle(
+                                  color: theme.colorScheme.onSurface,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              content: Text(
+                                '¿Estás seguro de que deseas salir de tu cuenta?',
+                                style: TextStyle(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
                               actions: [
                                 TextButton(
-                                  onPressed: () => Navigator.pop(context, false),
-                                  child: const Text('Cancelar', style: TextStyle(color: AppColors.textSecondary)),
+                                  onPressed: () => Navigator.pop(dialogCtx, false),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                  child: const Text('Cancelar'),
                                 ),
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context, true),
-                                  style: TextButton.styleFrom(foregroundColor: AppColors.error),
-                                  child: const Text('Cerrar sesión', style: TextStyle(fontWeight: FontWeight.bold)),
+                                FilledButton(
+                                  onPressed: () => Navigator.pop(dialogCtx, true),
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: theme.colorScheme.error,
+                                    foregroundColor: theme.colorScheme.onError,
+                                    elevation: 0,
+                                  ),
+                                  child: const Text('Cerrar sesión'),
                                 ),
                               ],
                             ),
@@ -320,27 +350,36 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             await ref.read(authServiceProvider).signOut();
                           }
                         },
-                        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
+                        borderRadius: const BorderRadius.vertical(
+                          bottom: Radius.circular(24),
+                        ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
                           child: Row(
                             children: [
                               Container(
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: AppColors.error.withValues(alpha: 0.1),
+                                  color: theme.colorScheme.errorContainer.withValues(alpha: 0.4),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: const Icon(Icons.logout_rounded, color: AppColors.error, size: 22),
+                                child: Icon(
+                                  Icons.logout_rounded,
+                                  color: theme.colorScheme.error,
+                                  size: 22,
+                                ),
                               ),
                               const SizedBox(width: 16),
-                              const Expanded(
+                              Expanded(
                                 child: Text(
                                   'Cerrar sesión',
                                   style: TextStyle(
                                     fontSize: 15,
-                                    color: AppColors.error,
-                                    fontWeight: FontWeight.bold,
+                                    color: theme.colorScheme.error,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ),
@@ -356,16 +395,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           );
         },
         loading: () =>
-            const Center(child: CircularProgressIndicator.adaptive(
-              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-            )),
+            const Center(child: CircularProgressIndicator.adaptive()),
         error: (error, stack) => Center(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: Text(
               'Error al cargar perfil: $error',
-              style: const TextStyle(
-                color: AppColors.error,
+              style: TextStyle(
+                color: theme.colorScheme.error,
                 fontWeight: FontWeight.w500,
               ),
             ),
