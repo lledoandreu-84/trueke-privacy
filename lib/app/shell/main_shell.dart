@@ -30,6 +30,7 @@ class MainShell extends ConsumerWidget {
     final user = ref.watch(currentUserProvider);
     final userId = user?.id ?? '';
     final unreadChats = ref.watch(chatUnreadCountProvider);
+    final theme = Theme.of(context);
 
     final List<Widget> screens = [
       const HomePage(),
@@ -39,12 +40,17 @@ class MainShell extends ConsumerWidget {
     ];
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.colorScheme.surface,
       body: IndexedStack(index: currentIndex, children: screens),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          border: Border(top: BorderSide(color: Colors.black12, width: 0.5)),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          border: Border(
+            top: BorderSide(
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+              width: 0.5,
+            ),
+          ),
         ),
         child: SafeArea(
           child: SizedBox(
@@ -59,7 +65,9 @@ class MainShell extends ConsumerWidget {
                         : Icons.home_outlined,
                     size: 24,
                   ),
-                  color: currentIndex == 0 ? Colors.black87 : Colors.black45,
+                  color: currentIndex == 0
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurfaceVariant,
                   onPressed: () {
                     ref.read(shellIndexProvider.notifier).setIndex(0);
                   },
@@ -76,8 +84,8 @@ class MainShell extends ConsumerWidget {
                         size: 22,
                       ),
                       color: currentIndex == 1
-                          ? Colors.black87
-                          : Colors.black45,
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.onSurfaceVariant,
                       onPressed: () {
                         ref.read(shellIndexProvider.notifier).setIndex(1);
                       },
@@ -93,7 +101,7 @@ class MainShell extends ConsumerWidget {
                             vertical: 1.5,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.black87,
+                            color: theme.colorScheme.primary,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           constraints: const BoxConstraints(
@@ -102,8 +110,8 @@ class MainShell extends ConsumerWidget {
                           ),
                           child: Text(
                             '$unreadChats',
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: theme.colorScheme.onPrimary,
                               fontSize: 9,
                               fontWeight: FontWeight.w700,
                             ),
@@ -113,7 +121,6 @@ class MainShell extends ConsumerWidget {
                       ),
                   ],
                 ),
-                // Botón central de publicar premium: minimalista, negro plano y ergonómico
                 GestureDetector(
                   onTap: () {
                     _navigateToPublish(context);
@@ -121,13 +128,13 @@ class MainShell extends ConsumerWidget {
                   child: Container(
                     width: 44,
                     height: 44,
-                    decoration: const BoxDecoration(
-                      color: Colors.black87,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.add_rounded,
-                      color: Colors.white,
+                      color: theme.colorScheme.onPrimary,
                       size: 24,
                     ),
                   ),
@@ -139,7 +146,9 @@ class MainShell extends ConsumerWidget {
                         : Icons.favorite_border_rounded,
                     size: 23,
                   ),
-                  color: currentIndex == 2 ? Colors.black87 : Colors.black45,
+                  color: currentIndex == 2
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurfaceVariant,
                   onPressed: () {
                     ref.read(shellIndexProvider.notifier).setIndex(2);
                   },
@@ -152,7 +161,9 @@ class MainShell extends ConsumerWidget {
                         : Icons.person_outline_rounded,
                     size: 24,
                   ),
-                  color: currentIndex == 3 ? Colors.black87 : Colors.black45,
+                  color: currentIndex == 3
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurfaceVariant,
                   onPressed: () {
                     ref.read(shellIndexProvider.notifier).setIndex(3);
                   },
