@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../app/routes/app_routes.dart';
+import '../../core/services/location_service.dart';
 import '../products/providers/paginated_products_provider.dart';
 import 'widgets/product_card.dart';
 
@@ -14,6 +15,30 @@ class ProductsMapPage extends ConsumerStatefulWidget {
 
 class _ProductsMapPageState extends ConsumerState<ProductsMapPage> {
   static const LatLng _madridEspana = LatLng(40.416775, -3.703790);
+  GoogleMapController? _mapController;
+  LatLng _currentCenter = _madridEspana;
+
+  @override
+  void initState() {
+    super.initState();
+    _requestGpsAndCenter();
+  }
+
+  Future<void> _requestGpsAndCenter() async {
+    try {
+      final position = await LocationService().getCurrentLocation();
+      if (position != null && mounted) {
+        setState(() {
+          _currentCenter = LatLng(position.latitude, position.longitude);
+        });
+        _mapController?.animateCamera(
+          CameraUpdate.newLatLngZoom(_currentCenter, 13.5),
+        );
+      }
+    } catch (_) {
+      // Se mantiene Madrid como fallback seguro
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -121,16 +146,18 @@ class _ProductsMapPageState extends ConsumerState<ProductsMapPage> {
             children: [
               Positioned.fill(
                 child: GoogleMap(
-                  initialCameraPosition: const CameraPosition(
-                    target: _madridEspana,
-                    zoom: 11.5,
+                  initialCameraPosition: CameraPosition(
+                    target: _currentCenter,
+                    zoom: 12.0,
                   ),
                   markers: markers,
                   myLocationEnabled: true,
                   myLocationButtonEnabled: true,
                   zoomControlsEnabled: true,
                   mapToolbarEnabled: true,
-                  onMapCreated: (GoogleMapController controller) {},
+                  onMapCreated: (GoogleMapController controller) {
+                    _mapController = controller;
+                  },
                 ),
               ),
             ],
