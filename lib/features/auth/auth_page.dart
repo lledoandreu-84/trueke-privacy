@@ -31,7 +31,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
         if (success && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('¡Cuenta creada con éxito! Iniciando sesión...'),
+              content: const Text('¡Cuenta creada con éxito!'),
               backgroundColor: Theme.of(context).colorScheme.primary,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
@@ -39,6 +39,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
               ),
             ),
           );
+          Navigator.pop(context);
         }
       } else {
         await ref
@@ -47,6 +48,9 @@ class _AuthPageState extends ConsumerState<AuthPage> {
               email: _emailController.text.trim(),
               password: _passwordController.text.trim(),
             );
+        if (mounted) {
+          Navigator.pop(context);
+        }
       }
     } catch (e) {
       if (mounted) {
