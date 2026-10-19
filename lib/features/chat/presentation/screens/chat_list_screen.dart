@@ -19,11 +19,33 @@ class ChatListScreen extends ConsumerWidget {
       return Scaffold(
         backgroundColor: theme.colorScheme.surface,
         body: Center(
-          child: Text(
-            'Usuario no autenticado',
-            style: TextStyle(
-              color: theme.colorScheme.onSurfaceVariant,
-              fontSize: 14,
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer.withValues(alpha: 0.4),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.lock_outline_rounded,
+                    size: 48,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Usuario no autenticado',
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -43,48 +65,75 @@ class ChatListScreen extends ConsumerWidget {
         title: Text(
           'Mensajes',
           style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
+            fontSize: 20,
             letterSpacing: -0.5,
           ),
         ),
+        centerTitle: false,
       ),
       body: chatRoomsAsync.when(
         loading: () =>
             const Center(child: CircularProgressIndicator.adaptive()),
-        error: (err, _) =>
-            Center(child: Text('Error al cargar mensajes: $err')),
+        error: (err, _) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Text(
+              'Error al cargar mensajes: $err',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: theme.colorScheme.error),
+            ),
+          ),
+        ),
         data: (rooms) {
           if (rooms.isEmpty) {
             return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.chat_bubble_outline_rounded,
-                    size: 48,
-                    color: theme.colorScheme.outline,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Container(
+                  padding: const EdgeInsets.all(32),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(28),
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No tienes conversaciones activas',
-                    style: TextStyle(
-                      color: theme.colorScheme.onSurfaceVariant,
-                      fontSize: 14,
-                    ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.chat_bubble_outline_rounded,
+                        size: 56,
+                        color: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'No tienes conversaciones activas',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: -0.2,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Los chats de tus negociaciones aparecerán aquí.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             );
           }
 
           return ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             itemCount: rooms.length,
-            separatorBuilder: (context, index) => Divider(
-              height: 1,
-              thickness: 0.5,
-              color: theme.colorScheme.outlineVariant,
-              indent: 80,
-            ),
+            separatorBuilder: (context, index) => const SizedBox(height: 8),
             itemBuilder: (context, index) {
               final room = rooms[index];
               final isBuyer = room.buyerId == currentUserId;
@@ -105,50 +154,79 @@ class ChatListScreen extends ConsumerWidget {
               }
 
               return productAsync.when(
-                loading: () => const ListTile(title: Text('Cargando chat...')),
-                error: (err, _) => ListTile(
-                  title: const Text('Conversación'),
-                  subtitle: Text('Error: $err'),
-                  onTap: () => navigateToChat(context),
+                loading: () => Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    ),
+                  ),
+                  child: const Center(child: CircularProgressIndicator.adaptive(strokeWidth: 2)),
+                ),
+                error: (err, _) => Container(
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    ),
+                  ),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(16),
+                    title: const Text('Conversación'),
+                    subtitle: Text('Error: $err'),
+                    onTap: () => navigateToChat(context),
+                  ),
                 ),
                 data: (product) {
                   if (product == null) {
-                    return ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 4,
-                      ),
-                      leading: Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(12),
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surface,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
                         ),
-                        child: Icon(
-                          Icons.delete_outline_rounded,
-                          size: 20,
+                      ),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.all(16),
+                        leading: Container(
+                          width: 52,
+                          height: 52,
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Icon(
+                            Icons.delete_outline_rounded,
+                            size: 24,
+                            color: theme.colorScheme.outline,
+                          ),
+                        ),
+                        title: Text(
+                          'Trueque no disponible',
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        subtitle: Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            'El artículo ya no existe o fue eliminado',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                        trailing: Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 14,
                           color: theme.colorScheme.outline,
                         ),
+                        onTap: () => navigateToChat(context),
                       ),
-                      title: Text(
-                        'Trueque no disponible',
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      subtitle: Text(
-                        'El artículo ya no existe o fue eliminado',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      trailing: Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        size: 12,
-                        color: theme.colorScheme.outline,
-                      ),
-                      onTap: () => navigateToChat(context),
                     );
                   }
 
@@ -200,67 +278,124 @@ class ChatListScreen extends ConsumerWidget {
                         orElse: () => 'Chat con $peerName',
                       );
 
-                      return ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 4,
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surface,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: theme.colorScheme.shadow.withValues(alpha: 0.02),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
-                        leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Container(
-                            width: 48,
-                            height: 48,
-                            color: theme.colorScheme.surfaceContainerHighest,
-                            child: productImg.isNotEmpty
-                                ? Image.network(
-                                    productImg,
-                                    fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (
-                                          context,
-                                          error,
-                                          stackTrace,
-                                        ) => const Icon(
-                                          Icons.image_not_supported_outlined,
-                                          size: 18,
-                                        ),
-                                  )
-                                : const Icon(Icons.image_outlined, size: 18),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () => navigateToChat(context),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Row(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(16),
+                                      child: Container(
+                                        width: 56,
+                                        height: 56,
+                                        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                                        child: productImg.isNotEmpty
+                                            ? Image.network(
+                                                productImg,
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (context, error, stackTrace) =>
+                                                    Icon(
+                                                  Icons.image_not_supported_outlined,
+                                                  size: 22,
+                                                  color: theme.colorScheme.outline,
+                                                ),
+                                              )
+                                            : Icon(
+                                                Icons.image_outlined,
+                                                size: 22,
+                                                color: theme.colorScheme.outline,
+                                              ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            product.title,
+                                            style: theme.textTheme.bodyLarge?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                              letterSpacing: -0.2,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            subtitleText,
+                                            style: theme.textTheme.bodyMedium?.copyWith(
+                                              color: theme.colorScheme.onSurfaceVariant,
+                                              fontWeight: subtitleText.startsWith('Chat con')
+                                                  ? FontWeight.normal
+                                                  : FontWeight.w600,
+                                              fontSize: 13,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Icon(
+                                      Icons.arrow_forward_ios_rounded,
+                                      size: 14,
+                                      color: theme.colorScheme.outline,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                        title: Text(
-                          product.title,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        subtitle: Text(
-                          subtitleText,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                            fontWeight: subtitleText.startsWith('Chat con')
-                                ? FontWeight.normal
-                                : FontWeight.w600,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 12,
-                          color: theme.colorScheme.outline,
-                        ),
-                        onTap: () => navigateToChat(context),
                       );
                     },
-                    loading: () =>
-                        const ListTile(title: Text('Cargando perfil...')),
-                    error: (err, _) => ListTile(
-                      title: Text(product.title),
-                      subtitle: const Text('Error al cargar interlocutor'),
-                      onTap: () => navigateToChat(context),
+                    loading: () => Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surface,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                        ),
+                      ),
+                      child: const Center(child: CircularProgressIndicator.adaptive(strokeWidth: 2)),
+                    ),
+                    error: (err, _) => Container(
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surface,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                        ),
+                      ),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.all(16),
+                        title: Text(product.title),
+                        subtitle: const Text('Error al cargar interlocutor'),
+                        onTap: () => navigateToChat(context),
+                      ),
                     ),
                   );
                 },
