@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers/favorites_provider.dart';
-import '../../core/theme/app_colors.dart';
 import '../home/widgets/product_card.dart';
 
 class FavoritesPage extends ConsumerWidget {
@@ -11,33 +10,34 @@ class FavoritesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final favoritesAsync = ref.watch(favoritesProvider);
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
+        backgroundColor: theme.colorScheme.surface,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
         titleSpacing: 20,
-        title: const Column(
+        title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Mis favoritos',
               style: TextStyle(
-                color: AppColors.textPrimary,
+                color: theme.colorScheme.onSurface,
                 fontSize: 22,
                 fontWeight: FontWeight.w800,
                 letterSpacing: -0.6,
               ),
             ),
-            SizedBox(height: 2),
+            const SizedBox(height: 2),
             Text(
               'Los artículos que te interesan',
               style: TextStyle(
-                color: AppColors.textSecondary,
+                color: theme.colorScheme.onSurfaceVariant,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
                 letterSpacing: 0,
@@ -47,13 +47,16 @@ class FavoritesPage extends ConsumerWidget {
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(height: 1, color: AppColors.border),
+          child: Container(
+            height: 1,
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+          ),
         ),
       ),
       body: favoritesAsync.when(
-        loading: () => const Center(
+        loading: () => Center(
           child: CircularProgressIndicator.adaptive(
-            valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+            valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
           ),
         ),
         error: (error, _) => Center(
@@ -66,31 +69,31 @@ class FavoritesPage extends ConsumerWidget {
                   width: 64,
                   height: 64,
                   decoration: BoxDecoration(
-                    color: AppColors.coral.withValues(alpha: 0.12),
+                    color: theme.colorScheme.errorContainer.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(22),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.cloud_off_rounded,
-                    color: AppColors.coral,
+                    color: theme.colorScheme.error,
                     size: 30,
                   ),
                 ),
                 const SizedBox(height: 18),
-                const Text(
+                Text(
                   'No hemos podido cargar tus favoritos',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: AppColors.textPrimary,
+                    color: theme.colorScheme.onSurface,
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Comprueba tu conexión e inténtalo de nuevo.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: theme.colorScheme.onSurfaceVariant,
                     fontSize: 14,
                     height: 1.5,
                   ),
@@ -115,16 +118,16 @@ class FavoritesPage extends ConsumerWidget {
                       width: 4,
                       height: 22,
                       decoration: BoxDecoration(
-                        color: AppColors.primary,
+                        color: theme.colorScheme.primary,
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
                     const SizedBox(width: 10),
-                    const Expanded(
+                    Expanded(
                       child: Text(
                         'Tu colección',
                         style: TextStyle(
-                          color: AppColors.textPrimary,
+                          color: theme.colorScheme.onSurface,
                           fontSize: 17,
                           fontWeight: FontWeight.w800,
                           letterSpacing: -0.3,
@@ -137,13 +140,13 @@ class FavoritesPage extends ConsumerWidget {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.mintLight,
+                        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
                         '${favorites.length} ${favorites.length == 1 ? 'artículo' : 'artículos'}',
-                        style: const TextStyle(
-                          color: AppColors.primary,
+                        style: TextStyle(
+                          color: theme.colorScheme.primary,
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                         ),
@@ -160,11 +163,11 @@ class FavoritesPage extends ConsumerWidget {
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 14,
-                          mainAxisSpacing: 14,
-                          childAspectRatio: 0.62,
-                        ),
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 14,
+                      mainAxisSpacing: 14,
+                      childAspectRatio: 0.62,
+                    ),
                     itemCount: favorites.length,
                     itemBuilder: (context, index) {
                       final product = favorites[index];
@@ -191,6 +194,8 @@ class _EmptyFavorites extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(32),
@@ -201,36 +206,36 @@ class _EmptyFavorites extends StatelessWidget {
               width: 112,
               height: 112,
               decoration: BoxDecoration(
-                color: AppColors.mintLight,
+                color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: AppColors.mint.withValues(alpha: 0.22),
+                  color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.favorite_rounded,
-                color: AppColors.primary,
+                color: theme.colorScheme.primary,
                 size: 48,
               ),
             ),
             const SizedBox(height: 26),
-            const Text(
+            Text(
               'Todavía no tienes favoritos',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: AppColors.textPrimary,
+                color: theme.colorScheme.onSurface,
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
                 letterSpacing: -0.5,
               ),
             ),
             const SizedBox(height: 10),
-            const Text(
+            Text(
               'Guarda los artículos que te gusten y los encontrarás aquí cuando quieras volver a verlos.',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: AppColors.textSecondary,
+                color: theme.colorScheme.onSurfaceVariant,
                 fontSize: 14,
                 height: 1.6,
               ),
@@ -239,23 +244,25 @@ class _EmptyFavorites extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: AppColors.border),
+                border: Border.all(
+                  color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                ),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
                     Icons.lightbulb_outline_rounded,
-                    color: AppColors.amber,
+                    color: theme.colorScheme.tertiary,
                     size: 17,
                   ),
-                  SizedBox(width: 7),
+                  const SizedBox(width: 7),
                   Text(
                     'Explora y guarda lo que te guste',
                     style: TextStyle(
-                      color: AppColors.textSecondary,
+                      color: theme.colorScheme.onSurfaceVariant,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                     ),
