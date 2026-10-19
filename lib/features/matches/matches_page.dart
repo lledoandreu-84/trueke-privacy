@@ -9,34 +9,63 @@ class MatchesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final favoritesAsync = ref.watch(favoritesProvider);
+    final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Mis Matches')),
+      backgroundColor: theme.colorScheme.surface,
+      appBar: AppBar(
+        backgroundColor: theme.colorScheme.surface,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: Text(
+          'Mis Matches',
+          style: TextStyle(
+            color: theme.colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
+      ),
       body: favoritesAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) =>
-            Center(child: Text('Error cargando matches: $error')),
+        loading: () => Center(
+          child: CircularProgressIndicator.adaptive(
+            valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+          ),
+        ),
+        error: (error, _) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Text(
+              'Error cargando matches: $error',
+              style: TextStyle(color: theme.colorScheme.error),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
         data: (favorites) {
-          // Filtrado básico simulado del algoritmo: Productos donde encaja el trueque
           final matches = favorites.where((p) => p.wanted.isNotEmpty).toList();
 
           if (matches.isEmpty) {
-            return const Center(
+            return Center(
               child: Padding(
-                padding: EdgeInsets.all(32),
+                padding: const EdgeInsets.all(32),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
                       Icons.diversity_2_outlined,
                       size: 64,
-                      color: Colors.grey,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Text(
-                      'Aún no haycoincidencias de trueque directas.',
+                      'Aún no hay coincidencias de trueque directas.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),
@@ -45,16 +74,16 @@ class MatchesPage extends ConsumerWidget {
           }
 
           return GridView.builder(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(16),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 0.55,
+              crossAxisSpacing: 14,
+              mainAxisSpacing: 14,
+              childAspectRatio: 0.62,
             ),
-            itemCount: favorites.length,
+            itemCount: matches.length,
             itemBuilder: (context, index) {
-              return ProductCard(product: favorites[index]);
+              return ProductCard(product: matches[index]);
             },
           );
         },
