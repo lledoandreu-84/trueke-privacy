@@ -24,11 +24,13 @@ class _WriteReviewPageState extends ConsumerState<WriteReviewPage> {
 
   Future<void> _submitReview() async {
     final comment = _commentController.text.trim();
+    final theme = Theme.of(context);
     if (comment.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Por favor, escribe un comentario.'),
+        SnackBar(
+          content: const Text('Por favor, escribe un comentario.'),
           behavior: SnackBarBehavior.floating,
+          backgroundColor: theme.colorScheme.error,
         ),
       );
       return;
@@ -49,9 +51,10 @@ class _WriteReviewPageState extends ConsumerState<WriteReviewPage> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('¡Valoración enviada con éxito!'),
+        SnackBar(
+          content: const Text('¡Valoración enviada con éxito!'),
           behavior: SnackBarBehavior.floating,
+          backgroundColor: theme.colorScheme.primary,
         ),
       );
       Navigator.pop(context, true);
@@ -61,6 +64,7 @@ class _WriteReviewPageState extends ConsumerState<WriteReviewPage> {
         SnackBar(
           content: Text('Error al enviar valoración: $e'),
           behavior: SnackBarBehavior.floating,
+          backgroundColor: theme.colorScheme.error,
         ),
       );
     } finally {
@@ -80,38 +84,42 @@ class _WriteReviewPageState extends ConsumerState<WriteReviewPage> {
         title: Text(
           'Dejar Valoración',
           style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
             letterSpacing: -0.4,
+            color: theme.colorScheme.onSurface,
           ),
         ),
+        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
       ),
       body: SafeArea(
         child: _isSaving
             ? const Center(child: CircularProgressIndicator.adaptive())
             : ListView(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(24),
                 children: [
                   Text(
                     '¿Cómo valorarías tu experiencia de trueque?',
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(5, (index) {
                       final starValue = index + 1;
                       final isSelected = starValue <= _selectedRating;
                       return IconButton(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
                         constraints: const BoxConstraints(),
                         icon: Icon(
                           isSelected
                               ? Icons.star_rounded
                               : Icons.star_border_rounded,
-                          size: 38,
+                          size: 40,
                           color: isSelected
                               ? Colors.amber
                               : theme.colorScheme.outlineVariant,
@@ -121,7 +129,7 @@ class _WriteReviewPageState extends ConsumerState<WriteReviewPage> {
                       );
                     }),
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 32),
                   TextField(
                     controller: _commentController,
                     maxLines: 4,
@@ -133,18 +141,32 @@ class _WriteReviewPageState extends ConsumerState<WriteReviewPage> {
                       hintText:
                           'Excelente trueker, rápido y de total confianza...',
                       filled: true,
-                      fillColor: theme.colorScheme.surfaceContainerLow,
+                      fillColor: theme.colorScheme.surfaceContainerHighest
+                          .withValues(alpha: 0.4),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(16),
                         borderSide: BorderSide.none,
                       ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 12,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(
+                          color: theme.colorScheme.outlineVariant.withValues(
+                            alpha: 0.5,
+                          ),
+                          width: 1,
+                        ),
                       ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(
+                          color: theme.colorScheme.primary,
+                          width: 2,
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.all(16),
                       hintStyle: TextStyle(
-                        color: theme.colorScheme.onSurfaceVariant.withAlpha(
-                          150,
+                        color: theme.colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.7,
                         ),
                         fontSize: 14,
                       ),
@@ -153,15 +175,21 @@ class _WriteReviewPageState extends ConsumerState<WriteReviewPage> {
                   const SizedBox(height: 32),
                   FilledButton(
                     style: FilledButton.styleFrom(
-                      minimumSize: const Size.fromHeight(48),
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: theme.colorScheme.onPrimary,
+                      minimumSize: const Size.fromHeight(52),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
                       ),
+                      elevation: 0,
                     ),
                     onPressed: _submitReview,
                     child: const Text(
                       'Enviar Valoración',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 ],
