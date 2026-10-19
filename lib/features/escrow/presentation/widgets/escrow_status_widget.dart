@@ -15,18 +15,19 @@ class EscrowStatusWidget extends ConsumerWidget {
       escrowTransactionStreamProvider(tradeOfferId),
     );
     final currentUserId = AuthService.currentUserId;
+    final theme = Theme.of(context);
 
     return escrowAsync.when(
       loading: () => Container(
         margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: const Color(0xFFF5F5F7),
-          borderRadius: BorderRadius.circular(12),
+          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+          borderRadius: BorderRadius.circular(16),
         ),
-        child: const Center(
+        child: Center(
           child: CircularProgressIndicator.adaptive(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.black87),
+            valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
           ),
         ),
       ),
@@ -34,19 +35,26 @@ class EscrowStatusWidget extends ConsumerWidget {
         margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFFFF5F5),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0x33FF5252), width: 0.8),
+          color: theme.colorScheme.errorContainer.withValues(alpha: 0.3),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: theme.colorScheme.error.withValues(alpha: 0.3),
+            width: 1,
+          ),
         ),
         child: Row(
           children: [
-            const Icon(Icons.error_outline, color: Colors.redAccent, size: 20),
+            Icon(
+              Icons.error_outline_rounded,
+              color: theme.colorScheme.error,
+              size: 20,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 'Error en la pasarela de garantía: $error',
-                style: const TextStyle(
-                  color: Colors.redAccent,
+                style: TextStyle(
+                  color: theme.colorScheme.error,
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                 ),
@@ -65,52 +73,58 @@ class EscrowStatusWidget extends ConsumerWidget {
         return Container(
           margin: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.black12, width: 0.8),
+            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+              width: 1,
+            ),
           ),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildHeader(tx),
-                const Divider(
+                _buildHeader(context, tx),
+                Divider(
                   height: 24,
-                  thickness: 0.5,
-                  color: Colors.black12,
+                  thickness: 1,
+                  color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
                 ),
-                _buildStatusTimeline(tx.status),
-                const Divider(
+                _buildStatusTimeline(context, tx.status),
+                Divider(
                   height: 24,
-                  thickness: 0.5,
-                  color: Colors.black12,
+                  thickness: 1,
+                  color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
                 ),
-                _buildTrackingDetails(tx),
+                _buildTrackingDetails(context, tx),
                 if (isSeller && tx.status == EscrowStatus.heldInEscrow) ...[
                   const SizedBox(height: 16),
                   _buildLogisticsForm(context, ref, tx.id),
                 ],
                 if ((isBuyer || isSeller) && canCancel) ...[
-                  const Divider(
+                  Divider(
                     height: 24,
-                    thickness: 0.5,
-                    color: Colors.black12,
+                    thickness: 1,
+                    color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
                   ),
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton.icon(
                       onPressed: () => _showCancelDialog(context, ref, tx.id),
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.cancel_outlined,
-                        color: Colors.redAccent,
+                        color: theme.colorScheme.error,
                         size: 16,
                       ),
-                      style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                      label: const Text(
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        foregroundColor: theme.colorScheme.error,
+                      ),
+                      label: Text(
                         'Cancelar Trueque y Reembolsar',
                         style: TextStyle(
-                          color: Colors.redAccent,
+                          color: theme.colorScheme.error,
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                           letterSpacing: -0.1,
@@ -127,40 +141,47 @@ class EscrowStatusWidget extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(EscrowTransaction tx) {
+  Widget _buildHeader(BuildContext context, EscrowTransaction tx) {
+    final theme = Theme.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Garantía de Depósito (Trueke Escrow)',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
-                color: Colors.black87,
+                color: theme.colorScheme.onSurface,
                 letterSpacing: -0.2,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               'Ref: ${tx.id.length > 8 ? tx.id.substring(0, 8).toUpperCase() : tx.id.toUpperCase()}...',
-              style: const TextStyle(color: Colors.black38, fontSize: 12),
+              style: TextStyle(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontSize: 12,
+              ),
             ),
           ],
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
-            color: const Color(0xFFF5F5F7),
+            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.black12, width: 0.5),
+            border: Border.all(
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+              width: 1,
+            ),
           ),
           child: Text(
             '${tx.amount.toStringAsFixed(2)} ${tx.currency.toUpperCase()}',
-            style: const TextStyle(
-              color: Colors.black87,
+            style: TextStyle(
+              color: theme.colorScheme.onSurface,
               fontWeight: FontWeight.w700,
               fontSize: 12,
             ),
@@ -170,7 +191,8 @@ class EscrowStatusWidget extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatusTimeline(EscrowStatus currentStatus) {
+  Widget _buildStatusTimeline(BuildContext context, EscrowStatus currentStatus) {
+    final theme = Theme.of(context);
     final stages = [
       {'status': EscrowStatus.pendingDeposit, 'label': 'Depósito'},
       {'status': EscrowStatus.heldInEscrow, 'label': 'Custodia'},
@@ -191,7 +213,9 @@ class EscrowStatusWidget extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: List.generate(stages.length, (index) {
         final isCompleted = index <= currentIndex;
-        final color = isCompleted ? Colors.black87 : Colors.black12;
+        final color = isCompleted
+            ? theme.colorScheme.primary
+            : theme.colorScheme.outlineVariant;
 
         return Row(
           children: [
@@ -209,7 +233,9 @@ class EscrowStatusWidget extends ConsumerWidget {
                 Text(
                   stages[index]['label'] as String,
                   style: TextStyle(
-                    color: color,
+                    color: isCompleted
+                        ? theme.colorScheme.onSurface
+                        : theme.colorScheme.onSurfaceVariant,
                     fontSize: 11,
                     fontWeight: isCompleted ? FontWeight.w600 : FontWeight.w400,
                   ),
@@ -220,8 +246,10 @@ class EscrowStatusWidget extends ConsumerWidget {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 width: 20,
-                height: 1,
-                color: index < currentIndex ? Colors.black87 : Colors.black12,
+                height: 2,
+                color: index < currentIndex
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.outlineVariant,
               ),
           ],
         );
@@ -229,18 +257,22 @@ class EscrowStatusWidget extends ConsumerWidget {
     );
   }
 
-  Widget _buildTrackingDetails(EscrowTransaction tx) {
+  Widget _buildTrackingDetails(BuildContext context, EscrowTransaction tx) {
+    final theme = Theme.of(context);
     if (tx.status == EscrowStatus.pendingDeposit) {
-      return const Text(
+      return Text(
         'Esperando depósito seguro del comprador...',
-        style: TextStyle(color: Colors.black45, fontSize: 12),
+        style: TextStyle(
+          color: theme.colorScheme.onSurfaceVariant,
+          fontSize: 12,
+        ),
       );
     }
     if (tx.status == EscrowStatus.heldInEscrow) {
-      return const Text(
+      return Text(
         'Fondos custodiados. Esperando envío del vendedor.',
         style: TextStyle(
-          color: Colors.black54,
+          color: theme.colorScheme.onSurface,
           fontSize: 12,
           fontWeight: FontWeight.w500,
         ),
@@ -251,16 +283,19 @@ class EscrowStatusWidget extends ConsumerWidget {
       children: [
         Text(
           'Logística: ${tx.carrier ?? "Correos"}',
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
-            color: Colors.black87,
+            color: theme.colorScheme.onSurface,
             fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 2),
         Text(
           'Seguimiento: ${tx.trackingNumber ?? "Pendiente"}',
-          style: const TextStyle(fontSize: 12, color: Colors.black54),
+          style: TextStyle(
+            fontSize: 12,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
       ],
     );
@@ -274,18 +309,19 @@ class EscrowStatusWidget extends ConsumerWidget {
     final formKey = GlobalKey<FormState>();
     final trackingController = TextEditingController();
     final carrierController = TextEditingController();
+    final theme = Theme.of(context);
 
     return Form(
       key: formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Introducir Información de Envío',
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: Colors.black87,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 8),
@@ -294,8 +330,11 @@ class EscrowStatusWidget extends ConsumerWidget {
               Expanded(
                 child: TextFormField(
                   controller: trackingController,
-                  decoration: _getInputDecoration('Nº Seguimiento'),
-                  style: const TextStyle(fontSize: 12, color: Colors.black87),
+                  decoration: _getInputDecoration(context, 'Nº Seguimiento'),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: theme.colorScheme.onSurface,
+                  ),
                   validator: (v) => v == null || v.isEmpty ? 'Requerido' : null,
                 ),
               ),
@@ -303,15 +342,18 @@ class EscrowStatusWidget extends ConsumerWidget {
               Expanded(
                 child: TextFormField(
                   controller: carrierController,
-                  decoration: _getInputDecoration('Agencia (ej. Seur)'),
-                  style: const TextStyle(fontSize: 12, color: Colors.black87),
+                  decoration: _getInputDecoration(context, 'Agencia (ej. Seur)'),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: theme.colorScheme.onSurface,
+                  ),
                   validator: (v) => v == null || v.isEmpty ? 'Requerido' : null,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          ElevatedButton(
+          FilledButton(
             onPressed: () async {
               if (formKey.currentState!.validate()) {
                 await ref
@@ -323,12 +365,12 @@ class EscrowStatusWidget extends ConsumerWidget {
                     );
               }
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black87,
-              foregroundColor: Colors.white,
+            style: FilledButton.styleFrom(
+              backgroundColor: theme.colorScheme.primary,
+              foregroundColor: theme.colorScheme.onPrimary,
               minimumSize: const Size.fromHeight(36),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
               ),
               elevation: 0,
             ),
@@ -342,53 +384,88 @@ class EscrowStatusWidget extends ConsumerWidget {
     );
   }
 
-  InputDecoration _getInputDecoration(String hint) {
+  InputDecoration _getInputDecoration(BuildContext context, String hint) {
+    final theme = Theme.of(context);
     return InputDecoration(
       hintText: hint,
       filled: true,
-      fillColor: const Color(0xFFF5F5F7),
+      fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+          color: theme.colorScheme.primary,
+          width: 1.5,
+        ),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      hintStyle: const TextStyle(color: Colors.black38, fontSize: 12),
+      hintStyle: TextStyle(
+        color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+        fontSize: 12,
+      ),
     );
   }
 
   void _showCancelDialog(BuildContext context, WidgetRef ref, String escrowId) {
+    final theme = Theme.of(context);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text(
+        backgroundColor: theme.colorScheme.surface,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
           'Cancelar Operación',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: theme.colorScheme.onSurface,
+          ),
         ),
-        content: const Text(
+        content: Text(
           '¿Estás seguro de que deseas cancelar este trueque? Los fondos depositados serán reembolsados íntegramente de forma automatizada.',
-          style: TextStyle(fontSize: 13, color: Colors.black54),
+          style: TextStyle(
+            fontSize: 13,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
-              'Volver',
-              style: TextStyle(color: Colors.black45),
+            style: TextButton.styleFrom(
+              foregroundColor: theme.colorScheme.onSurfaceVariant,
             ),
+            child: const Text('Volver'),
           ),
-          TextButton(
+          FilledButton(
             onPressed: () async {
               await ref
                   .read(escrowRepositoryProvider)
                   .cancelAndRefundEscrow(escrowId: escrowId);
               if (context.mounted) Navigator.pop(ctx);
             },
+            style: FilledButton.styleFrom(
+              backgroundColor: theme.colorScheme.error,
+              foregroundColor: theme.colorScheme.onError,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
             child: const Text(
               'Confirmar Reembolso',
-              style: TextStyle(
-                color: Colors.redAccent,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
         ],
