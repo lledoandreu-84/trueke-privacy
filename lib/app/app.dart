@@ -1,3 +1,5 @@
+import 'package:trueke/features/auth/auth_service.dart';
+import 'package:trueke/features/auth/auth_page.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -56,7 +58,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-      home: const MainShell(),
+      home: AuthService.currentUser == null ? const AuthPage() : const MainShell(),
       onGenerateRoute: (settings) {
         if (settings.name == 'product' || settings.name == '/product') {
           final product = settings.arguments as Product;
