@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class FavoriteButton extends ConsumerWidget {
-  final String productId;
+  final String? productId;
   final bool isFavorite;
   final VoidCallback? onTap;
 
   const FavoriteButton({
     super.key,
-    required this.productId,
-    required this.isFavorite,
+    this.productId,
+    this.isFavorite = false,
     this.onTap,
   });
 
