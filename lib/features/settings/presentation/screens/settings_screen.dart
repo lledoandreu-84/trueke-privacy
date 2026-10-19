@@ -194,8 +194,11 @@ class SettingsScreen extends ConsumerWidget {
             ],
           );
         },
-        loading: () =>
-            const Center(child: CircularProgressIndicator.adaptive()),
+        loading: () => Center(
+          child: CircularProgressIndicator.adaptive(
+            valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+          ),
+        ),
         error: (error, stackTrace) => Center(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
