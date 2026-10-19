@@ -20,11 +20,14 @@ class NotificationsScreen extends ConsumerWidget {
         title: Text(
           'Notificaciones',
           style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            letterSpacing: -0.5,
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+            letterSpacing: -0.4,
+            color: theme.colorScheme.onSurface,
           ),
         ),
         centerTitle: false,
+        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
         actions: [
           notificationsAsync.maybeWhen(
             data: (list) => list.any((n) => !n.isRead)
@@ -52,23 +55,27 @@ class NotificationsScreen extends ConsumerWidget {
         data: (notifications) {
           if (notifications.isEmpty) {
             return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.notifications_off_outlined,
-                    size: 54,
-                    color: theme.colorScheme.onSurfaceVariant.withAlpha(100),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Tu bandeja de entrada está vacía',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant.withAlpha(180),
-                      fontWeight: FontWeight.w500,
+              child: Padding(
+                padding: const EdgeInsets.all(32.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.notifications_off_outlined,
+                      size: 56,
+                      color: theme.colorScheme.outline,
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 16),
+                    Text(
+                      'Tu bandeja de entrada está vacía',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           }
@@ -76,7 +83,7 @@ class NotificationsScreen extends ConsumerWidget {
           return RefreshIndicator.adaptive(
             onRefresh: () => ref.refresh(notificationsHistoryProvider.future),
             child: ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               physics: const BouncingScrollPhysics(
                 parent: AlwaysScrollableScrollPhysics(),
               ),
@@ -86,18 +93,29 @@ class NotificationsScreen extends ConsumerWidget {
                 final isUnread = !notification.isRead;
 
                 return Container(
-                  color: isUnread
-                      ? theme.colorScheme.primaryContainer.withAlpha(25)
-                      : Colors.transparent,
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: isUnread
+                        ? theme.colorScheme.primaryContainer.withValues(alpha: 0.2)
+                        : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: isUnread
+                          ? theme.colorScheme.primary.withValues(alpha: 0.3)
+                          : theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                      width: 1,
+                    ),
+                  ),
                   child: ListTile(
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
-                      vertical: 4,
+                      vertical: 8,
                     ),
                     leading: CircleAvatar(
+                      radius: 20,
                       backgroundColor: isUnread
                           ? theme.colorScheme.primaryContainer
-                          : theme.colorScheme.surfaceContainerHighest,
+                          : theme.colorScheme.surfaceContainerHigh,
                       child: Icon(
                         _getIconForType(notification.type),
                         color: isUnread
@@ -110,8 +128,9 @@ class NotificationsScreen extends ConsumerWidget {
                       notification.title,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: isUnread
-                            ? FontWeight.bold
-                            : FontWeight.normal,
+                            ? FontWeight.w600
+                            : FontWeight.w500,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                     subtitle: Padding(
@@ -120,6 +139,7 @@ class NotificationsScreen extends ConsumerWidget {
                         notification.message,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
+                          height: 1.3,
                         ),
                       ),
                     ),
@@ -130,6 +150,7 @@ class NotificationsScreen extends ConsumerWidget {
                               color: theme.colorScheme.primary,
                               size: 10,
                             ),
+                            tooltip: 'Marcar como leído',
                             onPressed: () {
                               ref
                                   .read(notificationsHistoryProvider.notifier)
