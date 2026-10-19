@@ -8,7 +8,8 @@ class UserReviewsListWidget extends ConsumerWidget {
 
   const UserReviewsListWidget({super.key, required this.userId});
 
-  Widget _buildStarsRow(double rating) {
+  Widget _buildStarsRow(BuildContext context, double rating) {
+    final theme = Theme.of(context);
     final List<Widget> stars = [];
     final int fullStars = rating.floor();
     final bool hasHalfStar = (rating - fullStars) >= 0.5;
@@ -16,17 +17,17 @@ class UserReviewsListWidget extends ConsumerWidget {
     for (int i = 1; i <= 5; i++) {
       if (i <= fullStars) {
         stars.add(
-          const Icon(Icons.star_rounded, color: Colors.black87, size: 18),
+          Icon(Icons.star_rounded, color: theme.colorScheme.primary, size: 18),
         );
       } else if (i == fullStars + 1 && hasHalfStar) {
         stars.add(
-          const Icon(Icons.star_half_rounded, color: Colors.black87, size: 18),
+          Icon(Icons.star_half_rounded, color: theme.colorScheme.primary, size: 18),
         );
       } else {
         stars.add(
-          const Icon(
+          Icon(
             Icons.star_outline_rounded,
-            color: Colors.black26,
+            color: theme.colorScheme.outlineVariant,
             size: 18,
           ),
         );
@@ -35,8 +36,9 @@ class UserReviewsListWidget extends ConsumerWidget {
     return Row(mainAxisSize: MainAxisSize.min, children: stars);
   }
 
-  Widget _buildSummaryHeader(List<UserReview> reviews) {
+  Widget _buildSummaryHeader(BuildContext context, List<UserReview> reviews) {
     if (reviews.isEmpty) return const SizedBox.shrink();
+    final theme = Theme.of(context);
 
     final double totalRating = reviews.fold(
       0.0,
@@ -46,10 +48,13 @@ class UserReviewsListWidget extends ConsumerWidget {
 
     return Container(
       padding: const EdgeInsets.all(20),
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F5F7),
-        borderRadius: BorderRadius.circular(12),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -59,17 +64,17 @@ class UserReviewsListWidget extends ConsumerWidget {
             children: [
               Text(
                 '${reviews.length} ${reviews.length == 1 ? "valoración" : "valoraciones"}',
-                style: const TextStyle(
-                  color: Colors.black45,
+                style: TextStyle(
+                  color: theme.colorScheme.onSurfaceVariant,
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
                 ),
               ),
               const SizedBox(height: 2),
-              const Text(
+              Text(
                 'Reputación del usuario',
                 style: TextStyle(
-                  color: Colors.black87,
+                  color: theme.colorScheme.onSurface,
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                   letterSpacing: -0.2,
@@ -86,25 +91,25 @@ class UserReviewsListWidget extends ConsumerWidget {
                 children: [
                   Text(
                     averageRating.toStringAsFixed(1),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w700,
-                      color: Colors.black87,
+                      color: theme.colorScheme.onSurface,
                       letterSpacing: -0.5,
                     ),
                   ),
-                  const Text(
+                  Text(
                     ' / 5',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black38,
+                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 2),
-              _buildStarsRow(averageRating),
+              _buildStarsRow(context, averageRating),
             ],
           ),
         ],
@@ -115,17 +120,18 @@ class UserReviewsListWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final reviewsAsync = ref.watch(userReviewsProvider(userId));
+    final theme = Theme.of(context);
 
     return reviewsAsync.when(
       data: (reviews) {
         if (reviews.isEmpty) {
-          return const Center(
+          return Center(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               child: Text(
                 'Este usuario aún no tiene opiniones.',
                 style: TextStyle(
-                  color: Colors.black45,
+                  color: theme.colorScheme.onSurfaceVariant,
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                   letterSpacing: -0.1,
@@ -139,7 +145,7 @@ class UserReviewsListWidget extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSummaryHeader(reviews),
+            _buildSummaryHeader(context, reviews),
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -158,9 +164,9 @@ class UserReviewsListWidget extends ConsumerWidget {
 
                 Widget? avatarChild;
                 if (avatarUrl.isEmpty) {
-                  avatarChild = const Icon(
+                  avatarChild = Icon(
                     Icons.person_outline,
-                    color: Colors.black45,
+                    color: theme.colorScheme.onSurfaceVariant,
                     size: 20,
                   );
                 }
@@ -175,10 +181,13 @@ class UserReviewsListWidget extends ConsumerWidget {
                     horizontal: 20,
                     vertical: 16,
                   ),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface,
                     border: Border(
-                      bottom: BorderSide(color: Colors.black12, width: 0.5),
+                      bottom: BorderSide(
+                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+                        width: 0.5,
+                      ),
                     ),
                   ),
                   child: Row(
@@ -188,7 +197,7 @@ class UserReviewsListWidget extends ConsumerWidget {
                         width: 38,
                         height: 38,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF5F5F7),
+                          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                           shape: BoxShape.circle,
                           image: imageDecoration,
                         ),
@@ -204,10 +213,10 @@ class UserReviewsListWidget extends ConsumerWidget {
                                 Expanded(
                                   child: Text(
                                     resolvedName,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 14,
-                                      color: Colors.black87,
+                                      color: theme.colorScheme.onSurface,
                                       letterSpacing: -0.2,
                                     ),
                                   ),
@@ -215,18 +224,18 @@ class UserReviewsListWidget extends ConsumerWidget {
                                 Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(
+                                    Icon(
                                       Icons.star_rounded,
-                                      color: Colors.black87,
+                                      color: theme.colorScheme.primary,
                                       size: 14,
                                     ),
                                     const SizedBox(width: 3),
                                     Text(
                                       '${review.rating.toStringAsFixed(0)}.0',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 13,
-                                        color: Colors.black87,
+                                        color: theme.colorScheme.onSurface,
                                       ),
                                     ),
                                   ],
@@ -236,9 +245,9 @@ class UserReviewsListWidget extends ConsumerWidget {
                             const SizedBox(height: 4),
                             Text(
                               review.comment,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.black54,
+                                color: theme.colorScheme.onSurfaceVariant,
                                 height: 1.4,
                                 letterSpacing: -0.1,
                               ),
@@ -254,21 +263,21 @@ class UserReviewsListWidget extends ConsumerWidget {
           ],
         );
       },
-      loading: () => const Center(
+      loading: () => Center(
         child: Padding(
-          padding: EdgeInsets.all(32.0),
+          padding: const EdgeInsets.all(32.0),
           child: CircularProgressIndicator.adaptive(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.black87),
+            valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
           ),
         ),
       ),
-      error: (error, stackTrace) => const Center(
+      error: (error, stackTrace) => Center(
         child: Padding(
-          padding: EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(24.0),
           child: Text(
             'Error al cargar las valoraciones',
             style: TextStyle(
-              color: Colors.black54,
+              color: theme.colorScheme.error,
               fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
