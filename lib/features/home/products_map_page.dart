@@ -18,14 +18,40 @@ class _ProductsMapPageState extends ConsumerState<ProductsMapPage> {
   @override
   Widget build(BuildContext context) {
     final paginatedAsync = ref.watch(paginatedProductsProvider);
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFECFDF5),
-      appBar: AppBar(title: const Text('EXPLORAR ENTORNO GPS')),
+      backgroundColor: theme.colorScheme.surface,
+      appBar: AppBar(
+        backgroundColor: theme.colorScheme.surface,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: Text(
+          'Explorar Entorno GPS',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+            letterSpacing: -0.4,
+            color: theme.colorScheme.onSurface,
+          ),
+        ),
+        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
+      ),
       body: paginatedAsync.when(
         loading: () =>
             const Center(child: CircularProgressIndicator.adaptive()),
-        error: (error, _) => Center(child: Text('Error: $error')),
+        error: (error, _) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Text(
+              'Error: $error',
+              style: TextStyle(
+                color: theme.colorScheme.error,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
         data: (state) {
           final productsWithGeo = state.products
               .where((p) => p.latitude != null && p.longitude != null)
@@ -46,21 +72,25 @@ class _ProductsMapPageState extends ConsumerState<ProductsMapPage> {
                   context: context,
                   backgroundColor: Colors.transparent,
                   builder: (ctx) => Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.vertical(
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainerHigh,
+                      borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(24),
                       ),
+                      border: Border.all(
+                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                        width: 1,
+                      ),
                     ),
-                    padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
                           width: 40,
-                          height: 5,
+                          height: 4,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFE2E8F0),
+                            color: theme.colorScheme.outlineVariant,
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
@@ -96,11 +126,9 @@ class _ProductsMapPageState extends ConsumerState<ProductsMapPage> {
                     zoom: 11.5,
                   ),
                   markers: markers,
-                  myLocationEnabled: true, // Punto azul activo
-                  myLocationButtonEnabled:
-                      true, // Botón de Mi Ubicación Forzado
-                  zoomControlsEnabled:
-                      true, // Habilitar zoom nativo anti-bloqueos
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: true,
+                  zoomControlsEnabled: true,
                   mapToolbarEnabled: true,
                   onMapCreated: (GoogleMapController controller) {},
                 ),
