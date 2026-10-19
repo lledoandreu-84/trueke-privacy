@@ -25,23 +25,28 @@ class TradeOfferCardWidget extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: theme.colorScheme.outlineVariant, width: 0.5),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+          width: 1,
+        ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               productTitle,
               style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w600,
+                fontSize: 17,
                 letterSpacing: -0.3,
+                color: theme.colorScheme.onSurface,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -49,16 +54,17 @@ class TradeOfferCardWidget extends ConsumerWidget {
                   'Compensación: ${amount.toStringAsFixed(2)}€',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
+                    fontSize: 14,
                   ),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
+                    horizontal: 12,
+                    vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(8),
+                    color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.7),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     status.toUpperCase(),
@@ -66,6 +72,7 @@ class TradeOfferCardWidget extends ConsumerWidget {
                       fontWeight: FontWeight.bold,
                       color: theme.colorScheme.onSecondaryContainer,
                       letterSpacing: 0.5,
+                      fontSize: 11,
                     ),
                   ),
                 ),
@@ -80,73 +87,92 @@ class TradeOfferCardWidget extends ConsumerWidget {
                       onPressed: isLoading
                           ? null
                           : () => ref
-                                .read(
-                                  tradeOfferNotifierProvider(offerId).notifier,
-                                )
-                                .updateOfferStatus('rejected'),
+                              .read(
+                                tradeOfferNotifierProvider(offerId).notifier,
+                              )
+                              .updateOfferStatus('rejected'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: theme.colorScheme.error,
                         side: BorderSide(
-                          color: theme.colorScheme.error.withAlpha(100),
+                          color: theme.colorScheme.error.withValues(alpha: 0.5),
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                         ),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                       child: const Text(
                         'Rechazar',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: FilledButton(
                       onPressed: isLoading
                           ? null
                           : () => ref
-                                .read(
-                                  tradeOfferNotifierProvider(offerId).notifier,
-                                )
-                                .updateOfferStatus('accepted'),
+                              .read(
+                                tradeOfferNotifierProvider(offerId).notifier,
+                              )
+                              .updateOfferStatus('accepted'),
                       style: FilledButton.styleFrom(
+                        backgroundColor: theme.colorScheme.primary,
+                        foregroundColor: theme.colorScheme.onPrimary,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                         ),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        elevation: 0,
                       ),
                       child: isLoading
-                          ? const SizedBox(
+                          ? SizedBox(
                               width: 16,
                               height: 16,
                               child: CircularProgressIndicator.adaptive(
                                 strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  theme.colorScheme.onPrimary,
+                                ),
                               ),
                             )
                           : const Text(
                               'Aceptar',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
                             ),
                     ),
                   ),
                 ],
               ),
             ],
-
             if (status == 'accepted') ...[
               const SizedBox(height: 16),
               FilledButton.icon(
                 icon: const Icon(Icons.pin_drop_rounded, size: 18),
                 label: isLoading
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator.adaptive(
                           strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            theme.colorScheme.onPrimary,
+                          ),
                         ),
                       )
                     : const Text(
                         'Encuentro Completado (100m Sol)',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
                       ),
                 onPressed: isLoading
                     ? null
@@ -164,20 +190,30 @@ class TradeOfferCardWidget extends ConsumerWidget {
                             );
                       },
                 style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(42),
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
+                  minimumSize: const Size.fromHeight(46),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
                   ),
+                  elevation: 0,
                 ),
               ),
             ],
             if (offerState is AsyncError) ...[
               const SizedBox(height: 12),
-              Text(
-                '${offerState.error}',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.error,
-                  fontWeight: FontWeight.w500,
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.errorContainer.withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '${offerState.error}',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.error,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ],
