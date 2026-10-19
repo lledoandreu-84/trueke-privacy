@@ -31,6 +31,10 @@ class SupabaseProfileRepository implements ProfileRepository {
 
   @override
   Future<UserProfile> getProfile(String id) async {
+    if (id.isEmpty) {
+      throw Exception('ID de usuario inválido o no autenticado');
+    }
+
     if (mockGetProfileInterceptor != null) {
       final response = await mockGetProfileInterceptor!(id);
       return UserProfile.fromJson(response);
