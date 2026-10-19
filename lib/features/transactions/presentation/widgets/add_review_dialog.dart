@@ -18,7 +18,6 @@ class _AddReviewDialogState extends ConsumerState<AddReviewDialog> {
   double _rating = 5.0;
   bool _isSubmitting = false;
 
-  // Expresión regular táctica de moderación local contra términos prohibidos
   final RegExp _forbiddenWordsRegExp = RegExp(
     r'(arma|droga|estafa|falso|falsa)',
     caseSensitive: false,
@@ -48,11 +47,15 @@ class _AddReviewDialogState extends ConsumerState<AddReviewDialog> {
       if (mounted) Navigator.of(context).pop(true);
     } catch (e) {
       if (mounted) {
+        final theme = Theme.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error al enviar la valoración: $e'),
             behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.black87,
+            backgroundColor: theme.colorScheme.error,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
         );
       }
@@ -63,15 +66,17 @@ class _AddReviewDialogState extends ConsumerState<AddReviewDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return AlertDialog(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.colorScheme.surface,
       surfaceTintColor: Colors.transparent,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: const Text(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: Text(
         'Valorar usuario',
         style: TextStyle(
           fontWeight: FontWeight.w600,
-          color: Colors.black87,
+          color: theme.colorScheme.onSurface,
           fontSize: 18,
           letterSpacing: -0.4,
         ),
@@ -84,10 +89,10 @@ class _AddReviewDialogState extends ConsumerState<AddReviewDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 '¿Cómo calificarías tu experiencia en este trueque?',
                 style: TextStyle(
-                  color: Colors.black54,
+                  color: theme.colorScheme.onSurfaceVariant,
                   fontSize: 14,
                   height: 1.3,
                 ),
@@ -108,7 +113,9 @@ class _AddReviewDialogState extends ConsumerState<AddReviewDialog> {
                         isSelected
                             ? Icons.star_rounded
                             : Icons.star_border_rounded,
-                        color: isSelected ? Colors.black87 : Colors.black26,
+                        color: isSelected
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.outlineVariant,
                         size: 36,
                       ),
                     ),
@@ -119,47 +126,61 @@ class _AddReviewDialogState extends ConsumerState<AddReviewDialog> {
               TextFormField(
                 controller: _commentController,
                 maxLines: 3,
-                style: const TextStyle(color: Colors.black87, fontSize: 15),
+                style: TextStyle(
+                  color: theme.colorScheme.onSurface,
+                  fontSize: 15,
+                ),
                 decoration: InputDecoration(
                   hintText:
                       'Cuéntanos más detalles del intercambio (opcional)...',
-                  hintStyle: const TextStyle(
-                    color: Colors.black38,
+                  hintStyle: TextStyle(
+                    color: theme.colorScheme.onSurfaceVariant.withValues(
+                      alpha: 0.6,
+                    ),
                     fontSize: 14,
                   ),
                   filled: true,
-                  fillColor: const Color(0xFFF5F5F7),
+                  fillColor: theme.colorScheme.surfaceContainerHighest
+                      .withValues(alpha: 0.3),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 14,
                     vertical: 12,
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.outlineVariant.withValues(
+                        alpha: 0.5,
+                      ),
+                    ),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.outlineVariant.withValues(
+                        alpha: 0.5,
+                      ),
+                    ),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Colors.black26,
-                      width: 1,
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.primary,
+                      width: 2,
                     ),
                   ),
                   errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Colors.redAccent,
-                      width: 0.8,
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.error,
+                      width: 1,
                     ),
                   ),
                   focusedErrorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Colors.redAccent,
-                      width: 1.2,
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.error,
+                      width: 1.5,
                     ),
                   ),
                 ),
@@ -190,7 +211,7 @@ class _AddReviewDialogState extends ConsumerState<AddReviewDialog> {
                     ? null
                     : () => Navigator.of(context).pop(false),
                 style: TextButton.styleFrom(
-                  foregroundColor: Colors.black54,
+                  foregroundColor: theme.colorScheme.onSurfaceVariant,
                   minimumSize: const Size.fromHeight(44),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -204,24 +225,26 @@ class _AddReviewDialogState extends ConsumerState<AddReviewDialog> {
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: TextButton(
+              child: FilledButton(
                 onPressed: _isSubmitting ? null : _submit,
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.black87,
-                  foregroundColor: Colors.white,
-                  disabledBackgroundColor: Colors.black38,
+                style: FilledButton.styleFrom(
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
+                  disabledBackgroundColor: theme.colorScheme.onSurface
+                      .withValues(alpha: 0.12),
                   minimumSize: const Size.fromHeight(44),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
+                  elevation: 0,
                 ),
                 child: _isSubmitting
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 18,
                         height: 18,
                         child: CircularProgressIndicator.adaptive(
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.white,
+                            theme.colorScheme.onPrimary,
                           ),
                           strokeWidth: 2,
                         ),
