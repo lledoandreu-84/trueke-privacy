@@ -41,14 +41,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     if (!mounted || !context.mounted) return;
     int selectedStars = 5;
     final commentController = TextEditingController();
+    final theme = Theme.of(context);
 
     showDialog(
       context: context,
       builder: (dialogCtx) => StatefulBuilder(
         builder: (dialogCtx, setDialogState) => AlertDialog(
-          title: const Text(
+          backgroundColor: theme.colorScheme.surface,
+          surfaceTintColor: Colors.transparent,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+          title: Text(
             "Valorar Trueke",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: theme.colorScheme.onSurface,
+              letterSpacing: -0.4,
+            ),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -70,23 +79,51 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 16),
               TextField(
                 controller: commentController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: "Escribe un comentario breve...",
-                  border: OutlineInputBorder(),
+                  hintStyle: TextStyle(
+                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                    fontSize: 14,
+                  ),
+                  filled: true,
+                  fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.primary,
+                      width: 1.5,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.all(16),
                 ),
                 maxLines: 2,
+                style: TextStyle(
+                  color: theme.colorScheme.onSurface,
+                  fontSize: 14,
+                ),
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogCtx),
+              style: TextButton.styleFrom(
+                foregroundColor: theme.colorScheme.onSurfaceVariant,
+              ),
               child: const Text("Cancelar"),
             ),
-            TextButton(
+            FilledButton(
               onPressed: () async {
                 final rev = Review(
                   id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -101,6 +138,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 ref.invalidate(userRatingAverageProvider(reviewedId));
                 if (dialogCtx.mounted) Navigator.pop(dialogCtx);
               },
+              style: FilledButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+                elevation: 0,
+              ),
               child: const Text("Enviar"),
             ),
           ],
@@ -132,7 +174,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           SnackBar(
             content: Text("Error al enviar mensaje: $e"),
             behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.black87,
           ),
         );
       }
@@ -215,7 +256,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           SnackBar(
             content: Text("Error al proponer trueke: $e"),
             behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.black87,
           ),
         );
       }
@@ -223,6 +263,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   Widget _buildStateBanner(List<dynamic> messages) {
+    final theme = Theme.of(context);
     dynamic lastOfferPayload;
     String? lastOfferSenderId;
     for (final msg in messages.reversed) {
@@ -254,25 +295,33 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       return Container(
         width: double.infinity,
         padding: const EdgeInsets.all(16),
-        color: const Color(0xFFFFF3E0),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.tertiaryContainer.withValues(alpha: 0.4),
+          border: Border(
+            bottom: BorderSide(
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+            ),
+          ),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               "PROPUESTA DE TRUEKE: $productTitle",
-              style: const TextStyle(
-                color: Color(0xFFE65100),
+              style: TextStyle(
+                color: theme.colorScheme.onTertiaryContainer,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
+                letterSpacing: 0.2,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             if (!isMyOffer) ...[
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton(
+                  FilledButton.tonal(
                     onPressed: () async {
                       try {
                         final room = await ref.read(
@@ -314,9 +363,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             );
                       } catch (_) {}
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green.shade700,
-                      foregroundColor: Colors.white,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: theme.colorScheme.primaryContainer,
+                      foregroundColor: theme.colorScheme.onPrimaryContainer,
                     ),
                     child: const Text(
                       "Aceptar Trueke",
@@ -345,8 +394,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       } catch (_) {}
                     },
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red.shade700,
-                      side: BorderSide(color: Colors.red.shade300),
+                      foregroundColor: theme.colorScheme.error,
+                      side: BorderSide(
+                        color: theme.colorScheme.error.withValues(alpha: 0.5),
+                      ),
                     ),
                     child: const Text(
                       "Rechazar",
@@ -359,10 +410,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 ],
               ),
             ] else ...[
-              const Text(
+              Text(
                 "Esperando respuesta del otro usuario...",
                 style: TextStyle(
-                  color: Colors.black54,
+                  color: theme.colorScheme.onSurfaceVariant,
                   fontSize: 12,
                   fontStyle: FontStyle.italic,
                 ),
@@ -376,20 +427,28 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       return Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        color: const Color(0xFFE8F5E9),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.primaryContainer.withValues(alpha: 0.4),
+          border: Border(
+            bottom: BorderSide(
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+            ),
+          ),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               "¡TRUEKE ACEPTADO! FONDOS EN CUSTODIA SEGURA",
               style: TextStyle(
-                color: Colors.green.shade800,
+                color: theme.colorScheme.onPrimaryContainer,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
+                letterSpacing: 0.2,
               ),
             ),
             const SizedBox(height: 8),
-            ElevatedButton.icon(
+            FilledButton.icon(
               onPressed: _isReleasingFunds
                   ? null
                   : () async {
@@ -452,9 +511,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 "Liberar fondos en mano",
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
               ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green.shade700,
-                foregroundColor: Colors.white,
+              style: FilledButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+                elevation: 0,
               ),
             ),
           ],
@@ -465,20 +525,27 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       return Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        color: Colors.blue.shade50,
+        decoration: BoxDecoration(
+          color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.4),
+          border: Border(
+            bottom: BorderSide(
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+            ),
+          ),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+            Text(
               "🤝 ¡Trueke Finalizado con éxito en mano!",
               style: TextStyle(
-                color: Color(0xFF0D47A1),
+                color: theme.colorScheme.onSecondaryContainer,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 8),
-            ElevatedButton.icon(
+            FilledButton.icon(
               onPressed: () async {
                 final room = await ref.read(
                   singleChatRoomProvider(widget.roomId).future,
@@ -489,7 +556,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     ? room.buyerId
                     : room.sellerId;
 
-                // Invocación nativa síncrona inmune al linter de gaps asíncronos
                 _abrirDialogoValoracionConGuardia(reviewedId, currentOfferId);
               },
               icon: const Icon(Icons.star_rounded, size: 16),
@@ -497,9 +563,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 "Valorar Interlocutor",
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
               ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue.shade700,
-                foregroundColor: Colors.white,
+              style: FilledButton.styleFrom(
+                backgroundColor: theme.colorScheme.secondary,
+                foregroundColor: theme.colorScheme.onSecondary,
+                elevation: 0,
               ),
             ),
           ],
@@ -510,12 +577,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       return Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-        color: Colors.red.shade50,
+        decoration: BoxDecoration(
+          color: theme.colorScheme.errorContainer.withValues(alpha: 0.4),
+          border: Border(
+            bottom: BorderSide(
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+            ),
+          ),
+        ),
         child: Center(
           child: Text(
             "Propuesta de trueke rechazada o cancelada",
             style: TextStyle(
-              color: Colors.red.shade800,
+              color: theme.colorScheme.onErrorContainer,
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
@@ -530,39 +604,51 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Widget build(BuildContext context) {
     final messagesAsync = ref.watch(chatMessagesStreamProvider(widget.roomId));
     final currentUserId = AuthService.currentUserId ?? '';
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.colorScheme.surface,
         elevation: 0,
         scrolledUnderElevation: 0,
-        title: const Text(
+        title: Text(
           "Chat de Negociación",
           style: TextStyle(
-            color: Colors.black87,
+            color: theme.colorScheme.onSurface,
             fontWeight: FontWeight.w600,
-            fontSize: 16,
+            fontSize: 18,
+            letterSpacing: -0.4,
           ),
         ),
-        iconTheme: const IconThemeData(color: Colors.black87),
+        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
         actions: [
           IconButton(
-            icon: const Icon(Icons.handshake_outlined, color: Colors.black87),
+            icon: Icon(Icons.handshake_outlined, color: theme.colorScheme.onSurface),
             onPressed: _showTradeOfferDialog,
             tooltip: "Proponer Trueke",
           ),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(color: Colors.black12, height: 0.5),
+          child: Container(
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+            height: 0.5,
+          ),
         ),
       ),
       body: messagesAsync.when(
         loading: () =>
             const Center(child: CircularProgressIndicator.adaptive()),
-        error: (err, _) =>
-            Center(child: Text("Error al cargar mensajes: $err")),
+        error: (err, _) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Text(
+              "Error al cargar mensajes: $err",
+              style: TextStyle(color: theme.colorScheme.error),
+            ),
+          ),
+        ),
         data: (messages) {
           return Column(
             children: [
@@ -580,20 +666,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surface,
                   border: Border(
-                    top: BorderSide(color: Colors.black12, width: 0.5),
+                    top: BorderSide(
+                      color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                      width: 0.5,
+                    ),
                   ),
                 ),
                 child: SafeArea(
                   child: Row(
                     children: [
                       IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.attach_file_rounded,
-                          color: Colors.black87,
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                         onPressed: _pickAndSendImage,
                       ),
@@ -602,32 +691,43 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           controller: _messageController,
                           decoration: InputDecoration(
                             hintText: "Escribe un mensaje...",
-                            hintStyle: const TextStyle(
-                              color: Colors.black38,
+                            hintStyle: TextStyle(
+                              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                               fontSize: 14,
                             ),
                             filled: true,
-                            fillColor: const Color(0xFFF5F5F7),
+                            fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                               borderSide: BorderSide.none,
                             ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(
+                                color: theme.colorScheme.primary,
+                                width: 1.5,
+                              ),
+                            ),
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
-                              vertical: 8,
+                              vertical: 10,
                             ),
                           ),
-                          style: const TextStyle(
-                            color: Colors.black87,
+                          style: TextStyle(
+                            color: theme.colorScheme.onSurface,
                             fontSize: 14,
                           ),
                         ),
                       ),
                       const SizedBox(width: 8),
                       IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.send_rounded,
-                          color: Colors.black87,
+                          color: theme.colorScheme.primary,
                         ),
                         onPressed: _sendMessage,
                       ),
