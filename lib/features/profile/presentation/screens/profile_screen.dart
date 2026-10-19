@@ -1,3 +1,4 @@
+import "../../../auth/auth_page.dart";
 import '../../../../core/theme/app_colors.dart';
 import "../../../auth/providers/auth_provider.dart";
 import 'package:trueke/features/products/providers/products_provider.dart';
@@ -112,7 +113,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    if (widget.userId.isEmpty) {
+        if (widget.userId.isEmpty) {
       return Scaffold(
         backgroundColor: theme.colorScheme.surface,
         appBar: AppBar(
@@ -120,7 +121,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           elevation: 0,
           scrolledUnderElevation: 0,
           title: Text(
-            'Mi Cuenta',
+            "Mi Cuenta",
             style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 20,
@@ -142,7 +143,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Inicia sesión para ver tu perfil',
+                  "Inicia sesión para ver tu perfil",
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -152,12 +153,31 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Accede a tus productos publicados, valoraciones y configuración de cuenta.',
+                  "Accede a tus productos publicados, valoraciones y configuración de cuenta.",
                   style: TextStyle(
                     fontSize: 14,
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
                   textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                FilledButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AuthPage(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.login_rounded),
+                  label: const Text("Iniciar Sesión / Registrarse"),
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                 ),
               ],
             ),
