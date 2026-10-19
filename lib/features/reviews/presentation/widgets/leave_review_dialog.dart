@@ -19,9 +19,19 @@ class LeaveReviewDialog extends ConsumerStatefulWidget {
 }
 
 class _LeaveReviewDialogState extends ConsumerState<LeaveReviewDialog> {
-  int _rating = 5;
+  int _currentRating = 5;
   final _commentController = TextEditingController();
   bool _isSubmitting = false;
+
+  bool _containsBlacklistedWords(String text) {
+    final cleanText = text.toLowerCase().trim();
+    final blacklist = ["arma", "droga", "estafa", "ilegal", "falso"];
+    for (var word in blacklist) {
+      final regex = RegExp(word);
+      if (regex.hasMatch(cleanText)) return true;
+    }
+    return false;
+  }
 
   @override
   void dispose() {
@@ -30,43 +40,57 @@ class _LeaveReviewDialogState extends ConsumerState<LeaveReviewDialog> {
   }
 
   Future<void> _submitReview() async {
-    final comment = _commentController.text.trim();
-    if (comment.isEmpty) {
+    final String commentText = _commentController.text.trim();
+    final theme = Theme.of(context);
+    if (_containsBlacklistedWords(commentText)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Por favor, escribe un comentario sobre tu experiencia.'),
-          behavior: SnackBarBehavior.floating,
+        SnackBar(
+          content: const Text("Comentario bloqueado: Contiene lenguaje prohibido."),
+          backgroundColor: theme.colorScheme.error,
+          duration: const Duration(seconds: 3),
         ),
       );
       return;
     }
-
     setState(() {
       _isSubmitting = true;
     });
 
+    final currentId = "mock_rev_${DateTime.now().millisecondsSinceEpoch}";
+    final review = Review(
+      id: currentId,
+      truekeId: widget.truekeId,
+      reviewerId: widget.reviewerId,
+      reviewedId: widget.reviewedId,
+      rating: _currentRating,
+      comment: commentText,
+      createdAt: DateTime.now(),
+    );
+
     try {
-      await ref.read(reviewsNotifierProvider.notifier).createReview(
-            truekeId: widget.truekeId,
-            reviewedId: widget.reviewedId,
-            reviewerId: widget.reviewerId,
-            rating: _rating.toDouble(),
-            comment: comment,
-          );
-      if (mounted) {
-        Navigator.of(context).pop(true);
-      }
+      await ref.read(reviewRepositoryProvider).createReview(review);
+
+      ref.invalidate(userReviewsProvider(widget.reviewedId));
+      ref.invalidate(userRatingAverageProvider(widget.reviewedId));
+      ref.invalidate(userProfileProvider(widget.reviewedId));
+
+      if (mounted) Navigator.of(context).pop(true);
     } catch (e) {
-      setState(() {
-        _isSubmitting = false;
-      });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al enviar la valoración: $e'),
-            behavior: SnackBarBehavior.floating,
+            content: Text(
+              "Error al publicar la reseña: ${e.toString().replaceAll('Exception: ', '')}",
+            ),
+            backgroundColor: theme.colorScheme.error,
           ),
         );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
       }
     }
   }
@@ -80,71 +104,66 @@ class _LeaveReviewDialogState extends ConsumerState<LeaveReviewDialog> {
       surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       title: Text(
-        'Valorar Experiencia',
+        "Valorar intercambio",
         style: TextStyle(
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           fontSize: 20,
           color: theme.colorScheme.onSurface,
-          letterSpacing: -0.5,
+          letterSpacing: -0.4,
         ),
       ),
       content: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              '¿Cómo ha ido el intercambio con este usuario?',
+              "¿Cómo fue tu experiencia en el trato en mano?",
+              textAlign: TextAlign.center,
               style: TextStyle(
                 color: theme.colorScheme.onSurfaceVariant,
                 fontSize: 14,
-                height: 1.4,
-                letterSpacing: -0.1,
+                fontWeight: FontWeight.w500,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(5, (index) {
-                final starIndex = index + 1;
-                final isSelected = starIndex <= _rating;
+                final starValue = index + 1;
                 return IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _rating = starIndex;
-                    });
-                  },
                   icon: Icon(
-                    isSelected ? Icons.star_rounded : Icons.star_outline_rounded,
-                    color: isSelected
+                    starValue <= _currentRating
+                        ? Icons.star_rounded
+                        : Icons.star_outline_rounded,
+                    color: starValue <= _currentRating
                         ? theme.colorScheme.primary
                         : theme.colorScheme.outlineVariant,
                     size: 32,
                   ),
+                  onPressed: _isSubmitting
+                      ? null
+                      : () {
+                          setState(() {
+                            _currentRating = starValue;
+                          });
+                        },
                 );
               }),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             TextField(
               controller: _commentController,
-              maxLines: 4,
-              style: TextStyle(
-                color: theme.colorScheme.onSurface,
-                fontSize: 15,
-              ),
+              maxLines: 3,
+              maxLength: 200,
+              enabled: !_isSubmitting,
               decoration: InputDecoration(
-                hintText: 'Escribe tu opinión detallada...',
-                hintStyle: TextStyle(
-                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                  fontSize: 14,
-                ),
+                hintText: "Escribe un comentario opcional...",
+                hintStyle: TextStyle(color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7), fontSize: 13),
                 filled: true,
                 fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+                counterText: "",
                 contentPadding: const EdgeInsets.all(16),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide.none,
-                ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
                   borderSide: BorderSide.none,
@@ -157,6 +176,7 @@ class _LeaveReviewDialogState extends ConsumerState<LeaveReviewDialog> {
                   ),
                 ),
               ),
+              style: TextStyle(fontSize: 14, color: theme.colorScheme.onSurface),
             ),
           ],
         ),
@@ -175,10 +195,7 @@ class _LeaveReviewDialogState extends ConsumerState<LeaveReviewDialog> {
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                child: const Text(
-                  'Cancelar',
-                  style: TextStyle(fontWeight: FontWeight.w500),
-                ),
+                child: const Text("Cancelar"),
               ),
             ),
             const SizedBox(width: 12),
@@ -205,10 +222,7 @@ class _LeaveReviewDialogState extends ConsumerState<LeaveReviewDialog> {
                           ),
                         ),
                       )
-                    : const Text(
-                        'Enviar Opinión',
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
+                    : const Text("Enviar"),
               ),
             ),
           ],
