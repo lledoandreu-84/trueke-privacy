@@ -1,25 +1,37 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/reviews_provider.dart';
+import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
+import "../../providers/reviews_provider.dart";
+import "../../../profile/providers/profile_provider.dart";
+import "../../../../models/review.dart";
 
 class LeaveReviewDialog extends ConsumerStatefulWidget {
-  final String transactionId;
-  final String targetUserId;
-
+  final String truekeId;
+  final String reviewedId;
+  final String reviewerId;
   const LeaveReviewDialog({
     super.key,
-    required this.transactionId,
-    required this.targetUserId,
+    required this.truekeId,
+    required this.reviewedId,
+    required this.reviewerId,
   });
-
   @override
   ConsumerState<LeaveReviewDialog> createState() => _LeaveReviewDialogState();
 }
 
 class _LeaveReviewDialogState extends ConsumerState<LeaveReviewDialog> {
-  int _rating = 5;
+  int _currentRating = 5;
   final _commentController = TextEditingController();
   bool _isSubmitting = false;
+
+  bool _containsBlacklistedWords(String text) {
+    final cleanText = text.toLowerCase().trim();
+    final blacklist = ["arma", "droga", "estafa", "ilegal", "falso"];
+    for (var word in blacklist) {
+      final regex = RegExp(word);
+      if (regex.hasMatch(cleanText)) return true;
+    }
+    return false;
+  }
 
   @override
   void dispose() {
@@ -28,187 +40,181 @@ class _LeaveReviewDialogState extends ConsumerState<LeaveReviewDialog> {
   }
 
   Future<void> _submitReview() async {
-    final comment = _commentController.text.trim();
-    if (comment.isEmpty) {
+    final String commentText = _commentController.text.trim();
+    if (_containsBlacklistedWords(commentText)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Por favor, escribe un comentario sobre tu experiencia.'),
-          behavior: SnackBarBehavior.floating,
+          content: Text("Comentario bloqueado: Contiene lenguaje prohibido."),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
         ),
       );
       return;
     }
-
     setState(() {
       _isSubmitting = true;
     });
 
+    final currentId = "mock_rev_${DateTime.now().millisecondsSinceEpoch}";
+    final review = Review(
+      id: currentId,
+      truekeId: widget.truekeId,
+      reviewerId: widget.reviewerId,
+      reviewedId: widget.reviewedId,
+      rating: _currentRating,
+      comment: commentText,
+      createdAt: DateTime.now(),
+    );
+
     try {
-      await ref.read(reviewsNotifierProvider.notifier).createReview(
-            transactionId: widget.transactionId,
-            targetUserId: widget.targetUserId,
-            rating: _rating.toDouble(),
-            comment: comment,
-          );
-      if (mounted) {
-        Navigator.of(context).pop(true);
-      }
+      await ref.read(reviewRepositoryProvider).createReview(review);
+
+      ref.invalidate(userReviewsProvider(widget.reviewedId));
+      ref.invalidate(userRatingAverageProvider(widget.reviewedId));
+      ref.invalidate(userProfileProvider(widget.reviewedId));
+
+      if (mounted) Navigator.of(context).pop(true);
     } catch (e) {
-      setState(() {
-        _isSubmitting = false;
-      });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al enviar la valoración: $e'),
-            behavior: SnackBarBehavior.floating,
+            content: Text(
+              "Error al publicar la reseña: ${e.toString().replaceAll('Exception: ', '')}",
+            ),
+            backgroundColor: Colors.red,
           ),
         );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return AlertDialog(
       backgroundColor: theme.colorScheme.surface,
       surfaceTintColor: Colors.transparent,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-      title: Text(
-        'Valorar Experiencia',
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: const Text(
+        "Valorar intercambio",
         style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          fontSize: 18,
           color: theme.colorScheme.onSurface,
-          letterSpacing: -0.5,
+          letterSpacing: -0.4,
         ),
       ),
       content: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              '¿Cómo ha ido el intercambio con este usuario?',
+            const Text(
+              "¿Cómo fue tu experiencia en el trato en mano?",
+              textAlign: TextAlign.center,
               style: TextStyle(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontSize: 14,
-                height: 1.4,
-                letterSpacing: -0.1,
+                color: Colors.grey,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(5, (index) {
-                final starIndex = index + 1;
-                final isSelected = starIndex <= _rating;
+                final starValue = index + 1;
                 return IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _rating = starIndex;
-                    });
-                  },
                   icon: Icon(
-                    isSelected ? Icons.star_rounded : Icons.star_outline_rounded,
-                    color: isSelected
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.outlineVariant,
-                    size: 32,
+                    starValue <= _currentRating
+                        ? Icons.star
+                        : Icons.star_border,
+                    color: Colors.amber,
+                    size: 28,
                   ),
+                  onPressed: _isSubmitting
+                      ? null
+                      : () {
+                          setState(() {
+                            _currentRating = starValue;
+                          });
+                        },
                 );
               }),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             TextField(
               controller: _commentController,
-              maxLines: 4,
-              style: TextStyle(
-                color: theme.colorScheme.onSurface,
-                fontSize: 15,
-              ),
+              maxLines: 3,
+              maxLength: 200,
+              enabled: !_isSubmitting,
               decoration: InputDecoration(
-                hintText: 'Escribe tu opinión detallada...',
-                hintStyle: TextStyle(
-                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                  fontSize: 14,
-                ),
+                hintText: "Escribe un comentario opcional...",
+                hintStyle: const TextStyle(color: Colors.grey, fontSize: 13),
                 filled: true,
-                fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
-                contentPadding: const EdgeInsets.all(16),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide.none,
-                ),
+                fillColor: Colors.grey.shade50,
+                counterText: "",
+                contentPadding: const EdgeInsets.all(14),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide.none,
+                  borderSide: BorderSide(
+                    color: Colors.grey.shade200,
+                    width: 1.0,
+                  ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(
-                    color: theme.colorScheme.primary,
-                    width: 1.5,
+                  borderSide: const BorderSide(
+                    color: theme.colorScheme.onSurface,
+                    width: 1.0,
                   ),
                 ),
               ),
+              style: const TextStyle(fontSize: 14),
             ),
           ],
         ),
       ),
-      actionsPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
       actions: [
-        Row(
-          children: [
-            Expanded(
-              child: TextButton(
-                onPressed: _isSubmitting ? null : () => Navigator.of(context).pop(),
-                style: TextButton.styleFrom(
-                  foregroundColor: theme.colorScheme.onSurfaceVariant,
-                  minimumSize: const Size.fromHeight(44),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: const Text(
-                  'Cancelar',
-                  style: TextStyle(fontWeight: FontWeight.w500),
-                ),
-              ),
+        TextButton(
+          onPressed: _isSubmitting ? null : () => Navigator.of(context).pop(),
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.black54,
+            textStyle: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: FilledButton(
-                onPressed: _isSubmitting ? null : _submitReview,
-                style: FilledButton.styleFrom(
-                  backgroundColor: theme.colorScheme.primary,
-                  foregroundColor: theme.colorScheme.onPrimary,
-                  minimumSize: const Size.fromHeight(44),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  elevation: 0,
-                ),
-                child: _isSubmitting
-                    ? SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator.adaptive(
-                          strokeWidth: 2.2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            theme.colorScheme.onPrimary,
-                          ),
-                        ),
-                      )
-                    : const Text(
-                        'Enviar Opinión',
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-              ),
+          ),
+          child: const Text("Cancelar"),
+        ),
+        TextButton(
+          onPressed: _isSubmitting ? null : _submitReview,
+          style: TextButton.styleFrom(
+            backgroundColor: Colors.black87,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(28),
             ),
-          ],
+            textStyle: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
+          ),
+          child: _isSubmitting
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : const Text("Enviar"),
         ),
       ],
     );
