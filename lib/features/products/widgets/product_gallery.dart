@@ -40,7 +40,6 @@ class ProductGallery extends ConsumerWidget {
   Widget _buildImage() {
     final bool hasValidWebImage =
         product.imageUrl.startsWith('http') &&
-        !product.imageUrl.contains('unsplash.com') &&
         product.imageUrl.isNotEmpty;
 
     if (!hasValidWebImage) {
