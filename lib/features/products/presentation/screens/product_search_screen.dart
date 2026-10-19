@@ -18,6 +18,9 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   Timer? _debounceTimer;
 
+  final List<double> _distanceTiers = [25.0, 50.0, 100.0, 150.0, 200.0, 250.0, 9999.0];
+  final List<String> _conditionOptions = ['Nuevo', 'Poco uso', 'Buen estado', 'Muy usado'];
+
   @override
   void initState() {
     super.initState();
@@ -39,7 +42,6 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
     if (_debounceTimer?.isActive ?? false) _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 400), () {
       notifier.updateQuery(query);
-      notifier.search();
     });
   }
 
@@ -52,6 +54,11 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
       case TradeType.tradeAndMoney:
         return 'Trueque + €';
     }
+  }
+
+  String _getDistanceLabel(double km) {
+    if (km >= 9999.0) return 'Sin límite';
+    return '${km.round()} km';
   }
 
   Widget _buildActiveChip(
@@ -124,20 +131,19 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
         ),
       );
     }
-    if (state.minPrice > 0.0 || state.maxPrice < 1000.0) {
+    if (state.minPrice > 0.0 || state.maxPrice < 5000.0) {
       activeChips.add(
         _buildActiveChip(
           context,
           '${state.minPrice.round()}€ - ${state.maxPrice.round()}€',
-          () => notifier.updatePriceRange(0.0, 1000.0),
+          () => notifier.updatePriceRange(0.0, 5000.0),
         ),
       );
     }
-    if (state.maxRadiusKm != 15.0) {
+    if (state.maxRadiusKm != 50.0) {
       activeChips.add(
-        _buildActiveChip(context, 'Radio: ${state.maxRadiusKm.round()} km', () {
-          notifier.updateRadius(15.0);
-          notifier.search();
+        _buildActiveChip(context, 'Ubicación: ${_getDistanceLabel(state.maxRadiusKm)}', () {
+          notifier.updateRadius(50.0);
         }),
       );
     }
@@ -179,139 +185,181 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                 right: 20,
                 bottom: MediaQuery.of(context).viewInsets.bottom + 24,
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Filtros Avanzados',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close_rounded, color: AppColors.textPrimary),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Rango de Precio',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  RangeSlider(
-                    values: RangeValues(state.minPrice, state.maxPrice),
-                    min: 0.0,
-                    max: 1000.0,
-                    divisions: 20,
-                    labels: RangeLabels(
-                      '${state.minPrice.round()}€',
-                      '${state.maxPrice.round()}€',
-                    ),
-                    activeColor: AppColors.primary,
-                    inactiveColor: AppColors.surfaceMint,
-                    onChanged: (RangeValues values) {
-                      setModalState(() {
-                        notifier.updatePriceRange(values.start, values.end);
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Radio de Búsqueda (${state.maxRadiusKm.round()} km)',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  Slider(
-                    value: state.maxRadiusKm,
-                    min: 1.0,
-                    max: 100.0,
-                    divisions: 99,
-                    label: '${state.maxRadiusKm.round()} km',
-                    activeColor: AppColors.primary,
-                    inactiveColor: AppColors.surfaceMint,
-                    onChanged: (value) {
-                      setModalState(() {
-                        notifier.updateRadius(value);
-                      });
-                    },
-                    onChangeEnd: (value) {
-                      notifier.search();
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Tipo de Trato',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    children: TradeType.values.map((type) {
-                      final isSelected = state.selectedTradeType == type;
-                      return ChoiceChip(
-                        label: Text(_getTradeTypeLabel(type)),
-                        selected: isSelected,
-                        selectedColor: AppColors.surfaceMint,
-                        backgroundColor: AppColors.background,
-                        labelStyle: TextStyle(
-                          color: isSelected ? AppColors.primary : AppColors.textPrimary,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                        ),
-                        onSelected: (selected) {
-                          setModalState(() {
-                            notifier.updateTradeType(selected ? type : null);
-                          });
-                        },
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [AppColors.primary, AppColors.petrolBlue],
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          'Aplicar Filtros',
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Filtros Avanzados',
                           style: TextStyle(
-                            color: Colors.white,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close_rounded, color: AppColors.textPrimary),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Rango de Precio (€)',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    RangeSlider(
+                      values: RangeValues(state.minPrice, state.maxPrice),
+                      min: 0.0,
+                      max: 5000.0,
+                      divisions: 50,
+                      labels: RangeLabels(
+                        '${state.minPrice.round()}€',
+                        '${state.maxPrice.round()}€',
+                      ),
+                      activeColor: AppColors.primary,
+                      inactiveColor: AppColors.surfaceMint,
+                      onChanged: (RangeValues values) {
+                        setModalState(() {
+                          notifier.updatePriceRange(values.start, values.end);
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Ubicación y Proximidad (Distancia)',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: _distanceTiers.map((tier) {
+                        final isSelected = state.maxRadiusKm == tier;
+                        return ChoiceChip(
+                          label: Text(_getDistanceLabel(tier)),
+                          selected: isSelected,
+                          selectedColor: AppColors.surfaceMint,
+                          backgroundColor: AppColors.background,
+                          labelStyle: TextStyle(
+                            color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          ),
+                          onSelected: (selected) {
+                            if (selected) {
+                              setModalState(() {
+                                notifier.updateRadius(tier);
+                              });
+                            }
+                          },
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Estado del Producto',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: _conditionOptions.map((cond) {
+                        final isSelected = state.selectedCondition?.toLowerCase() == cond.toLowerCase();
+                        return ChoiceChip(
+                          label: Text(cond),
+                          selected: isSelected,
+                          selectedColor: AppColors.surfaceMint,
+                          backgroundColor: AppColors.background,
+                          labelStyle: TextStyle(
+                            color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          ),
+                          onSelected: (selected) {
+                            setModalState(() {
+                              notifier.updateCondition(selected ? cond : null);
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Tipo de Trato',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: TradeType.values.map((type) {
+                        final isSelected = state.selectedTradeType == type;
+                        return ChoiceChip(
+                          label: Text(_getTradeTypeLabel(type)),
+                          selected: isSelected,
+                          selectedColor: AppColors.surfaceMint,
+                          backgroundColor: AppColors.background,
+                          labelStyle: TextStyle(
+                            color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          ),
+                          onSelected: (selected) {
+                            setModalState(() {
+                              notifier.updateTradeType(selected ? type : null);
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [AppColors.primary, AppColors.petrolBlue],
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text(
+                            'Aplicar Filtros',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           },
@@ -448,7 +496,6 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       onTap: () {
                         _searchController.clear();
                         searchNotifier.updateQuery('');
-                        searchNotifier.search();
                         setState(() {});
                       },
                       child: const Icon(
