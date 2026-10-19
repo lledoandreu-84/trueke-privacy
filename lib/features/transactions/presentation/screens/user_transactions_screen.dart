@@ -26,14 +26,16 @@ class UserTransactionsScreen extends ConsumerWidget {
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
               letterSpacing: -0.4,
+              color: theme.colorScheme.onSurface,
             ),
           ),
+          iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
           bottom: TabBar(
             indicatorColor: theme.colorScheme.primary,
             indicatorWeight: 2.0,
             labelColor: theme.colorScheme.primary,
-            unselectedLabelColor: theme.colorScheme.onSurfaceVariant.withAlpha(
-              150,
+            unselectedLabelColor: theme.colorScheme.onSurfaceVariant.withValues(
+              alpha: 0.6,
             ),
             labelStyle: theme.textTheme.labelLarge?.copyWith(
               fontWeight: FontWeight.bold,
@@ -71,8 +73,11 @@ class UserTransactionsScreen extends ConsumerWidget {
               ],
             );
           },
-          loading: () =>
-              const Center(child: CircularProgressIndicator.adaptive()),
+          loading: () => Center(
+            child: CircularProgressIndicator.adaptive(
+              valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+            ),
+          ),
           error: (err, _) => Center(
             child: Padding(
               padding: const EdgeInsets.all(24),
@@ -114,7 +119,7 @@ class _TransactionsList extends StatelessWidget {
             'No hay propuestas en esta categoría.',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant.withAlpha(180),
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
             ),
           ),
         ),
@@ -122,10 +127,10 @@ class _TransactionsList extends StatelessWidget {
     }
 
     return ListView.separated(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       physics: const BouncingScrollPhysics(),
       itemCount: transactions.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 12),
+      separatorBuilder: (context, index) => const SizedBox(height: 16),
       itemBuilder: (context, index) {
         final tx = transactions[index];
         return _TransactionItemRow(tx: tx, isSender: isSender, userId: userId);
@@ -166,6 +171,10 @@ class _TransactionItemRowState extends ConsumerState<_TransactionItemRow> {
           SnackBar(
             content: Text('Error al procesar: $e'),
             backgroundColor: Theme.of(context).colorScheme.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
         );
       }
@@ -180,27 +189,30 @@ class _TransactionItemRowState extends ConsumerState<_TransactionItemRow> {
     Widget? trailingAction;
 
     if (_isMutating) {
-      trailingAction = const SizedBox(
+      trailingAction = SizedBox(
         width: 24,
         height: 24,
-        child: CircularProgressIndicator.adaptive(strokeWidth: 2),
+        child: CircularProgressIndicator.adaptive(
+          strokeWidth: 2,
+          valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+        ),
       );
     } else if (widget.tx.isExpired) {
       trailingAction = Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(8),
+          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: theme.colorScheme.outlineVariant,
-            width: 0.5,
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+            width: 1,
           ),
         ),
         child: Text(
           'EXPIRADO (48H)',
           style: theme.textTheme.labelSmall?.copyWith(
             fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onSurfaceVariant.withAlpha(180),
+            color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
       );
@@ -211,27 +223,28 @@ class _TransactionItemRowState extends ConsumerState<_TransactionItemRow> {
           FilledButton(
             onPressed: () => _handleStatusChange('accepted'),
             style: FilledButton.styleFrom(
-              minimumSize: const Size(64, 34),
+              minimumSize: const Size(64, 38),
               padding: const EdgeInsets.symmetric(horizontal: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(12),
               ),
+              elevation: 0,
             ),
             child: const Text(
               'Aceptar',
               style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
             ),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: 8),
           OutlinedButton(
             onPressed: () => _handleStatusChange('rejected'),
             style: OutlinedButton.styleFrom(
               foregroundColor: theme.colorScheme.error,
-              side: BorderSide(color: theme.colorScheme.error.withAlpha(100)),
-              minimumSize: const Size(64, 34),
+              side: BorderSide(color: theme.colorScheme.error.withValues(alpha: 0.5)),
+              minimumSize: const Size(64, 38),
               padding: const EdgeInsets.symmetric(horizontal: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
             child: const Text(
@@ -242,19 +255,23 @@ class _TransactionItemRowState extends ConsumerState<_TransactionItemRow> {
         ],
       );
     } else {
+      final isAccepted = widget.tx.status == 'accepted';
       trailingAction = Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: widget.tx.status == 'accepted'
-              ? theme.colorScheme.primaryContainer
-              : theme.colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(8),
+          color: isAccepted
+              ? theme.colorScheme.primaryContainer.withValues(alpha: 0.5)
+              : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+          ),
         ),
         child: Text(
           widget.tx.status.toUpperCase(),
           style: theme.textTheme.labelSmall?.copyWith(
             fontWeight: FontWeight.bold,
-            color: widget.tx.status == 'accepted'
+            color: isAccepted
                 ? theme.colorScheme.onPrimaryContainer
                 : theme.colorScheme.onSurfaceVariant,
           ),
@@ -266,11 +283,14 @@ class _TransactionItemRowState extends ConsumerState<_TransactionItemRow> {
         'Trueque #${widget.tx.id.substring(0, 5).toUpperCase()}';
 
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: theme.colorScheme.outlineVariant, width: 0.5),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+          width: 1,
+        ),
       ),
       child: Row(
         children: [
@@ -282,6 +302,7 @@ class _TransactionItemRowState extends ConsumerState<_TransactionItemRow> {
                   displayTitle,
                   style: theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 4),
