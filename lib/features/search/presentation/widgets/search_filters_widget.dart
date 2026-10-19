@@ -5,6 +5,33 @@ import 'package:trueke/features/products/providers/product_filters_provider.dart
 class SearchFiltersWidget extends ConsumerWidget {
   const SearchFiltersWidget({super.key});
 
+  String _mapSortOptionToString(ProductSortOption option) {
+    switch (option) {
+      case ProductSortOption.priceAsc:
+        return 'price_asc';
+      case ProductSortOption.priceDesc:
+        return 'price_desc';
+      case ProductSortOption.distance:
+        return 'distance';
+      case ProductSortOption.relevance:
+        return 'recent';
+    }
+  }
+
+  ProductSortOption _mapStringToSortOption(String? val) {
+    switch (val) {
+      case 'price_asc':
+        return ProductSortOption.priceAsc;
+      case 'price_desc':
+        return ProductSortOption.priceDesc;
+      case 'distance':
+        return ProductSortOption.distance;
+      case 'recent':
+      default:
+        return ProductSortOption.relevance;
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
@@ -34,7 +61,7 @@ class SearchFiltersWidget extends ConsumerWidget {
               ),
               TextButton(
                 onPressed: () {
-                  ref.read(productSortNotifierProvider.notifier).setSortOption(ProductSortOption.recent);
+                  ref.read(productSortNotifierProvider.notifier).setSortOption(ProductSortOption.relevance);
                   Navigator.pop(context);
                 },
                 child: Text(
@@ -65,13 +92,13 @@ class SearchFiltersWidget extends ConsumerWidget {
             children: [
               ChoiceChip(
                 label: const Text('Más recientes'),
-                selected: currentSort == ProductSortOption.recent,
+                selected: currentSort == ProductSortOption.relevance,
                 onSelected: (selected) {
-                  ref.read(productSortNotifierProvider.notifier).setSortOption(ProductSortOption.recent);
+                  ref.read(productSortNotifierProvider.notifier).setSortOption(ProductSortOption.relevance);
                 },
                 selectedColor: theme.colorScheme.primaryContainer,
                 labelStyle: TextStyle(
-                  color: currentSort == ProductSortOption.recent
+                  color: currentSort == ProductSortOption.relevance
                       ? theme.colorScheme.onPrimaryContainer
                       : theme.colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w500,

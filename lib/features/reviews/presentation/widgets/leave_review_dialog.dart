@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/reviews_provider.dart';
+import '../../../profile/providers/profile_provider.dart';
+import '../../../../models/review.dart';
 
 class LeaveReviewDialog extends ConsumerStatefulWidget {
   final String truekeId;
   final String reviewedId;
   final String reviewerId;
-
   const LeaveReviewDialog({
     super.key,
     required this.truekeId,
     required this.reviewedId,
     required this.reviewerId,
   });
-
   @override
   ConsumerState<LeaveReviewDialog> createState() => _LeaveReviewDialogState();
 }
