@@ -55,7 +55,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
             ),
             const SliverToBoxAdapter(
-              child: SizedBox(height: 18), // Espacio libre generoso antes de categorías
+              child: SizedBox(height: 16),
             ),
             const SliverToBoxAdapter(
               child: _SectionHeading(
@@ -134,7 +134,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
             ),
             const SliverToBoxAdapter(
-              child: SizedBox(height: 18), // Espacio libre generoso antes de productos
+              child: SizedBox(height: 18),
             ),
             const SliverToBoxAdapter(
               child: _SectionHeading(
@@ -177,7 +177,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 final displayProducts = products.take(2).toList();
 
                 return SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 6, 16, 85),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 85),
                   sliver: SliverGrid(
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
@@ -223,7 +223,8 @@ class _SectionHeading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      // Añadimos un pequeño margen inferior (bottom: 8) para separar el título/subtítulo de los elementos inferiores
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -251,7 +252,7 @@ class _SectionHeading extends StatelessWidget {
                     letterSpacing: -0.2,
                   ),
                 ),
-                const SizedBox(height: 3), // Respiro perfecto y holgado para el subtítulo
+                const SizedBox(height: 3),
                 Text(
                   subtitle,
                   style: const TextStyle(
