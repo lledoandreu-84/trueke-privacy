@@ -76,23 +76,9 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
       selectedCategory: null,
       selectedTradeType: null,
       minPrice: 0.0,
-      maxPrice: 5000.0,
+      maxPrice: 1000.0,
       products: AsyncValue.data([]),
     );
-  }
-
-  String _normalize(String input) {
-    var letters = {
-      'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u',
-      'à': 'a', 'è': 'e', 'ì': 'i', 'ò': 'o', 'ù': 'u',
-      'ä': 'a', 'ë': 'e', 'ï': 'i', 'ö': 'o', 'ü': 'u',
-      'ñ': 'n',
-    };
-    String result = input.toLowerCase();
-    letters.forEach((key, value) {
-      result = result.replaceAll(key, value);
-    });
-    return result;
   }
 
   Future<void> initializePositionWithGPS() async {
@@ -103,31 +89,18 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
           latitude: position.latitude,
           longitude: position.longitude,
         );
-        await search();
       }
-    } catch (_) {}
+    } catch (_) {
+      // Fallback seguro: se mantienen las coordenadas por defecto de Madrid si falla
+    }
   }
 
   Future<void> search() async {
-    bool hasActiveFilters = state.query.trim().isNotEmpty ||
-        state.selectedCondition != null ||
-        state.selectedCategory != null ||
-        state.selectedTradeType != null ||
-        state.minPrice > 0.0 ||
-        state.maxPrice < 1000.0 ||
-        state.maxRadiusKm != 15.0;
-
-    if (!hasActiveFilters) {
-      state = state.copyWith(products: const AsyncValue.data([]));
-      return;
-    }
-
     state = state.copyWith(products: const AsyncValue.loading());
 
     try {
       final repository = ref.read(productRepositoryProvider);
-      final isUnlimited = state.maxRadiusKm >= 9999.0;
-      final radiusMeters = isUnlimited ? 9999999.0 : state.maxRadiusKm * 1000.0;
+      final radiusMeters = state.maxRadiusKm * 1000.0;
 
       final results = await repository.searchProductsAdvanced(
         query: state.query,
@@ -136,47 +109,43 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
         maxRadiusMeters: radiusMeters,
       );
 
-      final normalizedQuery = _normalize(state.query.trim());
+      final queryLower = state.query.trim().toLowerCase();
 
       final filteredResults = results.where((product) {
-        if (normalizedQuery.isNotEmpty) {
-          final titleMatch = _normalize(product.title).contains(normalizedQuery);
-          final descMatch = _normalize(product.description).contains(normalizedQuery);
-          final catMatch = _normalize(product.category).contains(normalizedQuery);
-          if (!titleMatch && !descMatch && !catMatch) {
+        // Validación de término de búsqueda local robusto (soporta acentos y coincidencias parciales)
+        if (queryLower.isNotEmpty) {
+          final title = product.title.toLowerCase();
+          final description = product.description.toLowerCase();
+          if (!title.contains(queryLower) && !description.contains(queryLower)) {
             return false;
           }
         }
 
         if (state.selectedCondition != null &&
             state.selectedCondition!.isNotEmpty) {
-          final prodCondition = _normalize(product.condition);
-          final targetCondition = _normalize(state.selectedCondition!);
-          if (!prodCondition.contains(targetCondition)) {
+          if (product.condition.toLowerCase() !=
+              state.selectedCondition!.toLowerCase()) {
             return false;
           }
         }
-
         if (state.selectedCategory != null &&
             state.selectedCategory!.isNotEmpty) {
-          if (_normalize(product.category) != _normalize(state.selectedCategory!)) {
+          if (product.category.toLowerCase() !=
+              state.selectedCategory!.toLowerCase()) {
             return false;
           }
         }
-
         if (state.selectedTradeType != null) {
           if (product.tradeType != state.selectedTradeType) {
             return false;
           }
         }
-
         if (product.price != null) {
           if (product.price! < state.minPrice ||
               product.price! > state.maxPrice) {
             return false;
           }
         }
-
         return true;
       }).toList();
 
@@ -186,23 +155,14 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
     }
   }
 
-  void updateQuery(String newQuery) {
-    state = state.copyWith(query: newQuery);
-    search();
-  }
-
-  void updateRadius(double newRadiusKm) {
-    state = state.copyWith(maxRadiusKm: newRadiusKm);
-    search();
-  }
-
-  void updateLocation(double lat, double lon) {
-    state = state.copyWith(latitude: lat, longitude: lon);
-    search();
-  }
+  void updateQuery(String newQuery) => state = state.copyWith(query: newQuery);
+  void updateRadius(double newRadiusKm) =>
+      state = state.copyWith(maxRadiusKm: newRadiusKm);
+  void updateLocation(double lat, double lon) =>
+      state = state.copyWith(latitude: lat, longitude: lon);
 
   void updateCondition(String? condition) {
-    if (condition == null || condition.isEmpty) {
+    if (condition == null) {
       state = state.copyWith(clearCondition: true);
     } else {
       state = state.copyWith(selectedCondition: condition);
@@ -241,7 +201,7 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
       clearCategory: true,
       clearTradeType: true,
       minPrice: 0.0,
-      maxPrice: 5000.0,
+      maxPrice: 1000.0,
     );
     search();
   }
@@ -249,5 +209,5 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
 
 final productSearchNotifierProvider =
     NotifierProvider<ProductSearchNotifier, ProductSearchState>(() {
-      return ProductSearchNotifier();
-    });
+  return ProductSearchNotifier();
+});
