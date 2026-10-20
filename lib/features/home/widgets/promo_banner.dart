@@ -6,7 +6,7 @@ class PromoBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFF2575FC), Color(0xFF6A11CB)],
@@ -35,7 +35,7 @@ class PromoBanner extends StatelessWidget {
                     Icon(
                       Icons.bolt_rounded,
                       color: Colors.amber,
-                      size: 22,
+                      size: 24,
                     ),
                     SizedBox(width: 6),
                     Flexible(
@@ -43,7 +43,7 @@ class PromoBanner extends StatelessWidget {
                         'Intercambio Inteligente',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 15.5,
+                          fontSize: 16,
                           fontWeight: FontWeight.w800,
                           letterSpacing: -0.3,
                         ),
@@ -52,12 +52,12 @@ class PromoBanner extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 6),
+                SizedBox(height: 10),
                 Text(
                   'Intercambia artículos o añade dinero sin comisiones de forma rápida y segura.',
                   style: TextStyle(
                     color: Colors.white70,
-                    fontSize: 11.5,
+                    fontSize: 12,
                     height: 1.35,
                     fontWeight: FontWeight.w400,
                   ),
@@ -76,7 +76,7 @@ class PromoBanner extends StatelessWidget {
               backgroundColor: Colors.white,
               foregroundColor: const Color(0xFF6A11CB),
               elevation: 3,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               shape: RoundedRectangleBorder(
@@ -86,7 +86,7 @@ class PromoBanner extends StatelessWidget {
             child: const Text(
               'Explorar',
               style: TextStyle(
-                fontSize: 12.5,
+                fontSize: 13,
                 fontWeight: FontWeight.w800,
               ),
             ),

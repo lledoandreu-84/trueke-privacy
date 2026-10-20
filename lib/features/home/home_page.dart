@@ -50,7 +50,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             const SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(16, 4, 16, 4),
+                padding: EdgeInsets.fromLTRB(16, 6, 16, 2),
                 child: PromoBanner(),
               ),
             ),
@@ -67,8 +67,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                   crossAxisSpacing: 10,
-                  mainAxisSpacing: 8,
-                  childAspectRatio: 1.7,
+                  mainAxisSpacing: 6,
+                  childAspectRatio: 2.1, // Categorías más compactas en altura
                 ),
                 delegate: SliverChildBuilderDelegate((context, index) {
                   final cat = _categories[index];
@@ -88,16 +88,16 @@ class _HomePageState extends ConsumerState<HomePage> {
                       duration: const Duration(milliseconds: 200),
                       decoration: BoxDecoration(
                         color: selected ? AppColors.primary : bgColor,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(10),
                         border: Border.all(
                           color: selected ? AppColors.primary : iconColor.withValues(alpha: 0.25),
                           width: selected ? 2 : 1,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: (selected ? AppColors.primary : iconColor).withValues(alpha: 0.1),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
+                            color: (selected ? AppColors.primary : iconColor).withValues(alpha: 0.08),
+                            blurRadius: 3,
+                            offset: const Offset(0, 1),
                           ),
                         ],
                       ),
@@ -106,10 +106,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                         children: [
                           Icon(
                             icon,
-                            size: 20,
+                            size: 18,
                             color: selected ? Colors.white : iconColor,
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 6),
                           Flexible(
                             child: Text(
                               name,
@@ -217,17 +217,17 @@ class _SectionHeading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 6),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
       child: Row(
         children: [
           Container(
-            width: 32,
-            height: 32,
+            width: 30,
+            height: 30,
             decoration: BoxDecoration(
               color: AppColors.surfaceMint,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: AppColors.primary, size: 16),
+            child: Icon(icon, color: AppColors.primary, size: 15),
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -238,7 +238,7 @@ class _SectionHeading extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     color: AppColors.textPrimary,
-                    fontSize: 14,
+                    fontSize: 13.5,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.2,
                   ),
@@ -247,7 +247,7 @@ class _SectionHeading extends StatelessWidget {
                   subtitle,
                   style: const TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 10.5,
+                    fontSize: 10,
                   ),
                 ),
               ],
