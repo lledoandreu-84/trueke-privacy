@@ -50,9 +50,12 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             const SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(16, 6, 16, 2),
+                padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
                 child: PromoBanner(),
               ),
+            ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 8), // Espacio libre elegante
             ),
             const SliverToBoxAdapter(
               child: _SectionHeading(
@@ -68,7 +71,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   crossAxisCount: 3,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 6,
-                  childAspectRatio: 2.1, // Categorías más compactas en altura
+                  childAspectRatio: 2.1,
                 ),
                 delegate: SliverChildBuilderDelegate((context, index) {
                   final cat = _categories[index];
@@ -129,6 +132,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                   );
                 }, childCount: _categories.length),
               ),
+            ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 8), // Espacio libre entre categorías y la sección inferior
             ),
             const SliverToBoxAdapter(
               child: _SectionHeading(
@@ -217,7 +223,7 @@ class _SectionHeading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
         children: [
           Container(
