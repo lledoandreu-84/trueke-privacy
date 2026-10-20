@@ -8,7 +8,6 @@ import '../products/providers/paginated_products_provider.dart';
 import 'widgets/home_header.dart';
 import 'widgets/product_card.dart';
 import 'widgets/promo_banner.dart';
-import 'widgets/search_bar_widget.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -49,7 +48,6 @@ class _HomePageState extends ConsumerState<HomePage> {
             const SliverToBoxAdapter(
               child: ColoredBox(color: AppColors.surface, child: HomeHeader()),
             ),
-            const SliverToBoxAdapter(child: SearchBarWidget()),
             const SliverToBoxAdapter(child: PromoBanner()),
             const SliverToBoxAdapter(
               child: _SectionHeading(
