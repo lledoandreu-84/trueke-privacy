@@ -50,12 +50,12 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             const SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
+                padding: EdgeInsets.fromLTRB(16, 12, 16, 6),
                 child: PromoBanner(),
               ),
             ),
             const SliverToBoxAdapter(
-              child: SizedBox(height: 8), // Espacio libre elegante
+              child: SizedBox(height: 22), // Espacio vertical generoso y visible
             ),
             const SliverToBoxAdapter(
               child: _SectionHeading(
@@ -70,7 +70,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                   crossAxisSpacing: 10,
-                  mainAxisSpacing: 6,
+                  mainAxisSpacing: 8,
                   childAspectRatio: 2.1,
                 ),
                 delegate: SliverChildBuilderDelegate((context, index) {
@@ -134,7 +134,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
             ),
             const SliverToBoxAdapter(
-              child: SizedBox(height: 8), // Espacio libre entre categorías y la sección inferior
+              child: SizedBox(height: 22), // Espacio generoso antes de la sección de productos
             ),
             const SliverToBoxAdapter(
               child: _SectionHeading(
@@ -177,7 +177,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 final displayProducts = products.take(2).toList();
 
                 return SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 2, 16, 80),
+                  padding: const EdgeInsets.fromLTRB(16, 6, 16, 80),
                   sliver: SliverGrid(
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
