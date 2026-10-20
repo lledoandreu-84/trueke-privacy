@@ -55,7 +55,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
             ),
             const SliverToBoxAdapter(
-              child: SizedBox(height: 22), // Espacio vertical generoso y visible
+              child: SizedBox(height: 18),
             ),
             const SliverToBoxAdapter(
               child: _SectionHeading(
@@ -134,7 +134,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
             ),
             const SliverToBoxAdapter(
-              child: SizedBox(height: 22), // Espacio generoso antes de la sección de productos
+              child: SizedBox(height: 18),
             ),
             const SliverToBoxAdapter(
               child: _SectionHeading(
@@ -177,13 +177,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                 final displayProducts = products.take(2).toList();
 
                 return SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 6, 16, 80),
+                  // Padding inferior ajustado para mostrar las tarjetas enteras sin cortes en el viewport inicial
+                  padding: const EdgeInsets.fromLTRB(16, 6, 16, 95),
                   sliver: SliverGrid(
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
-                      childAspectRatio: 0.78,
+                      childAspectRatio: 0.84, // Tarjetas ligeramente más compactas para garantizar visibilidad íntegra
                     ),
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final product = displayProducts[index];
@@ -225,6 +226,7 @@ class _SectionHeading extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             width: 30,
@@ -237,26 +239,31 @@ class _SectionHeading extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.2,
+            child: Padding(
+              // Margen superior añadido para dar respiro al subtítulo respecto al icono y contenedor
+              padding: const EdgeInsets.only(top: 2),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.2,
+                    ),
                   ),
-                ),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 10,
+                  const SizedBox(height: 1),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 10,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
