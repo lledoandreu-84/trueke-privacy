@@ -76,9 +76,23 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
       selectedCategory: null,
       selectedTradeType: null,
       minPrice: 0.0,
-      maxPrice: 1000.0,
+      maxPrice: 5000.0,
       products: AsyncValue.data([]),
     );
+  }
+
+  String _normalize(String input) {
+    var letters = {
+      'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u',
+      'à': 'a', 'è': 'e', 'ì': 'i', 'ò': 'o', 'ù': 'u',
+      'ä': 'a', 'ë': 'e', 'ï': 'i', 'ö': 'o', 'ü': 'u',
+      'ñ': 'n',
+    };
+    String result = input.toLowerCase();
+    letters.forEach((key, value) {
+      result = result.replaceAll(key, value);
+    });
+    return result;
   }
 
   Future<void> initializePositionWithGPS() async {
@@ -89,10 +103,9 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
           latitude: position.latitude,
           longitude: position.longitude,
         );
+        await search();
       }
-    } catch (_) {
-      // Fallback seguro: se mantienen las coordenadas por defecto de Madrid si falla
-    }
+    } catch (_) {}
   }
 
   Future<void> search() async {
@@ -100,7 +113,8 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
 
     try {
       final repository = ref.read(productRepositoryProvider);
-      final radiusMeters = state.maxRadiusKm * 1000.0;
+      final isUnlimited = state.maxRadiusKm >= 9999.0;
+      final radiusMeters = isUnlimited ? 9999999.0 : state.maxRadiusKm * 1000.0;
 
       final results = await repository.searchProductsAdvanced(
         query: state.query,
@@ -109,43 +123,47 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
         maxRadiusMeters: radiusMeters,
       );
 
-      final queryLower = state.query.trim().toLowerCase();
+      final normalizedQuery = _normalize(state.query.trim());
 
       final filteredResults = results.where((product) {
-        // Validación de término de búsqueda local robusto (soporta acentos y coincidencias parciales)
-        if (queryLower.isNotEmpty) {
-          final title = product.title.toLowerCase();
-          final description = product.description.toLowerCase();
-          if (!title.contains(queryLower) && !description.contains(queryLower)) {
+        if (normalizedQuery.isNotEmpty) {
+          final titleMatch = _normalize(product.title).contains(normalizedQuery);
+          final descMatch = _normalize(product.description).contains(normalizedQuery);
+          final catMatch = _normalize(product.category).contains(normalizedQuery);
+          if (!titleMatch && !descMatch && !catMatch) {
             return false;
           }
         }
 
         if (state.selectedCondition != null &&
             state.selectedCondition!.isNotEmpty) {
-          if (product.condition.toLowerCase() !=
-              state.selectedCondition!.toLowerCase()) {
+          final prodCondition = _normalize(product.condition);
+          final targetCondition = _normalize(state.selectedCondition!);
+          if (!prodCondition.contains(targetCondition)) {
             return false;
           }
         }
+
         if (state.selectedCategory != null &&
             state.selectedCategory!.isNotEmpty) {
-          if (product.category.toLowerCase() !=
-              state.selectedCategory!.toLowerCase()) {
+          if (_normalize(product.category) != _normalize(state.selectedCategory!)) {
             return false;
           }
         }
+
         if (state.selectedTradeType != null) {
           if (product.tradeType != state.selectedTradeType) {
             return false;
           }
         }
+
         if (product.price != null) {
           if (product.price! < state.minPrice ||
               product.price! > state.maxPrice) {
             return false;
           }
         }
+
         return true;
       }).toList();
 
@@ -155,14 +173,23 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
     }
   }
 
-  void updateQuery(String newQuery) => state = state.copyWith(query: newQuery);
-  void updateRadius(double newRadiusKm) =>
-      state = state.copyWith(maxRadiusKm: newRadiusKm);
-  void updateLocation(double lat, double lon) =>
-      state = state.copyWith(latitude: lat, longitude: lon);
+  void updateQuery(String newQuery) {
+    state = state.copyWith(query: newQuery);
+    search();
+  }
+
+  void updateRadius(double newRadiusKm) {
+    state = state.copyWith(maxRadiusKm: newRadiusKm);
+    search();
+  }
+
+  void updateLocation(double lat, double lon) {
+    state = state.copyWith(latitude: lat, longitude: lon);
+    search();
+  }
 
   void updateCondition(String? condition) {
-    if (condition == null) {
+    if (condition == null || condition.isEmpty) {
       state = state.copyWith(clearCondition: true);
     } else {
       state = state.copyWith(selectedCondition: condition);
@@ -201,7 +228,7 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
       clearCategory: true,
       clearTradeType: true,
       minPrice: 0.0,
-      maxPrice: 1000.0,
+      maxPrice: 5000.0,
     );
     search();
   }
@@ -209,5 +236,5 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
 
 final productSearchNotifierProvider =
     NotifierProvider<ProductSearchNotifier, ProductSearchState>(() {
-  return ProductSearchNotifier();
-});
+      return ProductSearchNotifier();
+    });
