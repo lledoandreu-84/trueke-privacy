@@ -68,7 +68,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   crossAxisCount: 3,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 8,
-                  childAspectRatio: 1.5, // Cuadros más compactos y proporcionados
+                  childAspectRatio: 1.7,
                 ),
                 delegate: SliverChildBuilderDelegate((context, index) {
                   final cat = _categories[index];
@@ -90,12 +90,12 @@ class _HomePageState extends ConsumerState<HomePage> {
                         color: selected ? AppColors.primary : bgColor,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: selected ? AppColors.primary : iconColor.withValues(alpha: 0.2),
+                          color: selected ? AppColors.primary : iconColor.withValues(alpha: 0.25),
                           width: selected ? 2 : 1,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: (selected ? AppColors.primary : iconColor).withValues(alpha: 0.08),
+                            color: (selected ? AppColors.primary : iconColor).withValues(alpha: 0.1),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
@@ -106,16 +106,21 @@ class _HomePageState extends ConsumerState<HomePage> {
                         children: [
                           Icon(
                             icon,
-                            size: 18,
+                            size: 20,
                             color: selected ? Colors.white : iconColor,
                           ),
-                          const SizedBox(width: 6),
-                          Text(
-                            name,
-                            style: TextStyle(
-                              color: selected ? Colors.white : AppColors.textPrimary,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: Text(
+                              name,
+                              style: TextStyle(
+                                color: selected ? Colors.white : AppColors.textPrimary,
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: -0.2,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -163,7 +168,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                   );
                 }
 
-                // Mostramos exactamente 2 productos para que se visualicen de un vistazo
                 final displayProducts = products.take(2).toList();
 
                 return SliverPadding(
