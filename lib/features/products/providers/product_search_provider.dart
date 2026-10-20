@@ -109,6 +109,19 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
   }
 
   Future<void> search() async {
+    bool hasActiveFilters = state.query.trim().isNotEmpty ||
+        state.selectedCondition != null ||
+        state.selectedCategory != null ||
+        state.selectedTradeType != null ||
+        state.minPrice > 0.0 ||
+        state.maxPrice < 1000.0 ||
+        state.maxRadiusKm != 15.0;
+
+    if (!hasActiveFilters) {
+      state = state.copyWith(products: const AsyncValue.data([]));
+      return;
+    }
+
     state = state.copyWith(products: const AsyncValue.loading());
 
     try {
