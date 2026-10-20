@@ -5,7 +5,6 @@ import 'package:trueke/features/products/providers/product_repository_provider.d
 import 'package:trueke/features/products/repositories/product_repository.dart';
 import 'package:trueke/models/product.dart';
 
-// Mock manual limpio del repositorio de productos para aislar Supabase
 class MockProductRepository implements ProductRepository {
   final List<Product> mockResults;
 
@@ -70,6 +69,7 @@ void main() {
         addTearDown(container.dispose);
 
         final notifier = container.read(productSearchNotifierProvider.notifier);
+        notifier.updateQuery('bicicleta');
 
         final future = notifier.search();
 
