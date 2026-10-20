@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_colors.dart';
 
 class PromoBanner extends StatelessWidget {
   const PromoBanner({super.key});
@@ -7,20 +6,19 @@ class PromoBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF2E3192), Color(0xFF1BFFFF)],
+          colors: [Color(0xFF2575FC), Color(0xFF6A11CB)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.22),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: const Color(0xFF6A11CB).withValues(alpha: 0.35),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -34,33 +32,34 @@ class PromoBanner extends StatelessWidget {
               children: [
                 Row(
                   children: [
+                    Icon(
+                      Icons.bolt_rounded,
+                      color: Colors.amber,
+                      size: 22,
+                    ),
+                    SizedBox(width: 6),
                     Flexible(
                       child: Text(
                         'Intercambio Inteligente',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 16,
+                          fontSize: 15.5,
                           fontWeight: FontWeight.w800,
-                          letterSpacing: -0.2,
+                          letterSpacing: -0.3,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    SizedBox(width: 6),
-                    Icon(
-                      Icons.bolt_rounded,
-                      color: Colors.amber,
-                      size: 20,
                     ),
                   ],
                 ),
                 SizedBox(height: 6),
                 Text(
-                  'Intercambia artículos o añade dinero para conseguir lo que buscas sin comisiones.',
+                  'Intercambia artículos o añade dinero sin comisiones de forma rápida y segura.',
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 11.5,
-                    height: 1.3,
+                    height: 1.35,
+                    fontWeight: FontWeight.w400,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -68,26 +67,26 @@ class PromoBanner extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 12),
           ElevatedButton(
             onPressed: () {
               // Acción del motor de búsqueda principal
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
-              foregroundColor: AppColors.primary,
-              elevation: 2,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              foregroundColor: const Color(0xFF6A11CB),
+              elevation: 3,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(16),
               ),
             ),
             child: const Text(
               'Explorar',
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 12.5,
                 fontWeight: FontWeight.w800,
               ),
             ),
