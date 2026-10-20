@@ -50,12 +50,12 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             const SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(16, 10, 16, 4),
+                padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
                 child: PromoBanner(),
               ),
             ),
             const SliverToBoxAdapter(
-              child: SizedBox(height: 14),
+              child: SizedBox(height: 10),
             ),
             const SliverToBoxAdapter(
               child: _SectionHeading(
@@ -70,8 +70,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                   crossAxisSpacing: 10,
-                  mainAxisSpacing: 8,
-                  childAspectRatio: 2.1,
+                  mainAxisSpacing: 6,
+                  childAspectRatio: 2.2,
                 ),
                 delegate: SliverChildBuilderDelegate((context, index) {
                   final cat = _categories[index];
@@ -134,7 +134,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
             ),
             const SliverToBoxAdapter(
-              child: SizedBox(height: 14),
+              child: SizedBox(height: 10),
             ),
             const SliverToBoxAdapter(
               child: _SectionHeading(
@@ -177,13 +177,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                 final displayProducts = products.take(2).toList();
 
                 return SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 85),
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 70),
                   sliver: SliverGrid(
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                      childAspectRatio: 0.92, // Tarjetas optimizadas para visibilidad 100% íntegra en el viewport
+                      mainAxisSpacing: 8,
+                      childAspectRatio: 1.05, // Relación optimizada para garantizar 100% visibilidad íntegra sin cortes
                     ),
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final product = displayProducts[index];
@@ -223,45 +223,43 @@ class _SectionHeading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center, // Alineación centrada perfecta respecto al icono
         children: [
           Container(
-            width: 30,
-            height: 30,
+            width: 28,
+            height: 28,
             decoration: BoxDecoration(
               color: AppColors.surfaceMint,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: AppColors.primary, size: 15),
+            child: Icon(icon, color: AppColors.primary, size: 14),
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 2),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.2,
-                    ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.2,
                   ),
-                  const SizedBox(height: 1),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 10,
-                    ),
+                ),
+                const SizedBox(height: 2), // Respiro milimétrico exacto y limpio
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 10,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
