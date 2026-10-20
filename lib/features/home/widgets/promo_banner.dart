@@ -6,7 +6,7 @@ class PromoBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFF2575FC), Color(0xFF6A11CB)],
@@ -52,7 +52,7 @@ class PromoBanner extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 8),
                 Text(
                   'Intercambia artículos o añade dinero sin comisiones de forma rápida y segura.',
                   style: TextStyle(

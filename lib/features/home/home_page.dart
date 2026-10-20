@@ -50,12 +50,12 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             const SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(16, 12, 16, 6),
+                padding: EdgeInsets.fromLTRB(16, 10, 16, 4),
                 child: PromoBanner(),
               ),
             ),
             const SliverToBoxAdapter(
-              child: SizedBox(height: 18),
+              child: SizedBox(height: 14),
             ),
             const SliverToBoxAdapter(
               child: _SectionHeading(
@@ -134,7 +134,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
             ),
             const SliverToBoxAdapter(
-              child: SizedBox(height: 18),
+              child: SizedBox(height: 14),
             ),
             const SliverToBoxAdapter(
               child: _SectionHeading(
@@ -177,14 +177,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                 final displayProducts = products.take(2).toList();
 
                 return SliverPadding(
-                  // Padding inferior ajustado para mostrar las tarjetas enteras sin cortes en el viewport inicial
-                  padding: const EdgeInsets.fromLTRB(16, 6, 16, 95),
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 85),
                   sliver: SliverGrid(
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
-                      childAspectRatio: 0.84, // Tarjetas ligeramente más compactas para garantizar visibilidad íntegra
+                      childAspectRatio: 0.92, // Tarjetas optimizadas para visibilidad 100% íntegra en el viewport
                     ),
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final product = displayProducts[index];
@@ -240,7 +239,6 @@ class _SectionHeading extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Padding(
-              // Margen superior añadido para dar respiro al subtítulo respecto al icono y contenedor
               padding: const EdgeInsets.only(top: 2),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
