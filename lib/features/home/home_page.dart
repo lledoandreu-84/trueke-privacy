@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../products/providers/product_filters_provider.dart';
 import '../products/providers/paginated_products_provider.dart';
 import 'widgets/home_header.dart';
+import 'widgets/product_card.dart';
 import 'widgets/promo_banner.dart';
+import 'widgets/search_bar_widget.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -17,37 +20,26 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   final ScrollController _scrollController = ScrollController();
 
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_onScroll);
-  }
+  static const List<Map<String, dynamic>> _categories = [
+    {'name': 'Electrónica', 'icon': Icons.devices_rounded, 'color': Color(0xFFE3F2FD), 'iconColor': Color(0xFF1976D2)},
+    {'name': 'Moda', 'icon': Icons.checkroom_rounded, 'color': Color(0xFFFCE4EC), 'iconColor': Color(0xFFC2185B)},
+    {'name': 'Hogar', 'icon': Icons.chair_rounded, 'color': Color(0xFFFFF3E0), 'iconColor': Color(0xFFE65100)},
+    {'name': 'Gaming', 'icon': Icons.sports_esports_rounded, 'color': Color(0xFFF3E5F5), 'iconColor': Color(0xFF7B1FA2)},
+    {'name': 'Deporte', 'icon': Icons.sports_soccer_rounded, 'color': Color(0xFFE8F5E9), 'iconColor': Color(0xFF388E3C)},
+    {'name': 'Otros', 'icon': Icons.category_rounded, 'color': Color(0xFFECEFF1), 'iconColor': Color(0xFF455A64)},
+  ];
 
   @override
   void dispose() {
-    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
   }
 
-  void _onScroll() {
-    if (!_scrollController.hasClients) return;
-
-    final position = _scrollController.position;
-    if (position.pixels < position.maxScrollExtent * 0.85) return;
-
-    final paginatedState = ref.read(paginatedProductsProvider);
-    paginatedState.whenData((state) {
-      if (!state.isLoadingMore) {
-        ref.read(paginatedProductsProvider.notifier).loadNextPage();
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-        final filters = ref.watch(productFiltersProvider);
-        
+    final filters = ref.watch(productFiltersProvider);
+    final paginatedAsync = ref.watch(paginatedProductsProvider);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -57,8 +49,8 @@ class _HomePageState extends ConsumerState<HomePage> {
             const SliverToBoxAdapter(
               child: ColoredBox(color: AppColors.surface, child: HomeHeader()),
             ),
+            const SliverToBoxAdapter(child: SearchBarWidget()),
             const SliverToBoxAdapter(child: PromoBanner()),
-
             const SliverToBoxAdapter(
               child: _SectionHeading(
                 title: 'Categorías destacadas',
@@ -66,81 +58,132 @@ class _HomePageState extends ConsumerState<HomePage> {
                 icon: Icons.grid_view_rounded,
               ),
             ),
-
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               sliver: SliverGrid(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 1.4,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 1.1,
                 ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    const categoriesData = [
-                      {"name": "Electrónica", "icon": Icons.devices_rounded, "color": Color(0xFF3B82F6)},
-                      {"name": "Moda", "icon": Icons.checkroom_rounded, "color": Color(0xFFEC4899)},
-                      {"name": "Hogar", "icon": Icons.chair_rounded, "color": Color(0xFFF59E0B)},
-                      {"name": "Gaming", "icon": Icons.sports_esports_rounded, "color": Color(0xFF8B5CF6)},
-                      {"name": "Deporte", "icon": Icons.sports_soccer_rounded, "color": Color(0xFF10B981)},
-                      {"name": "Otros", "icon": Icons.widgets_rounded, "color": Color(0xFF6B7280)},
-                    ];
-                    final cat = categoriesData[index];
-                    final String name = cat["name"] as String;
-                    final IconData icon = cat["icon"] as IconData;
-                    final Color catColor = cat["color"] as Color;
-                    final bool isSelected = filters.category == name;
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final cat = _categories[index];
+                  final name = cat['name'] as String;
+                  final icon = cat['icon'] as IconData;
+                  final bgColor = cat['color'] as Color;
+                  final iconColor = cat['iconColor'] as Color;
+                  final selected = filters.category == name;
 
-                    return InkWell(
-                      onTap: () {
-                        ref.read(productFiltersProvider.notifier).toggleCategory(name);
-                      },
-                      borderRadius: BorderRadius.circular(16),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        decoration: BoxDecoration(
-                          color: isSelected ? catColor : catColor.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: isSelected ? catColor : catColor.withValues(alpha: 0.3),
-                            width: isSelected ? 2 : 1,
+                  return GestureDetector(
+                    onTap: () {
+                      ref
+                          .read(productFiltersProvider.notifier)
+                          .toggleCategory(name);
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      decoration: BoxDecoration(
+                        color: selected ? AppColors.primary : bgColor,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: selected ? AppColors.primary : iconColor.withValues(alpha: 0.2),
+                          width: selected ? 2 : 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: (selected ? AppColors.primary : iconColor).withValues(alpha: 0.12),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
                           ),
-                          boxShadow: isSelected
-                              ? [
-                                  BoxShadow(
-                                    color: catColor.withValues(alpha: 0.3),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 3),
-                                  )
-                                ]
-                              : [],
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              icon,
-                              size: 22,
-                              color: isSelected ? Colors.white : catColor,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              name,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                                color: isSelected ? Colors.white : AppColors.textPrimary,
-                              ),
-                            ),
-                          ],
-                        ),
+                        ],
                       ),
-                    );
-                  },
-                  childCount: 6,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            icon,
+                            size: 26,
+                            color: selected ? Colors.white : iconColor,
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            name,
+                            style: TextStyle(
+                              color: selected ? Colors.white : AppColors.textPrimary,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }, childCount: _categories.length),
+              ),
+            ),
+            const SliverToBoxAdapter(
+              child: _SectionHeading(
+                title: 'Más buscados en tu zona',
+                subtitle: 'Artículos relevantes cerca de tu ubicación GPS',
+                icon: Icons.near_me_rounded,
+              ),
+            ),
+            paginatedAsync.when(
+              loading: () => const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 32),
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.primary,
+                      strokeWidth: 3,
+                    ),
+                  ),
                 ),
               ),
+              error: (error, stackTrace) => const SliverToBoxAdapter(
+                child: SizedBox.shrink(),
+              ),
+              data: (paginatedState) {
+                final products = paginatedState.products;
+                if (products.isEmpty) {
+                  return const SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.all(24),
+                      child: Text(
+                        'No hay artículos disponibles en esta categoría o zona por el momento.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                      ),
+                    ),
+                  );
+                }
+
+                return SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 104),
+                  sliver: SliverGrid(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 14,
+                      childAspectRatio: 0.74,
+                    ),
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final product = products[index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            AppRoutes.product,
+                            arguments: product,
+                          );
+                        },
+                        child: ProductCard(product: product),
+                      );
+                    }, childCount: products.length),
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -154,12 +197,12 @@ class _SectionHeading extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.icon,
-      });
+  });
 
   final String title;
   final String subtitle;
   final IconData icon;
-  
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -206,4 +249,3 @@ class _SectionHeading extends StatelessWidget {
     );
   }
 }
-
