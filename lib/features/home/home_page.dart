@@ -48,11 +48,16 @@ class _HomePageState extends ConsumerState<HomePage> {
             const SliverToBoxAdapter(
               child: ColoredBox(color: AppColors.surface, child: HomeHeader()),
             ),
-            const SliverToBoxAdapter(child: PromoBanner()),
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(16, 4, 16, 4),
+                child: PromoBanner(),
+              ),
+            ),
             const SliverToBoxAdapter(
               child: _SectionHeading(
                 title: 'Categorías destacadas',
-                subtitle: 'Encuentra algo que encaje contigo',
+                subtitle: 'Explora por tipo de artículo',
                 icon: Icons.grid_view_rounded,
               ),
             ),
@@ -61,9 +66,9 @@ class _HomePageState extends ConsumerState<HomePage> {
               sliver: SliverGrid(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 1.1,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 8,
+                  childAspectRatio: 1.5, // Cuadros más compactos y proporcionados
                 ),
                 delegate: SliverChildBuilderDelegate((context, index) {
                   final cat = _categories[index];
@@ -83,33 +88,33 @@ class _HomePageState extends ConsumerState<HomePage> {
                       duration: const Duration(milliseconds: 200),
                       decoration: BoxDecoration(
                         color: selected ? AppColors.primary : bgColor,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: selected ? AppColors.primary : iconColor.withValues(alpha: 0.2),
                           width: selected ? 2 : 1,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: (selected ? AppColors.primary : iconColor).withValues(alpha: 0.12),
-                            blurRadius: 8,
-                            offset: const Offset(0, 3),
+                            color: (selected ? AppColors.primary : iconColor).withValues(alpha: 0.08),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
-                      child: Column(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
                             icon,
-                            size: 26,
+                            size: 18,
                             color: selected ? Colors.white : iconColor,
                           ),
-                          const SizedBox(height: 6),
+                          const SizedBox(width: 6),
                           Text(
                             name,
                             style: TextStyle(
                               color: selected ? Colors.white : AppColors.textPrimary,
-                              fontSize: 12,
+                              fontSize: 11,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -123,18 +128,18 @@ class _HomePageState extends ConsumerState<HomePage> {
             const SliverToBoxAdapter(
               child: _SectionHeading(
                 title: 'Más buscados en tu zona',
-                subtitle: 'Artículos relevantes cerca de tu ubicación GPS',
+                subtitle: 'Artículos relevantes cerca de tu GPS',
                 icon: Icons.near_me_rounded,
               ),
             ),
             paginatedAsync.when(
               loading: () => const SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 32),
+                  padding: EdgeInsets.symmetric(vertical: 16),
                   child: Center(
                     child: CircularProgressIndicator(
                       color: AppColors.primary,
-                      strokeWidth: 3,
+                      strokeWidth: 2.5,
                     ),
                   ),
                 ),
@@ -144,30 +149,34 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
               data: (paginatedState) {
                 final products = paginatedState.products;
+
                 if (products.isEmpty) {
                   return const SliverToBoxAdapter(
                     child: Padding(
-                      padding: EdgeInsets.all(24),
+                      padding: EdgeInsets.all(16),
                       child: Text(
-                        'No hay artículos disponibles en esta categoría o zona por el momento.',
+                        'No hay artículos disponibles en esta zona por el momento.',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                        style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
                       ),
                     ),
                   );
                 }
 
+                // Mostramos exactamente 2 productos para que se visualicen de un vistazo
+                final displayProducts = products.take(2).toList();
+
                 return SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 104),
+                  padding: const EdgeInsets.fromLTRB(16, 2, 16, 80),
                   sliver: SliverGrid(
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 14,
-                      childAspectRatio: 0.74,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 0.78,
                     ),
                     delegate: SliverChildBuilderDelegate((context, index) {
-                      final product = products[index];
+                      final product = displayProducts[index];
                       return GestureDetector(
                         onTap: () {
                           Navigator.pushNamed(
@@ -178,7 +187,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                         },
                         child: ProductCard(product: product),
                       );
-                    }, childCount: products.length),
+                    }, childCount: displayProducts.length),
                   ),
                 );
               },
@@ -204,19 +213,19 @@ class _SectionHeading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 26, 16, 14),
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 6),
       child: Row(
         children: [
           Container(
-            width: 42,
-            height: 42,
+            width: 32,
+            height: 32,
             decoration: BoxDecoration(
               color: AppColors.surfaceMint,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: AppColors.primary, size: 21),
+            child: Icon(icon, color: AppColors.primary, size: 16),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -225,18 +234,16 @@ class _SectionHeading extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     color: AppColors.textPrimary,
-                    fontSize: 17,
+                    fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    letterSpacing: -0.35,
+                    letterSpacing: -0.2,
                   ),
                 ),
-                const SizedBox(height: 3),
                 Text(
                   subtitle,
                   style: const TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 12,
-                    height: 1.3,
+                    fontSize: 10.5,
                   ),
                 ),
               ],
