@@ -3,10 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../products/providers/product_filters_provider.dart';
-import 'products_map_page.dart';
+import '../products/providers/paginated_products_provider.dart';
 import 'widgets/home_header.dart';
 import 'widgets/promo_banner.dart';
-import 'widgets/search_bar_widget.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -18,71 +17,39 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   final ScrollController _scrollController = ScrollController();
 
-  static const Map<String, IconData> _categories = {
-    'Electrónica': Icons.devices_rounded,
-    'Moda': Icons.checkroom_rounded,
-    'Hogar': Icons.chair_rounded,
-    'Gaming': Icons.sports_esports_rounded,
-    'Deporte': Icons.sports_soccer_rounded,
-    'Otros': Icons.category_rounded,
-  };
-
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
   }
 
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+
+    final position = _scrollController.position;
+    if (position.pixels < position.maxScrollExtent * 0.85) return;
+
+    final paginatedState = ref.read(paginatedProductsProvider);
+    paginatedState.whenData((state) {
+      if (!state.isLoadingMore) {
+        ref.read(paginatedProductsProvider.notifier).loadNextPage();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final filters = ref.watch(productFiltersProvider);
-
+        final filters = ref.watch(productFiltersProvider);
+        
     return Scaffold(
       backgroundColor: AppColors.background,
-      floatingActionButton: Container(
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [AppColors.primary, AppColors.mint],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(28),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.22),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: FloatingActionButton.extended(
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const ProductsMapPage()),
-            );
-          },
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          focusElevation: 0,
-          hoverElevation: 0,
-          highlightElevation: 0,
-          icon: const Icon(Icons.map_outlined, size: 21),
-          label: const Text(
-            'Explorar mapa GPS',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.1,
-            ),
-          ),
-        ),
-      ),
       body: SafeArea(
         child: CustomScrollView(
           controller: _scrollController,
@@ -90,8 +57,8 @@ class _HomePageState extends ConsumerState<HomePage> {
             const SliverToBoxAdapter(
               child: ColoredBox(color: AppColors.surface, child: HomeHeader()),
             ),
-            const SliverToBoxAdapter(child: SearchBarWidget()),
             const SliverToBoxAdapter(child: PromoBanner()),
+
             const SliverToBoxAdapter(
               child: _SectionHeading(
                 title: 'Categorías destacadas',
@@ -99,56 +66,79 @@ class _HomePageState extends ConsumerState<HomePage> {
                 icon: Icons.grid_view_rounded,
               ),
             ),
-            SliverToBoxAdapter(
-              child: SizedBox(
-                height: 58,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: _categories.length,
-                  separatorBuilder: (_, _) => const SizedBox(width: 10),
-                  itemBuilder: (context, index) {
-                    final category = _categories.keys.elementAt(index);
-                    final icon = _categories.values.elementAt(index);
-                    final selected = filters.category == category;
 
-                    return ChoiceChip(
-                      avatar: Icon(
-                        icon,
-                        size: 18,
-                        color: selected ? Colors.white : AppColors.petrolBlue,
-                      ),
-                      label: Text(category),
-                      selected: selected,
-                      onSelected: (_) {
-                        ref
-                            .read(productFiltersProvider.notifier)
-                            .toggleCategory(category);
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: 1.4,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    const categoriesData = [
+                      {"name": "Electrónica", "icon": Icons.devices_rounded, "color": Color(0xFF3B82F6)},
+                      {"name": "Moda", "icon": Icons.checkroom_rounded, "color": Color(0xFFEC4899)},
+                      {"name": "Hogar", "icon": Icons.chair_rounded, "color": Color(0xFFF59E0B)},
+                      {"name": "Gaming", "icon": Icons.sports_esports_rounded, "color": Color(0xFF8B5CF6)},
+                      {"name": "Deporte", "icon": Icons.sports_soccer_rounded, "color": Color(0xFF10B981)},
+                      {"name": "Otros", "icon": Icons.widgets_rounded, "color": Color(0xFF6B7280)},
+                    ];
+                    final cat = categoriesData[index];
+                    final String name = cat["name"] as String;
+                    final IconData icon = cat["icon"] as IconData;
+                    final Color catColor = cat["color"] as Color;
+                    final bool isSelected = filters.category == name;
+
+                    return InkWell(
+                      onTap: () {
+                        ref.read(productFiltersProvider.notifier).toggleCategory(name);
                       },
-                      showCheckmark: false,
-                      labelStyle: TextStyle(
-                        color: selected ? Colors.white : AppColors.petrolBlue,
-                        fontSize: 13,
-                        fontWeight: selected
-                            ? FontWeight.w700
-                            : FontWeight.w600,
-                      ),
-                      selectedColor: AppColors.primary,
-                      backgroundColor: AppColors.surfaceMint,
-                      side: BorderSide(
-                        color: selected
-                            ? AppColors.primary
-                            : AppColors.mint.withValues(alpha: 0.30),
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
+                      borderRadius: BorderRadius.circular(16),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        decoration: BoxDecoration(
+                          color: isSelected ? catColor : catColor.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isSelected ? catColor : catColor.withValues(alpha: 0.3),
+                            width: isSelected ? 2 : 1,
+                          ),
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                    color: catColor.withValues(alpha: 0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 3),
+                                  )
+                                ]
+                              : [],
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              icon,
+                              size: 22,
+                              color: isSelected ? Colors.white : catColor,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              name,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                                color: isSelected ? Colors.white : AppColors.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
+                  childCount: 6,
                 ),
               ),
             ),
@@ -164,12 +154,12 @@ class _SectionHeading extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.icon,
-  });
+      });
 
   final String title;
   final String subtitle;
   final IconData icon;
-
+  
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -216,3 +206,4 @@ class _SectionHeading extends StatelessWidget {
     );
   }
 }
+
