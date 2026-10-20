@@ -50,12 +50,12 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             const SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
+                padding: EdgeInsets.fromLTRB(16, 12, 16, 6),
                 child: PromoBanner(),
               ),
             ),
             const SliverToBoxAdapter(
-              child: SizedBox(height: 10),
+              child: SizedBox(height: 18), // Espacio libre generoso antes de categorías
             ),
             const SliverToBoxAdapter(
               child: _SectionHeading(
@@ -70,8 +70,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                   crossAxisSpacing: 10,
-                  mainAxisSpacing: 6,
-                  childAspectRatio: 2.2,
+                  mainAxisSpacing: 8,
+                  childAspectRatio: 2.1,
                 ),
                 delegate: SliverChildBuilderDelegate((context, index) {
                   final cat = _categories[index];
@@ -134,7 +134,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
             ),
             const SliverToBoxAdapter(
-              child: SizedBox(height: 10),
+              child: SizedBox(height: 18), // Espacio libre generoso antes de productos
             ),
             const SliverToBoxAdapter(
               child: _SectionHeading(
@@ -177,13 +177,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                 final displayProducts = products.take(2).toList();
 
                 return SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 70),
+                  padding: const EdgeInsets.fromLTRB(16, 6, 16, 85),
                   sliver: SliverGrid(
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 10,
-                      mainAxisSpacing: 8,
-                      childAspectRatio: 1.05, // Relación optimizada para garantizar 100% visibilidad íntegra sin cortes
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 0.88,
                     ),
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final product = displayProducts[index];
@@ -223,20 +223,20 @@ class _SectionHeading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center, // Alineación centrada perfecta respecto al icono
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: 28,
-            height: 28,
+            width: 32,
+            height: 32,
             decoration: BoxDecoration(
               color: AppColors.surfaceMint,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: AppColors.primary, size: 14),
+            child: Icon(icon, color: AppColors.primary, size: 16),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,17 +246,18 @@ class _SectionHeading extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     color: AppColors.textPrimary,
-                    fontSize: 13,
+                    fontSize: 14,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.2,
                   ),
                 ),
-                const SizedBox(height: 2), // Respiro milimétrico exacto y limpio
+                const SizedBox(height: 3), // Respiro perfecto y holgado para el subtítulo
                 Text(
                   subtitle,
                   style: const TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 10,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ],
