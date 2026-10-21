@@ -163,9 +163,9 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
     );
   }
 
-  void _showFilterBottomSheet(
+    void _showFilterBottomSheet(
     BuildContext context,
-    ProductSearchState state,
+    ProductSearchState initialModalState,
     ProductSearchNotifier notifier,
   ) {
     showModalBottomSheet(
@@ -176,8 +176,10 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
+        return Consumer(
+          builder: (context, ref, child) {
+            final state = ref.watch(productSearchNotifierProvider);
+
             return Padding(
               padding: EdgeInsets.only(
                 top: 24,
@@ -227,9 +229,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       activeColor: AppColors.primary,
                       inactiveColor: AppColors.surfaceMint,
                       onChanged: (RangeValues values) {
-                        setModalState(() {
-                          notifier.updatePriceRange(values.start, values.end);
-                        });
+                        notifier.updatePriceRange(values.start, values.end);
                       },
                     ),
                     const SizedBox(height: 16),
@@ -257,9 +257,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           ),
                           onSelected: (selected) {
                             if (selected) {
-                              setModalState(() {
-                                notifier.updateRadius(tier);
-                              });
+                              notifier.updateRadius(tier);
                             }
                           },
                         );
@@ -277,10 +275,10 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children: _conditionOptions.map((cond) {
-                        final isSelected = state.selectedCondition?.toLowerCase() == cond.toLowerCase();
+                      children: ['Nuevo', 'Poco uso', 'Buen estado', 'Muy usado'].map((condition) {
+                        final isSelected = state.selectedCondition == condition;
                         return ChoiceChip(
-                          label: Text(cond),
+                          label: Text(condition),
                           selected: isSelected,
                           selectedColor: AppColors.surfaceMint,
                           backgroundColor: AppColors.background,
@@ -289,9 +287,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                           ),
                           onSelected: (selected) {
-                            setModalState(() {
-                              notifier.updateCondition(selected ? cond : null);
-                            });
+                            notifier.updateCondition(selected ? condition : null);
                           },
                         );
                       }).toList(),
@@ -310,8 +306,20 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       runSpacing: 8,
                       children: TradeType.values.map((type) {
                         final isSelected = state.selectedTradeType == type;
+                        String label = '';
+                        switch (type) {
+                          case TradeType.truequePuro:
+                            label = 'Trueque puro';
+                            break;
+                          case TradeType.ventaDirecta:
+                            label = 'Venta directa';
+                            break;
+                          case TradeType.truequeEuros:
+                            label = 'Trueque + €';
+                            break;
+                        }
                         return ChoiceChip(
-                          label: Text(_getTradeTypeLabel(type)),
+                          label: Text(label),
                           selected: isSelected,
                           selectedColor: AppColors.surfaceMint,
                           backgroundColor: AppColors.background,
@@ -320,9 +328,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                           ),
                           onSelected: (selected) {
-                            setModalState(() {
-                              notifier.updateTradeType(selected ? type : null);
-                            });
+                            notifier.updateTradeType(selected ? type : null);
                           },
                         );
                       }).toList(),
@@ -330,31 +336,18 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                     const SizedBox(height: 24),
                     SizedBox(
                       width: double.infinity,
-                      height: 52,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [AppColors.primary, AppColors.petrolBlue],
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
                           ),
-                          borderRadius: BorderRadius.circular(16),
                         ),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text(
-                            'Aplicar Filtros',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          'Aplicar Filtros',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
