@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/product_model.dart';
 
-enum ProductSortOption { relevance, priceAsc, priceDesc, distance }
+enum ProductSortOption { relevance, priceAsc, priceDesc, distance, mostViewed }
 
 class ProductFilters {
   const ProductFilters({
