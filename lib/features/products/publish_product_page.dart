@@ -185,7 +185,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                           decoration: BoxDecoration(
                             color: AppColors.background,
                             borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: const Color(0xFFCBD5E1), style: BorderStyle.dashed),
+                            border: Border.all(color: const Color(0xFFCBD5E1)),
                           ),
                           child: const Column(
                             children: [
@@ -210,7 +210,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         itemCount: _images.length + 1,
-                        separatorBuilder: (_, __) => const SizedBox(width: 12),
+                        separatorBuilder: (context, index) => const SizedBox(width: 12),
                         itemBuilder: (context, index) {
                           if (index == _images.length) {
                             return InkWell(
@@ -221,7 +221,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                                 decoration: BoxDecoration(
                                   color: AppColors.background,
                                   borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: const Color(0xFFCBD5E1), style: BorderStyle.dashed),
+                                  border: Border.all(color: const Color(0xFFCBD5E1)),
                                 ),
                                 child: const Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -247,7 +247,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                                 child: Image.network(
                                   _images[index],
                                   fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => Container(
+                                  errorBuilder: (context, error, stackTrace) => Container(
                                     color: AppColors.surfaceMint,
                                     child: const Icon(Icons.image_outlined, color: AppColors.primary),
                                   ),
