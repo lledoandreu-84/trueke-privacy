@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/core/theme/app_colors.dart';
+import 'package:trueke/models/product.dart';
 
 class PublishProductPage extends ConsumerStatefulWidget {
-  const PublishProductPage({super.key});
+  final Product? product;
+
+  const PublishProductPage({super.key, this.product});
 
   @override
   ConsumerState<PublishProductPage> createState() => _PublishProductPageState();
@@ -11,13 +14,24 @@ class PublishProductPage extends ConsumerStatefulWidget {
 
 class _PublishProductPageState extends ConsumerState<PublishProductPage> {
   final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _seekingController = TextEditingController();
+  late final TextEditingController _titleController;
+  late final TextEditingController _descriptionController;
+  late final TextEditingController _seekingController;
   
-  String _selectedCategory = 'Electrónica';
-  String _selectedCondition = 'Buen estado';
-  bool _isTrueque = true;
+  late String _selectedCategory;
+  late String _selectedCondition;
+  late bool _isTrueque;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController = TextEditingController(text: widget.product?.title ?? '');
+    _descriptionController = TextEditingController(text: widget.product?.description ?? '');
+    _seekingController = TextEditingController(text: widget.product?.seeking ?? '');
+    _selectedCategory = widget.product?.category ?? 'Electrónica';
+    _selectedCondition = widget.product?.condition ?? 'Buen estado';
+    _isTrueque = widget.product?.isTrueque ?? true;
+  }
 
   @override
   void dispose() {
@@ -29,15 +43,17 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isEditing = widget.product != null;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
         elevation: 0,
         centerTitle: true,
-        title: const Text(
-          'Publicar Producto',
-          style: TextStyle(
+        title: Text(
+          isEditing ? 'Editar Producto' : 'Publicar Producto',
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontSize: 16,
             fontWeight: FontWeight.w700,
@@ -166,7 +182,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
-                    value: _selectedCategory,
+                    initialValue: _selectedCategory,
                     dropdownColor: AppColors.surface,
                     decoration: InputDecoration(
                       labelText: 'Categoría',
@@ -184,7 +200,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
-                    value: _selectedCondition,
+                    initialValue: _selectedCondition,
                     dropdownColor: AppColors.surface,
                     decoration: InputDecoration(
                       labelText: 'Estado de conservación',
@@ -316,9 +332,9 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                child: const Text(
-                  'Publicar Artículo',
-                  style: TextStyle(
+                child: Text(
+                  isEditing ? 'Guardar Cambios' : 'Publicar Artículo',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
