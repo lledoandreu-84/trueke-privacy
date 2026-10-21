@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../products/presentation/screens/product_search_screen.dart';
 
 class PromoBanner extends StatelessWidget {
@@ -11,15 +12,15 @@ class PromoBanner extends StatelessWidget {
       height: 150,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF1D4ED8), Color(0xFF4F46E5), Color(0xFF7C3AED)],
+          colors: [Color(0xFF1E3A8A), Color(0xFF4F46E5), Color(0xFF7C3AED)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF4F46E5).withValues(alpha: 0.35),
-            blurRadius: 12,
+            color: const Color(0xFF4F46E5).withValues(alpha: 0.4),
+            blurRadius: 14,
             offset: const Offset(0, 6),
           ),
         ],
@@ -29,12 +30,12 @@ class PromoBanner extends StatelessWidget {
         child: Stack(
           children: [
             Positioned(
-              right: -10,
-              bottom: -15,
+              right: -15,
+              bottom: -20,
               child: Icon(
                 Icons.bolt_rounded,
-                size: 130,
-                color: Colors.white.withValues(alpha: 0.12),
+                size: 140,
+                color: Colors.white.withValues(alpha: 0.15),
               ),
             ),
             Padding(
@@ -48,14 +49,14 @@ class PromoBanner extends StatelessWidget {
                 children: [
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 3,
+                      horizontal: 10,
+                      vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: Colors.white.withValues(alpha: 0.22),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.3),
+                        color: Colors.white.withValues(alpha: 0.35),
                         width: 1,
                       ),
                     ),
@@ -65,14 +66,14 @@ class PromoBanner extends StatelessWidget {
                         Icon(
                           Icons.bolt_rounded,
                           color: Colors.amberAccent,
-                          size: 14,
+                          size: 15,
                         ),
                         SizedBox(width: 4),
                         Text(
                           'Intercambio Inteligente',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 11,
+                            fontSize: 11.5,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -111,7 +112,7 @@ class PromoBanner extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
+                            color: Colors.black.withValues(alpha: 0.12),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
