@@ -103,12 +103,24 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
           latitude: position.latitude,
           longitude: position.longitude,
         );
-        await search();
+        // Únicamente ejecutamos la búsqueda si ya existe un término de búsqueda válido
+        if (state.query.trim().isNotEmpty) {
+          await search();
+        }
       }
     } catch (_) {}
   }
 
   Future<void> search() async {
+    final trimmedQuery = state.query.trim();
+
+    // REGRA DE ESTADO CERO ESTRICTO:
+    // Si la búsqueda está vacía, forzamos un estado de lista vacía de forma inmediata.
+    if (trimmedQuery.isEmpty) {
+      state = state.copyWith(products: const AsyncValue.data([]));
+      return;
+    }
+
     state = state.copyWith(products: const AsyncValue.loading());
 
     try {
@@ -123,7 +135,7 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
         maxRadiusMeters: radiusMeters,
       );
 
-      final normalizedQuery = _normalize(state.query.trim());
+      final normalizedQuery = _normalize(trimmedQuery);
 
       final filteredResults = results.where((product) {
         if (normalizedQuery.isNotEmpty) {
@@ -180,12 +192,16 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
 
   void updateRadius(double newRadiusKm) {
     state = state.copyWith(maxRadiusKm: newRadiusKm);
-    search();
+    if (state.query.trim().isNotEmpty) {
+      search();
+    }
   }
 
   void updateLocation(double lat, double lon) {
     state = state.copyWith(latitude: lat, longitude: lon);
-    search();
+    if (state.query.trim().isNotEmpty) {
+      search();
+    }
   }
 
   void updateCondition(String? condition) {
@@ -194,7 +210,9 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
     } else {
       state = state.copyWith(selectedCondition: condition);
     }
-    search();
+    if (state.query.trim().isNotEmpty) {
+      search();
+    }
   }
 
   void toggleCategory(String? category) {
@@ -203,7 +221,9 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
     } else {
       state = state.copyWith(selectedCategory: category);
     }
-    search();
+    if (state.query.trim().isNotEmpty) {
+      search();
+    }
   }
 
   void updateTradeType(TradeType? type) {
@@ -212,12 +232,16 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
     } else {
       state = state.copyWith(selectedTradeType: type);
     }
-    search();
+    if (state.query.trim().isNotEmpty) {
+      search();
+    }
   }
 
   void updatePriceRange(double min, double max) {
     state = state.copyWith(minPrice: min, maxPrice: max);
-    search();
+    if (state.query.trim().isNotEmpty) {
+      search();
+    }
   }
 
   void clearAllFilters() {
@@ -229,8 +253,8 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
       clearTradeType: true,
       minPrice: 0.0,
       maxPrice: 5000.0,
+      products: const AsyncValue.data([]),
     );
-    search();
   }
 }
 
