@@ -306,18 +306,10 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       runSpacing: 8,
                       children: TradeType.values.map((type) {
                         final isSelected = state.selectedTradeType == type;
-                        String label = '';
-                        switch (type) {
-                          case TradeType.truequePuro:
-                            label = 'Trueque puro';
-                            break;
-                          case TradeType.ventaDirecta:
-                            label = 'Venta directa';
-                            break;
-                          case TradeType.truequeEuros:
-                            label = 'Trueque + €';
-                            break;
-                        }
+                        String label = type.name;
+                        if (type.name == 'trade') label = 'Trueque puro';
+                        else if (type.name == 'sale') label = 'Venta directa';
+                        else if (type.name == 'tradeAndCash' || type.name == 'tradeAndMoney') label = 'Trueque + €';
                         return ChoiceChip(
                           label: Text(label),
                           selected: isSelected,
