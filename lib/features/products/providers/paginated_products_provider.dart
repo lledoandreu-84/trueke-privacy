@@ -45,7 +45,7 @@ class PaginatedProductsNotifier extends AsyncNotifier<PaginatedProductsState> {
         category: filters.category,
         userLatitude: filters.userLatitude,
         userLongitude: filters.userLongitude,
-        radiusInKm: filters.radiusInKm ?? 100.0, // Forzar 100km por defecto
+        radiusInKm: filters.radiusInKm,
         page: 0,
         limit: 20,
       );
@@ -124,7 +124,7 @@ class PaginatedProductsNotifier extends AsyncNotifier<PaginatedProductsState> {
   }
 
   List<Product> _applyLocalFilters(List<Product> items, dynamic filters) {
-    final maxRadius = filters.radiusInKm ?? 100.0;
+    final maxRadius = filters.radiusInKm;
     final uLat = filters.userLatitude;
     final uLng = filters.userLongitude;
 
@@ -144,7 +144,7 @@ class PaginatedProductsNotifier extends AsyncNotifier<PaginatedProductsState> {
         }
       }
 
-      // Filtro estricto por radio de 100km si hay coordenadas de GPS disponibles
+      // Filtro estricto por radio configurado si hay coordenadas de GPS disponibles
       if (uLat != null && uLng != null && product.latitude != null && product.longitude != null) {
         final distance = _haversineDistance(
           uLat,
@@ -233,7 +233,7 @@ class PaginatedProductsNotifier extends AsyncNotifier<PaginatedProductsState> {
         category: filters.category,
         userLatitude: filters.userLatitude,
         userLongitude: filters.userLongitude,
-        radiusInKm: filters.radiusInKm ?? 100.0,
+        radiusInKm: filters.radiusInKm,
         page: nextPage,
         limit: 20,
       );
