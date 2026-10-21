@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:trueke/core/theme/app_colors.dart';
+import 'package:trueke/features/auth/auth_service.dart';
+import 'package:trueke/features/products/providers/publish_product_provider.dart';
 import 'package:trueke/models/product.dart';
 
 class PublishProductPage extends ConsumerStatefulWidget {
@@ -23,7 +25,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
   late String _selectedCategory;
   late String _selectedCondition;
   late bool _isTrueque;
-  late List<String> _images;
+  late List<String> _existingImages;
   final ImagePicker _picker = ImagePicker();
 
   @override
@@ -39,7 +41,12 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
         ? widget.product!.condition 
         : 'Buen estado';
     _isTrueque = widget.product != null ? widget.product!.tradeType == TradeType.trade : true;
-    _images = List.from(widget.product?.images ?? []);
+    _existingImages = List.from(widget.product?.images ?? []);
+    
+    // Limpiamos imágenes seleccionadas previas al abrir
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(publishProductProvider.notifier).clearImages();
+    });
   }
 
   @override
@@ -57,9 +64,10 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
         imageQuality: 80,
       );
       if (pickedFile != null) {
-        setState(() {
-          _images.add(pickedFile.path);
-        });
+        final publishState = ref.read(publishProductProvider);
+        final currentFiles = List<File>.from(publishState.selectedImages);
+        currentFiles.add(File(pickedFile.path));
+        ref.read(publishProductProvider.notifier).setImages(currentFiles);
       }
     } catch (e) {
       debugPrint('Error al seleccionar imagen: $e');
@@ -136,9 +144,105 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
     );
   }
 
+  Future<void> _handleSubmit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final userId = AuthService.currentUserId;
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Debes iniciar sesión para publicar productos.'),
+          backgroundColor: AppColors.textPrimary,
+        ),
+      );
+      return;
+    }
+
+    final publishState = ref.read(publishProductProvider);
+    if (_existingImages.isEmpty && publishState.selectedImages.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Debes añadir al menos una foto del artículo.'),
+          backgroundColor: AppColors.textPrimary,
+        ),
+      );
+      return;
+    }
+
+    final title = _titleController.text.trim();
+    final description = _descriptionController.text.trim();
+    final wanted = _seekingController.text.trim();
+    const location = 'Madrid, España'; // Ubicación por defecto o de perfil
+    const latitude = 40.416775;
+    const longitude = -3.703790;
+    final tradeType = _isTrueque ? TradeType.trade : TradeType.sell;
+
+    final notifier = ref.read(publishProductProvider.notifier);
+
+    if (widget.product != null) {
+      await notifier.updateExistingProduct(
+        productId: widget.product!.id,
+        title: title,
+        description: description,
+        price: _isTrueque ? null : 0.0,
+        category: _selectedCategory,
+        owner: 'Usuario Trueke',
+        ownerId: userId,
+        condition: _selectedCondition,
+        tradeType: tradeType,
+        wanted: wanted,
+        location: location,
+        latitude: latitude,
+        longitude: longitude,
+        existingImages: _existingImages,
+        createdAt: widget.product!.createdAt,
+      );
+    } else {
+      await notifier.submitProduct(
+        title: title,
+        description: description,
+        price: _isTrueque ? null : 0.0,
+        category: _selectedCategory,
+        owner: 'Usuario Trueke',
+        ownerId: userId,
+        condition: _selectedCondition,
+        tradeType: tradeType,
+        wanted: wanted,
+        location: location,
+        latitude: latitude,
+        longitude: longitude,
+      );
+    }
+
+    final finalState = ref.read(publishProductProvider);
+    if (!mounted) return;
+
+    if (finalState.isSuccess) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(widget.product != null ? '¡Producto actualizado con éxito!' : '¡Artículo publicado con éxito!'),
+          backgroundColor: AppColors.primary,
+        ),
+      );
+      Navigator.pop(context, true);
+    } else if (finalState.errorMessage != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(finalState.errorMessage!),
+          backgroundColor: AppColors.textPrimary,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isEditing = widget.product != null;
+    final publishState = ref.watch(publishProductProvider);
+    final selectedFiles = publishState.selectedImages;
+
+    // Total de imágenes (existentes + nuevas locales)
+    final totalImagesCount = _existingImages.length + selectedFiles.length;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -184,7 +288,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                     height: 75,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
-                      itemCount: _images.length + 1,
+                      itemCount: totalImagesCount + 1,
                       separatorBuilder: (context, index) => const SizedBox(width: 10),
                       itemBuilder: (context, index) {
                         if (index == 0) {
@@ -218,8 +322,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                         }
 
                         final imgIndex = index - 1;
-                        final imagePath = _images[imgIndex];
-                        final isNetwork = imagePath.startsWith('http');
+                        final bool isExisting = imgIndex < _existingImages.length;
 
                         return Stack(
                           children: [
@@ -230,9 +333,9 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                                 border: Border.all(color: const Color(0xFFE2E8F0)),
                               ),
                               clipBehavior: Clip.antiAlias,
-                              child: isNetwork
+                              child: isExisting
                                   ? Image.network(
-                                      imagePath,
+                                      _existingImages[imgIndex],
                                       fit: BoxFit.cover,
                                       errorBuilder: (context, error, stackTrace) => Container(
                                         color: AppColors.surfaceMint,
@@ -240,7 +343,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                                       ),
                                     )
                                   : Image.file(
-                                      File(imagePath),
+                                      selectedFiles[imgIndex - _existingImages.length],
                                       fit: BoxFit.cover,
                                       errorBuilder: (context, error, stackTrace) => Container(
                                         color: AppColors.surfaceMint,
@@ -254,7 +357,14 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                               child: GestureDetector(
                                 onTap: () {
                                   setState(() {
-                                    _images.removeAt(imgIndex);
+                                    if (isExisting) {
+                                      _existingImages.removeAt(imgIndex);
+                                    } else {
+                                      final localIdx = imgIndex - _existingImages.length;
+                                      final updatedFiles = List<File>.from(selectedFiles);
+                                      updatedFiles.removeAt(localIdx);
+                                      ref.read(publishProductProvider.notifier).setImages(updatedFiles);
+                                    }
                                   });
                                 },
                                 child: Container(
@@ -267,24 +377,6 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                                 ),
                               ),
                             ),
-                            if (imgIndex == 0)
-                              Positioned(
-                                bottom: 3,
-                                left: 3,
-                                right: 3,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(vertical: 1),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primary.withValues(alpha: 0.85),
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: const Text(
-                                    'Portada',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(color: Colors.white, fontSize: 8.5, fontWeight: FontWeight.w700),
-                                  ),
-                                ),
-                              ),
                           ],
                         );
                       },
@@ -295,7 +387,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
             ),
             const SizedBox(height: 10),
 
-            // 📝 2. Tarjeta de Información Básica (Agrupada)
+            // 📝 2. Tarjeta de Información Básica
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -320,6 +412,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                         borderSide: BorderSide.none,
                       ),
                     ),
+                    validator: (val) => val == null || val.trim().isEmpty ? 'Ingresa un título' : null,
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
@@ -337,15 +430,14 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                         borderSide: BorderSide.none,
                       ),
                     ),
+                    validator: (val) => val == null || val.trim().isEmpty ? 'Ingresa una descripción' : null,
                   ),
                   const SizedBox(height: 10),
-
-                  // Categoría y Estado en la misma fila (2 columnas)
                   Row(
                     children: [
                       Expanded(
                         child: DropdownButtonFormField<String>(
-                          initialValue: _selectedCategory,
+                          value: _selectedCategory,
                           dropdownColor: AppColors.surface,
                           style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
                           decoration: InputDecoration(
@@ -368,7 +460,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: DropdownButtonFormField<String>(
-                          initialValue: _selectedCondition,
+                          value: _selectedCondition,
                           dropdownColor: AppColors.surface,
                           style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
                           decoration: InputDecoration(
@@ -485,15 +577,11 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
             ),
             const SizedBox(height: 16),
 
-            // 🚀 4. Botón de Acción Principal Visualmente Directo
+            // 🚀 4. Botón de Acción Principal
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    // Lógica de guardado
-                  }
-                },
+                onPressed: publishState.isPublishing ? null : _handleSubmit,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 14),
@@ -502,14 +590,20 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: Text(
-                  isEditing ? 'Guardar Cambios' : 'Publicar Artículo',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14.5,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
+                child: publishState.isPublishing
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator.adaptive(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
+                      )
+                    : Text(
+                        isEditing ? 'Guardar Cambios' : 'Publicar Artículo',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
               ),
             ),
             const SizedBox(height: 16),
