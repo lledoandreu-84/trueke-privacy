@@ -5,9 +5,6 @@ import '../../../models/product.dart';
 import 'products_provider.dart';
 import 'paginated_products_provider.dart';
 
-// Nota: Asumimos que myProductsProvider se encuentra en products_provider o perfiles.
-// Para evitar roturas de importación cruzada, invalidamos por referencia dinámica si es necesario.
-
 class PublishProductState {
   final bool isPublishing;
   final bool isSuccess;
@@ -93,11 +90,11 @@ class PublishProductNotifier extends Notifier<PublishProductState> {
       _validateContent(title, description);
 
       final List<String> uploadedUrls = [];
+      final productsNotifier = ref.read(productsProvider.notifier);
+
       for (final file in state.selectedImages) {
         final xFile = XFile(file.path);
-        final imageUrl = await ref
-            .read(productsProvider.notifier)
-            .uploadProductImage(xFile);
+        final imageUrl = await productsNotifier.uploadProductImage(xFile);
         if (imageUrl.isNotEmpty) {
           uploadedUrls.add(imageUrl);
         }
@@ -121,9 +118,8 @@ class PublishProductNotifier extends Notifier<PublishProductState> {
         createdAt: DateTime.now(),
       );
 
-      await ref.read(productsProvider.notifier).addProduct(newProduct);
+      await productsNotifier.addProduct(newProduct);
 
-      // Invalidation síncrona en cascada viva para sincronizar el stock inmediatamente
       ref.invalidate(paginatedProductsProvider);
 
       state = state.copyWith(isPublishing: false, isSuccess: true);
@@ -159,11 +155,11 @@ class PublishProductNotifier extends Notifier<PublishProductState> {
       _validateContent(title, description);
 
       final List<String> finalImages = List.from(existingImages);
+      final productsNotifier = ref.read(productsProvider.notifier);
+
       for (final file in state.selectedImages) {
         final xFile = XFile(file.path);
-        final imageUrl = await ref
-            .read(productsProvider.notifier)
-            .uploadProductImage(xFile);
+        final imageUrl = await productsNotifier.uploadProductImage(xFile);
         if (imageUrl.isNotEmpty) {
           finalImages.add(imageUrl);
         }
@@ -187,9 +183,8 @@ class PublishProductNotifier extends Notifier<PublishProductState> {
         createdAt: createdAt,
       );
 
-      await ref.read(productsProvider.notifier).updateProduct(updatedProduct);
+      await productsNotifier.updateProduct(updatedProduct);
 
-      // Invalidation síncrona en cascada viva para sincronizar modificaciones
       ref.invalidate(paginatedProductsProvider);
 
       state = state.copyWith(isPublishing: false, isSuccess: true);
