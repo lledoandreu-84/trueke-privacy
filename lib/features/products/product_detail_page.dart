@@ -5,6 +5,7 @@ import 'package:trueke/core/theme/app_colors.dart';
 import 'package:trueke/features/auth/auth_service.dart';
 import 'package:trueke/features/chat/presentation/screens/chat_screen.dart';
 import 'package:trueke/features/chat/providers/chat_providers.dart';
+import 'package:trueke/features/products/providers/product_repository_provider.dart';
 import 'package:trueke/features/transactions/presentation/widgets/create_offer_dialog.dart';
 import 'package:trueke/models/product.dart';
 
@@ -19,8 +20,33 @@ class ProductDetailPage extends ConsumerStatefulWidget {
 
 class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
   bool _isStartingChat = false;
+  late int _currentViews;
 
   bool get _isOwner => widget.product.ownerId == AuthService.currentUserId;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentViews = widget.product.viewsCount > 0 ? widget.product.viewsCount : 1;
+    // Incrementamos las vistas de forma asíncrona al abrir el detalle
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _incrementProductViews();
+    });
+  }
+
+  Future<void> _incrementProductViews() async {
+    try {
+      final productRepo = ref.read(productRepositoryProvider);
+      await productRepo.incrementViews(widget.product.id);
+      if (mounted) {
+        setState(() {
+          _currentViews += 1;
+        });
+      }
+    } catch (_) {
+      // Silencioso para no interrumpir la experiencia de usuario
+    }
+  }
 
   Future<void> _handleStartChat() async {
     if (_isOwner) {
@@ -134,7 +160,7 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
       orElse: () => false,
     );
 
-    final viewsText = '${widget.product.viewsCount > 0 ? widget.product.viewsCount : 1} vistas';
+    final viewsText = '$_currentViews vistas';
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -174,7 +200,7 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
                     ),
                   ),
                 ),
-                // Badge de Contador de Visitas Real
+                // Badge de Contador de Visitas Real y Dinámico
                 Positioned(
                   top: 10,
                   right: 10,
