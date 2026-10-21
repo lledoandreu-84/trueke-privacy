@@ -1,32 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../models/product.dart';
 import '../../../../app/routes/app_routes.dart';
 import '../../providers/paginated_products_provider.dart';
-import '../../providers/product_filters_provider.dart';
 import '../../../home/widgets/product_card.dart';
 
-class NearbyProductsScreen extends ConsumerStatefulWidget {
+class NearbyProductsScreen extends ConsumerWidget {
   const NearbyProductsScreen({super.key});
 
   @override
-  ConsumerState<NearbyProductsScreen> createState() => _NearbyProductsScreenState();
-}
-
-class _NearbyProductsScreenState extends ConsumerState<NearbyProductsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Al entrar, aseguramos que el radio sea de 100km y ordenemos por distancia/relevance
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(productFiltersProvider.notifier).setRadius(100.0);
-      ref.read(productFiltersProvider.notifier).setSortBy(ProductSortOption.distance);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final paginatedAsync = ref.watch(paginatedProductsProvider);
 
     return Scaffold(
