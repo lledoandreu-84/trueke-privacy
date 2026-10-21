@@ -21,6 +21,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
   late String _selectedCategory;
   late String _selectedCondition;
   late bool _isTrueque;
+  late List<String> _images;
 
   @override
   void initState() {
@@ -35,6 +36,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
         ? widget.product!.condition 
         : 'Buen estado';
     _isTrueque = widget.product != null ? widget.product!.tradeType == TradeType.trade : true;
+    _images = List.from(widget.product?.images ?? []);
   }
 
   @override
@@ -43,6 +45,80 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
     _descriptionController.dispose();
     _seekingController.dispose();
     super.dispose();
+  }
+
+  void _showImageSourceDialog() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFFCBD5E1),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Añadir fotografía',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: const BoxDecoration(
+                  color: AppColors.surfaceMint,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.camera_alt_rounded, color: AppColors.primary),
+              ),
+              title: const Text('Hacer una foto', style: TextStyle(fontWeight: FontWeight.w600)),
+              subtitle: const Text('Usa la cámara de tu dispositivo', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+              onTap: () {
+                Navigator.pop(context);
+                setState(() {
+                  _images.add('https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500');
+                });
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: const BoxDecoration(
+                  color: AppColors.surfaceMint,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.photo_library_rounded, color: AppColors.primary),
+              ),
+              title: const Text('Subir desde galería', style: TextStyle(fontWeight: FontWeight.w600)),
+              subtitle: const Text('Elige una o varias imágenes', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+              onTap: () {
+                Navigator.pop(context);
+                setState(() {
+                  _images.add('https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500');
+                });
+              },
+            ),
+            const SizedBox(height: 12),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -69,35 +145,22 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
         child: ListView(
           padding: const EdgeInsets.all(16.0),
           children: [
-            // 📸 1. Sección de Multimedia Protagonista (Arriba)
+            // 📸 1. Sección de Multimedia Protagonista Interactiva
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: const Color(0xFFE2E8F0)),
               ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 72,
-                    height: 72,
-                    decoration: const BoxDecoration(
-                      color: AppColors.surfaceMint,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.add_a_photo_rounded,
-                      size: 32,
-                      color: AppColors.primary,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
                   const Text(
-                    'Añade fotos de tu artículo',
+                    'Fotografías del artículo',
                     style: TextStyle(
                       color: AppColors.textPrimary,
-                      fontSize: 14.5,
+                      fontSize: 14,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -110,27 +173,128 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      // Lógica de selección de imagen
-                    },
-                    icon: const Icon(Icons.camera_alt_outlined, size: 18, color: AppColors.primary),
-                    label: const Text(
-                      'Subir desde galería',
-                      style: TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
+                  
+                  if (_images.isEmpty)
+                    Center(
+                      child: InkWell(
+                        onTap: _showImageSourceDialog,
+                        borderRadius: BorderRadius.circular(16),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 24),
+                          decoration: BoxDecoration(
+                            color: AppColors.background,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: const Color(0xFFCBD5E1), style: BorderStyle.dashed),
+                          ),
+                          child: const Column(
+                            children: [
+                              Icon(Icons.add_a_photo_rounded, size: 36, color: AppColors.primary),
+                              SizedBox(height: 8),
+                              Text(
+                                'Añadir fotos (Cámara o Galería)',
+                                style: TextStyle(
+                                  color: AppColors.primary,
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                  else
+                    SizedBox(
+                      height: 110,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _images.length + 1,
+                        separatorBuilder: (_, __) => const SizedBox(width: 12),
+                        itemBuilder: (context, index) {
+                          if (index == _images.length) {
+                            return InkWell(
+                              onTap: _showImageSourceDialog,
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                width: 100,
+                                decoration: BoxDecoration(
+                                  color: AppColors.background,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: const Color(0xFFCBD5E1), style: BorderStyle.dashed),
+                                ),
+                                child: const Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.add_rounded, color: AppColors.primary, size: 28),
+                                    SizedBox(height: 4),
+                                    Text('Añadir', style: TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.w600)),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
+
+                          return Stack(
+                            children: [
+                              Container(
+                                width: 100,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                                ),
+                                clipBehavior: Clip.antiAlias,
+                                child: Image.network(
+                                  _images[index],
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => Container(
+                                    color: AppColors.surfaceMint,
+                                    child: const Icon(Icons.image_outlined, color: AppColors.primary),
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                top: 4,
+                                right: 4,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _images.removeAt(index);
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.black54,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(Icons.close_rounded, size: 14, color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                              if (index == 0)
+                                Positioned(
+                                  bottom: 4,
+                                  left: 4,
+                                  right: 4,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primary.withValues(alpha: 0.8),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: const Text(
+                                      'Portada',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w700),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          );
+                        },
                       ),
                     ),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: AppColors.primary),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    ),
-                  ),
                 ],
               ),
             ),
