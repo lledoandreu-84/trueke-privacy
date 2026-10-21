@@ -76,8 +76,7 @@ class Product {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
+    final map = <String, dynamic>{
       'title': title,
       'description': description,
       'price': price,
@@ -91,9 +90,11 @@ class Product {
       'location': location,
       'latitude': latitude,
       'longitude': longitude,
-      'views': viewsCount,
-      'created_at': createdAt.toIso8601String(),
     };
+    if (id.isNotEmpty) {
+      map['id'] = id;
+    }
+    return map;
   }
 
   String get imageUrl => images.isNotEmpty ? images.first : '';
