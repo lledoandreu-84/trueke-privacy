@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
-import '../products/providers/product_filters_provider.dart';
 import '../products/providers/paginated_products_provider.dart';
 import 'widgets/home_header.dart';
 import 'widgets/product_card.dart';
@@ -27,7 +26,6 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final filters = ref.watch(productFiltersProvider);
     final paginatedAsync = ref.watch(paginatedProductsProvider);
 
     return Scaffold(
