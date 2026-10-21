@@ -6,7 +6,7 @@ import 'package:trueke/models/product.dart';
 class PublishProductPage extends ConsumerStatefulWidget {
   final Product? product;
 
-  const PublishProductPage({super, this.product});
+  const PublishProductPage({super.key, this.product});
 
   @override
   ConsumerState<PublishProductPage> createState() => _PublishProductPageState();
