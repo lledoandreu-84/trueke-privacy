@@ -19,8 +19,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
   Timer? _debounceTimer;
 
   final List<double> _distanceTiers = [25.0, 50.0, 100.0, 150.0, 200.0, 250.0, 9999.0];
-  final List<String> _conditionOptions = ['Nuevo', 'Poco uso', 'Buen estado', 'Muy usado'];
-
+  
   @override
   void initState() {
     super.initState();
