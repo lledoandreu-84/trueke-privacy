@@ -36,7 +36,7 @@ class ProfileScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // 👤 1. Cabecera de Perfil Pro Rediseñada
+          // 👤 1. Cabecera de Perfil Pro
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -117,36 +117,42 @@ class ProfileScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 20),
 
-          // 📦 2. Opciones de Gestión
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFE2E8F0)),
-            ),
-            child: Column(
-              children: [
-                _buildMenuItem(
-                  icon: Icons.swap_horiz_rounded,
-                  title: 'Mis Ofertas de Trueke',
-                  subtitle: 'Gestionar intercambios propuestos y recibidos',
-                  onTap: () {},
-                ),
-                const Divider(height: 1, color: Color(0xFFE2E8F0), indent: 16, endIndent: 16),
-                _buildMenuItem(
-                  icon: Icons.inventory_2_outlined,
-                  title: 'Mis Productos Publicados',
-                  subtitle: 'Tienes 1 artículo publicado',
-                  onTap: () {},
-                ),
-                const Divider(height: 1, color: Color(0xFFE2E8F0), indent: 16, endIndent: 16),
-                _buildMenuItem(
-                  icon: Icons.account_balance_wallet_outlined,
-                  title: 'Historial de Truekes',
-                  subtitle: 'Intercambios de bienes y estado financiero',
-                  onTap: () {},
-                ),
-              ],
+          // 📦 2. Opciones de Gestión con Contadores/Badges Dinámicos
+          Material(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+              ),
+              child: Column(
+                children: [
+                  _buildMenuItem(
+                    icon: Icons.swap_horiz_rounded,
+                    title: 'Mis Ofertas de Trueke',
+                    subtitle: 'Gestionar intercambios propuestos',
+                    badgeText: '0',
+                    onTap: () {},
+                  ),
+                  const Divider(height: 1, color: Color(0xFFE2E8F0), indent: 16, endIndent: 16),
+                  _buildMenuItem(
+                    icon: Icons.inventory_2_outlined,
+                    title: 'Mis Productos Publicados',
+                    subtitle: 'Artículos activos en el escaparate',
+                    badgeText: '1',
+                    onTap: () {},
+                  ),
+                  const Divider(height: 1, color: Color(0xFFE2E8F0), indent: 16, endIndent: 16),
+                  _buildMenuItem(
+                    icon: Icons.account_balance_wallet_outlined,
+                    title: 'Historial de Truekes',
+                    subtitle: 'Intercambios finalizados',
+                    badgeText: '0',
+                    onTap: () {},
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 24),
@@ -182,6 +188,7 @@ class ProfileScreen extends ConsumerWidget {
     required IconData icon,
     required String title,
     required String subtitle,
+    required String badgeText,
     required VoidCallback onTap,
   }) {
     return ListTile(
@@ -210,7 +217,28 @@ class ProfileScreen extends ConsumerWidget {
           fontSize: 11.5,
         ),
       ),
-      trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary, size: 20),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF1F5F9),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              badgeText,
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 11.5,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          const SizedBox(width: 4),
+          const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary, size: 20),
+        ],
+      ),
     );
   }
 }
