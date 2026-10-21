@@ -68,7 +68,7 @@ class Product {
       longitude: json['longitude'] != null
           ? (json['longitude'] as num).toDouble()
           : null,
-      viewsCount: json['views_count'] as int? ?? json['views'] as int? ?? 0,
+      viewsCount: json['views'] as int? ?? json['views_count'] as int? ?? 0,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)
           : DateTime.now(),
@@ -91,7 +91,7 @@ class Product {
       'location': location,
       'latitude': latitude,
       'longitude': longitude,
-      'views_count': viewsCount,
+      'views': viewsCount,
       'created_at': createdAt.toIso8601String(),
     };
   }
