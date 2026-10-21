@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../models/product.dart';
 import '../../providers/product_search_provider.dart';
-import '../../home/widgets/product_card.dart';
+import 'package:trueke/features/home/widgets/product_card.dart';
 
 class ProductSearchScreen extends ConsumerStatefulWidget {
   const ProductSearchScreen({super.key});
