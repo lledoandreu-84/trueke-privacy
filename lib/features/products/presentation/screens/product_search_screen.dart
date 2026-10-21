@@ -18,6 +18,8 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
 
   final List<String> _categories = ['Todos', 'Electrónica', 'Moda', 'Hogar', 'Gaming', 'Deporte', 'Otros'];
   final List<double> _radii = [25.0, 50.0, 100.0, 150.0, 200.0];
+  final List<String> _conditions = ['Nuevo', 'Poco uso', 'Buen estado', 'Muy usado'];
+  final List<String> _tradeTypes = ['Trueke puro', 'Venta directa', 'Trueke + €'];
 
   @override
   void initState() {
@@ -55,97 +57,175 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
       ),
       body: Column(
         children: [
-          // 🔍 Barra de Búsqueda y Filtros Integrados
+          // 🔍 Barra de Búsqueda y Panel de Filtros Expandido
           Container(
             color: AppColors.surface,
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            child: Column(
-              children: [
-                // Input de Búsqueda
-                TextField(
-                  controller: _searchController,
-                  onChanged: (value) {
-                    ref.read(productFiltersProvider.notifier).setQuery(value);
-                  },
-                  decoration: InputDecoration(
-                    hintText: '¿Qué estás buscando?',
-                    hintStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 13.5),
-                    prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary, size: 20),
-                    suffixIcon: _searchController.text.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear_rounded, size: 18, color: AppColors.textSecondary),
-                            onPressed: () {
-                              _searchController.clear();
-                              ref.read(productFiltersProvider.notifier).setQuery('');
-                            },
-                          )
-                        : null,
-                    filled: true,
-                    fillColor: AppColors.background,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: BorderSide.none,
+            child: SizedBox(
+              height: 230,
+              child: ListView(
+                children: [
+                  // Input de Búsqueda
+                  TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      ref.read(productFiltersProvider.notifier).setQuery(value);
+                    },
+                    decoration: InputDecoration(
+                      hintText: '¿Qué estás buscando?',
+                      hintStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 13.5),
+                      prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary, size: 20),
+                      suffixIcon: _searchController.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear_rounded, size: 18, color: AppColors.textSecondary),
+                              onPressed: () {
+                                _searchController.clear();
+                                ref.read(productFiltersProvider.notifier).setQuery('');
+                              },
+                            )
+                          : null,
+                      filled: true,
+                      fillColor: AppColors.background,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 14),
+                  const SizedBox(height: 16),
 
-                // 🏷️ Filtro de Categorías (Scroll horizontal)
-                SizedBox(
-                  height: 34,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _categories.length,
-                    separatorBuilder: (_, _) => const SizedBox(width: 8),
-                    itemBuilder: (context, index) {
-                      final category = _categories[index];
-                      final isSelected = category == 'Todos'
-                          ? filters.category == null
-                          : filters.category == category;
-
-                      return ChoiceChip(
-                        label: Text(category),
-                        selected: isSelected,
-                        selectedColor: AppColors.primary,
-                        backgroundColor: AppColors.background,
-                        labelStyle: TextStyle(
-                          color: isSelected ? Colors.white : AppColors.textPrimary,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        onSelected: (selected) {
-                          ref.read(productFiltersProvider.notifier).setCategory(
-                                category == 'Todos' ? null : category,
-                              );
-                        },
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          side: BorderSide(
-                            color: isSelected ? AppColors.primary : const Color(0xFFE2E8F0),
-                            width: 1,
-                          ),
-                        ),
-                      );
-                    },
+                  // 🏷️ Categorías
+                  const Text(
+                    'Categoría',
+                    style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w700),
                   ),
-                ),
-                const SizedBox(height: 10),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: 34,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _categories.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 8),
+                      itemBuilder: (context, index) {
+                        final category = _categories[index];
+                        final isSelected = category == 'Todos'
+                            ? filters.category == null
+                            : filters.category == category;
 
-                // 📍 Filtro de Ubicación / Radio (Scroll horizontal)
-                SizedBox(
-                  height: 32,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _radii.length,
-                    separatorBuilder: (_, _) => const SizedBox(width: 8),
-                    itemBuilder: (context, index) {
-                      final radius = _radii[index];
-                      final isSelected = filters.radiusInKm == radius;
+                        return ChoiceChip(
+                          label: Text(category),
+                          selected: isSelected,
+                          selectedColor: AppColors.primary,
+                          backgroundColor: AppColors.background,
+                          labelStyle: TextStyle(
+                            color: isSelected ? Colors.white : AppColors.textPrimary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          onSelected: (selected) {
+                            ref.read(productFiltersProvider.notifier).setCategory(
+                                  category == 'Todos' ? null : category,
+                                );
+                          },
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(
+                              color: isSelected ? AppColors.primary : const Color(0xFFE2E8F0),
+                              width: 1,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
 
+                  // 📍 Ubicación y Proximidad (Distancia)
+                  const Text(
+                    'Ubicación y Proximidad (Distancia)',
+                    style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: 32,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _radii.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 8),
+                      itemBuilder: (context, index) {
+                        final radius = _radii[index];
+                        final isSelected = filters.radiusInKm == radius;
+
+                        return ChoiceChip(
+                          label: Text('${radius.toInt()} km'),
+                          selected: isSelected,
+                          selectedColor: AppColors.surfaceMint,
+                          backgroundColor: AppColors.background,
+                          labelStyle: TextStyle(
+                            color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          onSelected: (selected) {
+                            ref.read(productFiltersProvider.notifier).updateMaxDistance(radius);
+                          },
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            side: BorderSide(
+                              color: isSelected ? AppColors.primary : const Color(0xFFE2E8F0),
+                              width: 1,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // 💶 Rango de Precio (€)
+                  const Text(
+                    'Rango de Precio (€)',
+                    style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Slider(
+                          value: filters.maxPrice ?? 500.0,
+                          min: 0.0,
+                          max: 1000.0,
+                          divisions: 20,
+                          activeColor: AppColors.primary,
+                          inactiveColor: const Color(0xFFE2E8F0),
+                          label: '${(filters.maxPrice ?? 500.0).toInt()} €',
+                          onChanged: (value) {
+                            ref.read(productFiltersProvider.notifier).updatePriceRange(filters.minPrice, value);
+                          },
+                        ),
+                      ),
+                      Text(
+                        'Máx: ${(filters.maxPrice ?? 500.0).toInt()} €',
+                        style: const TextStyle(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  // ✨ Estado del Producto
+                  const Text(
+                    'Estado del Producto',
+                    style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _conditions.map((condition) {
+                      final isSelected = filters.condition == condition;
                       return ChoiceChip(
-                        label: Text('${radius.toInt()} km'),
+                        label: Text(condition),
                         selected: isSelected,
                         selectedColor: AppColors.surfaceMint,
                         backgroundColor: AppColors.background,
@@ -155,7 +235,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           fontWeight: FontWeight.w600,
                         ),
                         onSelected: (selected) {
-                          ref.read(productFiltersProvider.notifier).updateMaxDistance(radius);
+                          ref.read(productFiltersProvider.notifier).updateCondition(selected ? condition : null);
                         },
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -165,10 +245,46 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           ),
                         ),
                       );
-                    },
+                    }).toList(),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+
+                  // 🤝 Tipo de Trato
+                  const Text(
+                    'Tipo de Trato',
+                    style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _tradeTypes.map((tradeType) {
+                      final isSelected = filters.tradeType == tradeType;
+                      return ChoiceChip(
+                        label: Text(tradeType),
+                        selected: isSelected,
+                        selectedColor: AppColors.surfaceMint,
+                        backgroundColor: AppColors.background,
+                        labelStyle: TextStyle(
+                          color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        onSelected: (selected) {
+                          ref.read(productFiltersProvider.notifier).setTradeType(selected ? tradeType : null);
+                        },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          side: BorderSide(
+                            color: isSelected ? AppColors.primary : const Color(0xFFE2E8F0),
+                            width: 1,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
             ),
           ),
           const Divider(height: 1, color: Color(0xFFE2E8F0)),
