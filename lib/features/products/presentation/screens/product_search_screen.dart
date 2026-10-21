@@ -401,10 +401,16 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.tune_rounded, color: AppColors.primary),
+          TextButton(
             onPressed: () =>
                 _showFilterBottomSheet(context, searchState, searchNotifier),
+            child: const Text(
+              'Filtros',
+              style: TextStyle(
+                color: AppColors.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           TextButton(
             onPressed: () {
