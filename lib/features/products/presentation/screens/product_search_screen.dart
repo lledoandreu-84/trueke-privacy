@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../models/product.dart';
-import '../../providers/product_search_provider.dart';
+import 'package:trueke/core/theme/app_colors.dart';
+import 'package:trueke/models/product.dart';
+import 'package:trueke/features/products/providers/product_search_provider.dart';
 import 'package:trueke/features/home/widgets/product_card.dart';
 
 class ProductSearchScreen extends ConsumerStatefulWidget {
@@ -23,6 +23,15 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
     200.0,
     250.0,
     9999.0,
+  ];
+  final List<String> _quickCategories = [
+    'Tecnología',
+    'Deportes',
+    'Hogar',
+    'Moda',
+    'Música',
+    'Vehículos',
+    'Juegos',
   ];
 
   @override
@@ -172,6 +181,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
         return Consumer(
           builder: (context, ref, child) {
             final state = ref.watch(productSearchNotifierProvider);
+            final productsCount = state.products.asData?.value.length ?? 0;
 
             return Padding(
               padding: EdgeInsets.only(
@@ -196,22 +206,47 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                             color: AppColors.textPrimary,
                           ),
                         ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.close_rounded,
-                            color: AppColors.textPrimary,
-                          ),
-                          onPressed: () => Navigator.pop(context),
+                        Row(
+                          children: [
+                            TextButton(
+                              onPressed: () => notifier.clearAllFilters(),
+                              child: const Text(
+                                'Restablecer',
+                                style: TextStyle(
+                                  color: AppColors.primary,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.close_rounded,
+                                color: AppColors.textPrimary,
+                              ),
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Rango de Precio (€)',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
+                    const Row(
+                      children: [
+                        Icon(
+                          Icons.euro_rounded,
+                          size: 18,
+                          color: AppColors.primary,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Rango de Precio (€)',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ],
                     ),
                     RangeSlider(
                       values: RangeValues(state.minPrice, state.maxPrice),
@@ -229,52 +264,74 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Ubicación y Proximidad (Distancia)',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
+                    const Row(
+                      children: [
+                        Icon(
+                          Icons.location_on_rounded,
+                          size: 18,
+                          color: AppColors.primary,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Ubicación y Proximidad (Distancia)',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
                     Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
-                      alignment: WrapAlignment.start,
-                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 8,
+                      runSpacing: 8,
                       children: _distanceTiers.map((tier) {
                         final isSelected = state.maxRadiusKm == tier;
-                        return ChoiceChip(
-                          showCheckmark: false,
-                          label: Text(_getDistanceLabel(tier)),
-                          selected: isSelected,
-                          selectedColor: AppColors.surfaceMint,
-                          backgroundColor: AppColors.background,
-                          labelStyle: TextStyle(
-                            color: isSelected
-                                ? AppColors.primary
-                                : AppColors.textPrimary,
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.normal,
+                        return SizedBox(
+                          width: 86,
+                          child: ChoiceChip(
+                            showCheckmark: false,
+                            label: Center(child: Text(_getDistanceLabel(tier))),
+                            selected: isSelected,
+                            selectedColor: AppColors.surfaceMint,
+                            backgroundColor: AppColors.background,
+                            labelStyle: TextStyle(
+                              color: isSelected
+                                  ? AppColors.primary
+                                  : AppColors.textPrimary,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              fontSize: 12,
+                            ),
+                            onSelected: (selected) {
+                              if (selected) {
+                                notifier.updateRadius(tier);
+                              }
+                            },
                           ),
-                          onSelected: (selected) {
-                            if (selected) {
-                              notifier.updateRadius(tier);
-                            }
-                          },
                         );
                       }).toList(),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Estado del Producto',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
+                    const Row(
+                      children: [
+                        Icon(
+                          Icons.verified_rounded,
+                          size: 18,
+                          color: AppColors.primary,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Estado del Producto',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
@@ -307,14 +364,24 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           ).toList(),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Tipo de Trato',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
+                    const Row(
+                      children: [
+                        Icon(
+                          Icons.handshake_rounded,
+                          size: 18,
+                          color: AppColors.primary,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Tipo de Trato',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
@@ -360,11 +427,12 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           ),
                         ),
                         onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          'Aplicar Filtros',
-                          style: TextStyle(
+                        child: Text(
+                          'Ver $productsCount artículos',
+                          style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
+                            fontSize: 15,
                           ),
                         ),
                       ),
@@ -432,67 +500,119 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
         child: Column(
           children: [
             const SizedBox(height: 8),
-            TextField(
-              controller: _searchController,
-              onChanged: _onSearchChanged,
-              decoration: InputDecoration(
-                hintText: '¿Qué estás buscando?',
-                prefixIcon: const Icon(
-                  Icons.search,
-                  color: AppColors.textSecondary,
-                ),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(
-                          Icons.clear,
-                          color: AppColors.textSecondary,
-                        ),
-                        onPressed: () {
-                          _searchController.clear();
-                          _onSearchChanged('');
-                          setState(() {});
-                        },
-                      )
-                    : null,
-                filled: true,
-                fillColor: AppColors.surface,
-                contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16.0),
-                  borderSide: BorderSide.none,
+            Container(
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: TextField(
+                controller: _searchController,
+                onChanged: _onSearchChanged,
+                decoration: InputDecoration(
+                  hintText: '¿Qué estás buscando?',
+                  prefixIcon: const Icon(
+                    Icons.search,
+                    color: AppColors.textSecondary,
+                  ),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(
+                            Icons.clear,
+                            color: AppColors.textSecondary,
+                          ),
+                          onPressed: () {
+                            _searchController.clear();
+                            _onSearchChanged('');
+                            setState(() {});
+                          },
+                        )
+                      : null,
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 38,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: _quickCategories.length,
+                separatorBuilder: (context, index) => const SizedBox(width: 8),
+                itemBuilder: (context, index) {
+                  final category = _quickCategories[index];
+                  final isSelected = searchState.selectedCategory == category;
+                  return ActionChip(
+                    label: Text(category),
+                    backgroundColor: isSelected
+                        ? AppColors.primary
+                        : AppColors.surface,
+                    labelStyle: TextStyle(
+                      color: isSelected ? Colors.white : AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                    ),
+                    onPressed: () {
+                      searchNotifier.toggleCategory(
+                        isSelected ? null : category,
+                      );
+                    },
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(
+                        color: isSelected
+                            ? Colors.transparent
+                            : AppColors.border,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 4),
             _buildActiveFiltersRow(context, searchState, searchNotifier),
+            const SizedBox(height: 8),
             Expanded(
               child: searchState.products.when(
                 data: (products) {
-                  if (searchState.query.trim().isEmpty) {
-                    return const Center(
-                      child: Text(
-                        'Escribe algo para buscar productos',
-                        style: TextStyle(color: AppColors.textSecondary),
-                      ),
-                    );
-                  }
                   if (products.isEmpty) {
-                    return const Center(
+                    return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.search_off_rounded,
                             size: 64,
                             color: AppColors.textSecondary,
                           ),
-                          SizedBox(height: 16),
-                          Text(
+                          const SizedBox(height: 16),
+                          const Text(
                             'No hemos encontrado artículos',
                             style: TextStyle(
                               color: AppColors.textPrimary,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            searchState.query.isEmpty
+                                ? 'Prueba seleccionando una categoría superior'
+                                : 'Intenta con otra palabra clave',
+                            style: const TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 13,
                             ),
                           ),
                         ],
