@@ -238,27 +238,48 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
 
-          // 🚪 3. Botón de Cerrar Sesión
-          OutlinedButton.icon(
-            onPressed: () async {
-              await Supabase.instance.client.auth.signOut();
-              if (context.mounted) {
-                Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
-              }
-            },
-            icon: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 18),
-            label: const Text(
-              'Cerrar sesión',
-              style: TextStyle(color: Colors.redAccent, fontSize: 13.5, fontWeight: FontWeight.w700),
-            ),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              side: const BorderSide(color: Color(0xFFFEE2E2)),
-              backgroundColor: const Color(0xFFFFF5F5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+          // 🚪 4. Contenedor estilizado para Cerrar Sesión
+          Material(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+              ),
+              child: ListTile(
+                onTap: () async {
+                  await Supabase.instance.client.auth.signOut();
+                  if (context.mounted) {
+                    Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+                  }
+                },
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                leading: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF5F5),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 20),
+                ),
+                title: const Text(
+                  'Cerrar sesión',
+                  style: TextStyle(
+                    color: Colors.redAccent,
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                subtitle: const Text(
+                  'Finalizar sesión actual en este dispositivo',
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 11.5,
+                  ),
+                ),
               ),
             ),
           ),
