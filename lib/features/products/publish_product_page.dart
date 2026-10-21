@@ -6,7 +6,7 @@ import 'package:trueke/models/product.dart';
 class PublishProductPage extends ConsumerStatefulWidget {
   final Product? product;
 
-  const PublishProductPage({super.key, this.product});
+  const PublishProductPage({super, this.product});
 
   @override
   ConsumerState<PublishProductPage> createState() => _PublishProductPageState();
@@ -27,10 +27,14 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
     super.initState();
     _titleController = TextEditingController(text: widget.product?.title ?? '');
     _descriptionController = TextEditingController(text: widget.product?.description ?? '');
-    _seekingController = TextEditingController(text: widget.product?.seeking ?? '');
-    _selectedCategory = widget.product?.category ?? 'Electrónica';
-    _selectedCondition = widget.product?.condition ?? 'Buen estado';
-    _isTrueque = widget.product?.isTrueque ?? true;
+    _seekingController = TextEditingController(text: widget.product?.wanted ?? '');
+    _selectedCategory = (widget.product?.category != null && widget.product!.category.isNotEmpty) 
+        ? widget.product!.category 
+        : 'Electrónica';
+    _selectedCondition = (widget.product?.condition != null && widget.product!.condition.isNotEmpty) 
+        ? widget.product!.condition 
+        : 'Buen estado';
+    _isTrueque = widget.product != null ? widget.product!.tradeType == TradeType.trade : true;
   }
 
   @override
