@@ -24,14 +24,44 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
     250.0,
     9999.0,
   ];
-  final List<String> _quickCategories = [
-    'Tecnología',
-    'Deportes',
-    'Hogar',
-    'Moda',
-    'Música',
-    'Vehículos',
-    'Juegos',
+
+  final List<Map<String, dynamic>> _categoriesData = [
+    {
+      'name': 'Electrónica',
+      'icon': Icons.devices_rounded,
+      'color': const Color(0xFFE0E7FF),
+      'textColor': const Color(0xFF4338CA),
+    },
+    {
+      'name': 'Moda',
+      'icon': Icons.checkroom_rounded,
+      'color': const Color(0xFFFCE7F3),
+      'textColor': const Color(0xFFBE185D),
+    },
+    {
+      'name': 'Hogar',
+      'icon': Icons.chair_rounded,
+      'color': const Color(0xFFFEF3C7),
+      'textColor': const Color(0xFFB45309),
+    },
+    {
+      'name': 'Gaming',
+      'icon': Icons.sports_esports_rounded,
+      'color': const Color(0xFFF3E8FF),
+      'textColor': const Color(0xFF6B21A8),
+    },
+    {
+      'name': 'Deporte',
+      'icon': Icons.fitness_center_rounded,
+      'color': const Color(0xFFD1FAE5),
+      'textColor': const Color(0xFF047857),
+    },
+    {
+      'name': 'Otros',
+      'icon': Icons.widgets_rounded,
+      'color': const Color(0xFFF1F5F9),
+      'textColor': const Color(0xFF334155),
+    },
   ];
 
   @override
@@ -152,7 +182,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
     if (activeChips.isEmpty) return const SizedBox.shrink();
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0, top: 4.0),
+      padding: const EdgeInsets.only(bottom: 8.0, top: 4.0),
       child: SizedBox(
         height: 36,
         child: ListView.separated(
@@ -469,27 +499,40 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () =>
-                _showFilterBottomSheet(context, searchState, searchNotifier),
-            child: const Text(
-              'Filtros',
-              style: TextStyle(
+          Padding(
+            padding: const EdgeInsets.only(right: 2.0),
+            child: TextButton.icon(
+              onPressed: () =>
+                  _showFilterBottomSheet(context, searchState, searchNotifier),
+              icon: const Icon(
+                Icons.tune_rounded,
+                size: 16,
                 color: AppColors.primary,
-                fontWeight: FontWeight.bold,
+              ),
+              label: const Text(
+                'Filtros',
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
               ),
             ),
           ),
-          TextButton(
-            onPressed: () {
-              _searchController.clear();
-              searchNotifier.clearAllFilters();
-            },
-            child: const Text(
-              'Limpiar',
-              style: TextStyle(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w600,
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: TextButton(
+              onPressed: () {
+                _searchController.clear();
+                searchNotifier.clearAllFilters();
+              },
+              child: const Text(
+                'Limpiar',
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
               ),
             ),
           ),
@@ -544,48 +587,103 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            SizedBox(
-              height: 38,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: _quickCategories.length,
-                separatorBuilder: (context, index) => const SizedBox(width: 8),
-                itemBuilder: (context, index) {
-                  final category = _quickCategories[index];
-                  final isSelected = searchState.selectedCategory == category;
-                  return ActionChip(
-                    label: Text(category),
-                    backgroundColor: isSelected
-                        ? AppColors.primary
-                        : AppColors.surface,
-                    labelStyle: TextStyle(
-                      color: isSelected ? Colors.white : AppColors.textPrimary,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                    ),
-                    onPressed: () {
-                      searchNotifier.toggleCategory(
-                        isSelected ? null : category,
-                      );
-                    },
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(
-                        color: isSelected
-                            ? Colors.transparent
-                            : AppColors.border,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 4),
             _buildActiveFiltersRow(context, searchState, searchNotifier),
-            const SizedBox(height: 8),
             Expanded(
               child: searchState.products.when(
                 data: (products) {
+                  // Si no hay consulta ni filtros activos, se muestra la cuadrícula de Categorías Destacadas
+                  final hasActiveFilter =
+                      searchState.query.trim().isNotEmpty ||
+                      searchState.selectedCategory != null ||
+                      searchState.selectedCondition != null ||
+                      searchState.selectedTradeType != null ||
+                      searchState.maxRadiusKm < 9900.0 ||
+                      searchState.minPrice > 0.0 ||
+                      searchState.maxPrice < 5000.0;
+
+                  if (!hasActiveFilter) {
+                    return SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 12),
+                          const Text(
+                            'Categorías destacadas',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          const Text(
+                            'Explora por tipo de artículo',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  childAspectRatio: 2.1,
+                                  crossAxisSpacing: 12,
+                                  mainAxisSpacing: 12,
+                                ),
+                            itemCount: _categoriesData.length,
+                            itemBuilder: (context, index) {
+                              final cat = _categoriesData[index];
+                              return Material(
+                                color: cat['color'] as Color,
+                                borderRadius: BorderRadius.circular(16),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(16),
+                                  onTap: () {
+                                    searchNotifier.toggleCategory(
+                                      cat['name'] as String,
+                                    );
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          cat['icon'] as IconData,
+                                          color: cat['textColor'] as Color,
+                                          size: 22,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            cat['name'] as String,
+                                            style: TextStyle(
+                                              color: cat['textColor'] as Color,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 13,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
                   if (products.isEmpty) {
                     return Center(
                       child: Column(
@@ -608,7 +706,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           const SizedBox(height: 8),
                           Text(
                             searchState.query.isEmpty
-                                ? 'Prueba seleccionando una categoría superior'
+                                ? 'Prueba seleccionando otra categoría'
                                 : 'Intenta con otra palabra clave',
                             style: const TextStyle(
                               color: AppColors.textSecondary,
@@ -619,6 +717,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       ),
                     );
                   }
+
                   return GridView.builder(
                     padding: const EdgeInsets.only(top: 8.0, bottom: 24.0),
                     gridDelegate:
