@@ -18,8 +18,16 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   Timer? _debounceTimer;
 
-  final List<double> _distanceTiers = [25.0, 50.0, 100.0, 150.0, 200.0, 250.0, 9999.0];
-  
+  final List<double> _distanceTiers = [
+    25.0,
+    50.0,
+    100.0,
+    150.0,
+    200.0,
+    250.0,
+    9999.0,
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -70,7 +78,10 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
       decoration: BoxDecoration(
         color: AppColors.surfaceMint,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.3), width: 1),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.3),
+          width: 1,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -141,9 +152,13 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
     }
     if (state.maxRadiusKm < 9900.0) {
       activeChips.add(
-        _buildActiveChip(context, 'Ubicación: ${_getDistanceLabel(state.maxRadiusKm)}', () {
-          notifier.updateRadius(9999.0);
-        }),
+        _buildActiveChip(
+          context,
+          'Ubicación: ${_getDistanceLabel(state.maxRadiusKm)}',
+          () {
+            notifier.updateRadius(9999.0);
+          },
+        ),
       );
     }
     if (activeChips.isEmpty) return const SizedBox.shrink();
@@ -162,7 +177,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
     );
   }
 
-    void _showFilterBottomSheet(
+  void _showFilterBottomSheet(
     BuildContext context,
     ProductSearchState initialModalState,
     ProductSearchNotifier notifier,
@@ -203,7 +218,10 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.close_rounded, color: AppColors.textPrimary),
+                          icon: const Icon(
+                            Icons.close_rounded,
+                            color: AppColors.textPrimary,
+                          ),
                           onPressed: () => Navigator.pop(context),
                         ),
                       ],
@@ -251,8 +269,12 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           selectedColor: AppColors.surfaceMint,
                           backgroundColor: AppColors.background,
                           labelStyle: TextStyle(
-                            color: isSelected ? AppColors.primary : AppColors.textPrimary,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            color: isSelected
+                                ? AppColors.primary
+                                : AppColors.textPrimary,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                           ),
                           onSelected: (selected) {
                             if (selected) {
@@ -274,22 +296,32 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children: ['Nuevo', 'Poco uso', 'Buen estado', 'Muy usado'].map((condition) {
-                        final isSelected = state.selectedCondition == condition;
-                        return ChoiceChip(
-                          label: Text(condition),
-                          selected: isSelected,
-                          selectedColor: AppColors.surfaceMint,
-                          backgroundColor: AppColors.background,
-                          labelStyle: TextStyle(
-                            color: isSelected ? AppColors.primary : AppColors.textPrimary,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                          ),
-                          onSelected: (selected) {
-                            notifier.updateCondition(selected ? condition : null);
-                          },
-                        );
-                      }).toList(),
+                      children:
+                          ['Nuevo', 'Poco uso', 'Buen estado', 'Muy usado'].map(
+                            (condition) {
+                              final isSelected =
+                                  state.selectedCondition == condition;
+                              return ChoiceChip(
+                                label: Text(condition),
+                                selected: isSelected,
+                                selectedColor: AppColors.surfaceMint,
+                                backgroundColor: AppColors.background,
+                                labelStyle: TextStyle(
+                                  color: isSelected
+                                      ? AppColors.primary
+                                      : AppColors.textPrimary,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                                onSelected: (selected) {
+                                  notifier.updateCondition(
+                                    selected ? condition : null,
+                                  );
+                                },
+                              );
+                            },
+                          ).toList(),
                     ),
                     const SizedBox(height: 16),
                     const Text(
@@ -308,16 +340,23 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                         String label = type.name;
                         if (type.name == 'trade') {
                           label = 'Trueque puro';
-                        } else if (type.name == 'sale') label = 'Venta directa';
-                        else if (type.name == 'tradeAndCash' || type.name == 'tradeAndMoney') label = 'Trueque + €';
+                        } else if (type.name == 'sale')
+                          label = 'Venta directa';
+                        else if (type.name == 'tradeAndCash' ||
+                            type.name == 'tradeAndMoney')
+                          label = 'Trueque + €';
                         return ChoiceChip(
                           label: Text(label),
                           selected: isSelected,
                           selectedColor: AppColors.surfaceMint,
                           backgroundColor: AppColors.background,
                           labelStyle: TextStyle(
-                            color: isSelected ? AppColors.primary : AppColors.textPrimary,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            color: isSelected
+                                ? AppColors.primary
+                                : AppColors.textPrimary,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                           ),
                           onSelected: (selected) {
                             notifier.updateTradeType(selected ? type : null);
@@ -339,7 +378,10 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                         onPressed: () => Navigator.pop(context),
                         child: const Text(
                           'Aplicar Filtros',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -502,7 +544,10 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                borderSide: const BorderSide(
+                  color: AppColors.primary,
+                  width: 2,
+                ),
               ),
               contentPadding: const EdgeInsets.symmetric(vertical: 12),
             ),
