@@ -1,490 +1,219 @@
-import "../../../auth/auth_page.dart";
-import '../../../../core/theme/app_colors.dart';
-import "../../../auth/providers/auth_provider.dart";
-import 'package:trueke/features/products/providers/products_provider.dart';
-import 'package:trueke/features/truekes/presentation/screens/truekes_history_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:trueke/features/offers/presentation/screens/trade_offers_screen.dart';
-import 'package:trueke/features/profile/providers/profile_provider.dart';
-import 'package:trueke/features/reviews/providers/reviews_provider.dart';
-import 'my_published_products_screen.dart';
-import 'edit_profile_screen.dart';
+import 'package:trueke/core/theme/app_colors.dart';
+import 'package:trueke/features/auth/providers/auth_provider.dart';
+import 'package:trueke/app/routes/app_routes.dart';
 
-class ProfileScreen extends ConsumerStatefulWidget {
-  final String userId;
-  const ProfileScreen({super.key, required this.userId});
+class ProfileScreen extends ConsumerWidget {
+  const ProfileScreen({super.key});
+
   @override
-  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authNotifierProvider);
+    final user = authState.user;
 
-class _ProfileScreenState extends ConsumerState<ProfileScreen> {
-  Widget _buildMenuTile(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    final theme = Theme.of(context);
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, color: theme.colorScheme.primary, size: 22),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: theme.colorScheme.onSurface,
-                      letterSpacing: -0.2,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              color: theme.colorScheme.outline,
-              size: 14,
-            ),
-          ],
+    final userName = user?.userMetadata?['full_name'] ?? user?.email?.split('@').first ?? 'Usuario Trueke';
+    final userEmail = user?.email ?? 'correo@ejemplo.com';
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 0,
+        centerTitle: true,
+        title: const Text(
+          'Mi Cuenta',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
-    );
-  }
-
-  Widget _buildLiveRatingBadge(BuildContext context, double rating) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: theme.colorScheme.primary.withValues(alpha: 0.2),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
+      body: ListView(
+        padding: const EdgeInsets.all(16),
         children: [
-          const Icon(Icons.star_rounded, color: AppColors.amber, size: 18),
-          const SizedBox(width: 4),
-          Text(
-            rating.toStringAsFixed(1),
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-              color: theme.colorScheme.onPrimaryContainer,
+          // 👤 1. Cabecera de Perfil Pro Rediseñada
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-        if (widget.userId.isEmpty) {
-      return Scaffold(
-        backgroundColor: theme.colorScheme.surface,
-        appBar: AppBar(
-          backgroundColor: theme.colorScheme.surface,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          title: Text(
-            "Mi Cuenta",
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 20,
-              color: theme.colorScheme.onSurface,
-              letterSpacing: -0.5,
-            ),
-          ),
-        ),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: Row(
               children: [
-                Icon(
-                  Icons.account_circle_outlined,
-                  size: 80,
-                  color: theme.colorScheme.primary.withValues(alpha: 0.5),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  "Inicia sesión para ver tu perfil",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onSurface,
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.primary, width: 2),
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "Accede a tus productos publicados, valoraciones y configuración de cuenta.",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: theme.colorScheme.onSurfaceVariant,
+                  child: const CircleAvatar(
+                    radius: 36,
+                    backgroundColor: AppColors.surfaceMint,
+                    child: Icon(Icons.person_rounded, size: 40, color: AppColors.primary),
                   ),
-                  textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 24),
-                FilledButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AuthPage(),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        userName,
+                        style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    );
-                  },
-                  icon: const Icon(Icons.login_rounded),
-                  label: const Text("Iniciar Sesión / Registrarse"),
-                  style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                      const SizedBox(height: 2),
+                      Text(
+                        userEmail,
+                        style: const TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 12.5,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceMint,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.star_rounded, size: 14, color: AppColors.primary),
+                                SizedBox(width: 4),
+                                Text(
+                                  'Sin valoraciones',
+                                  style: TextStyle(
+                                    color: AppColors.primary,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
-        ),
-      );
-    }
+          const SizedBox(height: 20),
 
-    final profileAsync = ref.watch(userProfileProvider(widget.userId));
-    final liveRatingAsync = ref.watch(userRatingAverageProvider(widget.userId));
-    final myProductsAsync = ref.watch(myProductsProvider);
-
-    return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        title: Text(
-          'Mi Cuenta',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 20,
-            color: theme.colorScheme.onSurface,
-            letterSpacing: -0.5,
-          ),
-        ),
-        actions: [
-          profileAsync.maybeWhen(
-            data: (profile) => IconButton(
-              icon: Icon(
-                Icons.edit_outlined,
-                color: theme.colorScheme.primary,
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (context) => EditProfileScreen(profile: profile),
-                  ),
-                );
-              },
+          // 📦 2. Opciones de Gestión (Se mantendrán para los siguientes pasos)
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
             ),
-            orElse: () => const SizedBox.shrink(),
+            child: Column(
+              children: [
+                _buildMenuItem(
+                  icon: Icons.swap_horiz_rounded,
+                  title: 'Mis Ofertas de Trueke',
+                  subtitle: 'Gestionar intercambios propuestos y recibidos',
+                  onTap: () {
+                    // Navegación de ofertas
+                  },
+                ),
+                const Divider(height: 1, color: Color(0xFFE2E8F0), indent: 16, endIndent: 16),
+                _buildMenuItem(
+                  icon: Icons.inventory_2_outlined,
+                  title: 'Mis Productos Publicados',
+                  subtitle: 'Tienes 1 artículo publicado',
+                  onTap: () {
+                    // Navegación de productos
+                  },
+                ),
+                const Divider(height: 1, color: Color(0xFFE2E8F0), indent: 16, endIndent: 16),
+                _buildMenuItem(
+                  icon: Icons.account_balance_wallet_outlined,
+                  title: 'Historial de Truekes',
+                  subtitle: 'Intercambios de bienes y estado financiero',
+                  onTap: () {
+                    // Navegación de historial
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // 🚪 3. Botón de Cerrar Sesión
+          OutlinedButton.icon(
+            onPressed: () async {
+              await ref.read(authNotifierProvider.notifier).signOut();
+              if (context.mounted) {
+                Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+              }
+            },
+            icon: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 18),
+            label: const Text(
+              'Cerrar sesión',
+              style: TextStyle(color: Colors.redAccent, fontSize: 13.5, fontWeight: FontWeight.w700),
+            ),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              side: const BorderSide(color: Color(0xFFFEE2E2)),
+              backgroundColor: const Color(0xFFFFF5F5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
           ),
         ],
       ),
-      body: profileAsync.when(
-        data: (profile) {
-          final resolvedName = profile.displayName.isNotEmpty
-              ? profile.displayName
-              : 'Usuario Trueke';
-          final url = profile.avatarUrl;
-          final hasAvatar = url != null && url.isNotEmpty;
+    );
+  }
 
-          return ListView(
-            padding: const EdgeInsets.symmetric(vertical: 24),
-            physics: const BouncingScrollPhysics(),
-            children: [
-              Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: theme.colorScheme.primary, width: 2),
-                    ),
-                    child: CircleAvatar(
-                      radius: 44,
-                      backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                      backgroundImage: hasAvatar ? NetworkImage(url) : null,
-                      child: !hasAvatar
-                          ? Icon(
-                              Icons.person_outline_rounded,
-                              size: 40,
-                              color: theme.colorScheme.primary,
-                            )
-                          : null,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    resolvedName,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onSurface,
-                      letterSpacing: -0.3,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    profile.email,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  liveRatingAsync.when(
-                    data: (rating) => _buildLiveRatingBadge(context, rating),
-                    error: (err, stack) =>
-                        _buildLiveRatingBadge(context, profile.averageRating),
-                    loading: () => _buildLiveRatingBadge(context, profile.averageRating),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 28),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surface,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-                      width: 1,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: theme.colorScheme.shadow.withValues(alpha: 0.03),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      _buildMenuTile(
-                        context,
-                        icon: Icons.swap_horizontal_circle_outlined,
-                        title: 'Mis Ofertas de Trueke',
-                        subtitle:
-                            'Gestionar intercambios propuestos y recibidos',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute<void>(
-                              builder: (context) => const TradeOffersScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      Divider(
-                        height: 1,
-                        thickness: 1,
-                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-                        indent: 16,
-                        endIndent: 16,
-                      ),
-                      _buildMenuTile(
-                        context,
-                        icon: Icons.storefront_outlined,
-                        title: 'Mis Productos Publicados',
-                        subtitle: myProductsAsync.maybeWhen(
-                          data: (list) =>
-                              'Tienes ${list.length} ${list.length == 1 ? 'artículo publicado' : 'artículos publicados'}',
-                          orElse: () =>
-                              'Gestionar tus artículos y tu escaparate personal',
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute<void>(
-                              builder: (context) =>
-                                  const MyPublishedProductsScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      Divider(
-                        height: 1,
-                        thickness: 1,
-                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-                        indent: 16,
-                        endIndent: 16,
-                      ),
-                      _buildMenuTile(
-                        context,
-                        icon: Icons.currency_exchange_outlined,
-                        title: 'Historial de Truekes',
-                        subtitle: 'Intercambios de bienes y estado financiero',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute<void>(
-                              builder: (context) =>
-                                  TruekesHistoryScreen(userId: widget.userId),
-                            ),
-                          );
-                        },
-                      ),
-                      Divider(
-                        height: 1,
-                        thickness: 1,
-                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-                        indent: 16,
-                        endIndent: 16,
-                      ),
-                      InkWell(
-                        onTap: () async {
-                          final confirm = await showDialog<bool>(
-                            context: context,
-                            builder: (dialogCtx) => AlertDialog(
-                              backgroundColor: theme.colorScheme.surface,
-                              surfaceTintColor: Colors.transparent,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(28),
-                              ),
-                              title: Text(
-                                'Cerrar sesión',
-                                style: TextStyle(
-                                  color: theme.colorScheme.onSurface,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              content: Text(
-                                '¿Estás seguro de que deseas salir de tu cuenta?',
-                                style: TextStyle(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(dialogCtx, false),
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                  child: const Text('Cancelar'),
-                                ),
-                                FilledButton(
-                                  onPressed: () => Navigator.pop(dialogCtx, true),
-                                  style: FilledButton.styleFrom(
-                                    backgroundColor: theme.colorScheme.error,
-                                    foregroundColor: theme.colorScheme.onError,
-                                    elevation: 0,
-                                  ),
-                                  child: const Text('Cerrar sesión'),
-                                ),
-                              ],
-                            ),
-                          );
-
-                          if (confirm == true && context.mounted) {
-                            await ref.read(authServiceProvider).signOut();
-                          }
-                        },
-                        borderRadius: const BorderRadius.vertical(
-                          bottom: Radius.circular(24),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.errorContainer.withValues(alpha: 0.4),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Icon(
-                                  Icons.logout_rounded,
-                                  color: theme.colorScheme.error,
-                                  size: 22,
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Text(
-                                  'Cerrar sesión',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: theme.colorScheme.error,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-        loading: () =>
-            const Center(child: CircularProgressIndicator.adaptive()),
-        error: (error, stack) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Text(
-              'Error al cargar perfil: $error',
-              style: TextStyle(
-                color: theme.colorScheme.error,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
+  Widget _buildMenuItem({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      onTap: onTap,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      leading: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceMint,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(icon, color: AppColors.primary, size: 20),
+      ),
+      title: Text(
+        title,
+        style: const TextStyle(
+          color: AppColors.textPrimary,
+          fontSize: 13.5,
+          fontWeight: FontWeight.w700,
         ),
       ),
+      subtitle: Text(
+        subtitle,
+        style: const TextStyle(
+          color: AppColors.textSecondary,
+          fontSize: 11.5,
+        ),
+      ),
+      trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary, size: 20),
     );
   }
 }
