@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/core/theme/app_colors.dart';
-import 'package:trueke/models/product.dart';
-import 'package:trueke/features/products/providers/product_search_provider.dart';
 import 'package:trueke/features/home/widgets/product_card.dart';
+import 'package:trueke/features/products/providers/product_search_provider.dart';
+import 'package:trueke/models/product.dart';
 
 class ProductSearchScreen extends ConsumerStatefulWidget {
   const ProductSearchScreen({super.key});
@@ -517,20 +517,6 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
               style: TextStyle(
                 color: AppColors.primary,
                 fontWeight: FontWeight.bold,
-                fontSize: 13,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              _searchController.clear();
-              searchNotifier.clearAllFilters();
-            },
-            child: const Text(
-              'Limpiar',
-              style: TextStyle(
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w600,
                 fontSize: 13,
               ),
             ),
