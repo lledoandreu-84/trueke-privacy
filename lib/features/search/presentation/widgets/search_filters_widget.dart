@@ -13,6 +13,8 @@ class SearchFiltersWidget extends ConsumerWidget {
         return 'price_desc';
       case ProductSortOption.distance:
         return 'distance';
+      case ProductSortOption.mostViewed:
+        return 'most_viewed';
       case ProductSortOption.relevance:
         return 'recent';
     }
@@ -26,6 +28,8 @@ class SearchFiltersWidget extends ConsumerWidget {
         return ProductSortOption.priceDesc;
       case 'distance':
         return ProductSortOption.distance;
+      case 'most_viewed':
+        return ProductSortOption.mostViewed;
       default:
         return ProductSortOption.relevance;
     }
@@ -125,6 +129,10 @@ class SearchFiltersWidget extends ConsumerWidget {
                     DropdownMenuItem(
                       value: 'recent',
                       child: Text('Más recientes', style: TextStyle(color: theme.colorScheme.onSurface)),
+                    ),
+                    DropdownMenuItem(
+                      value: 'most_viewed',
+                      child: Text('Más vistos (Popularidad)', style: TextStyle(color: theme.colorScheme.onSurface)),
                     ),
                     DropdownMenuItem(
                       value: 'price_asc',
