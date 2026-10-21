@@ -5,12 +5,17 @@ import 'package:trueke/features/auth/providers/auth_provider.dart';
 import 'package:trueke/app/routes/app_routes.dart';
 
 class ProfileScreen extends ConsumerWidget {
-  const ProfileScreen({super.key});
+  final String? userId;
+
+  const ProfileScreen({
+    super.key,
+    this.userId,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authNotifierProvider);
-    final user = authState.user;
+    final authState = ref.watch(authProvider);
+    final user = authState.value;
 
     final userName = user?.userMetadata?['full_name'] ?? user?.email?.split('@').first ?? 'Usuario Trueke';
     final userEmail = user?.email ?? 'correo@ejemplo.com';
@@ -114,7 +119,7 @@ class ProfileScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 20),
 
-          // 📦 2. Opciones de Gestión (Se mantendrán para los siguientes pasos)
+          // 📦 2. Opciones de Gestión
           Container(
             decoration: BoxDecoration(
               color: AppColors.surface,
@@ -127,27 +132,21 @@ class ProfileScreen extends ConsumerWidget {
                   icon: Icons.swap_horiz_rounded,
                   title: 'Mis Ofertas de Trueke',
                   subtitle: 'Gestionar intercambios propuestos y recibidos',
-                  onTap: () {
-                    // Navegación de ofertas
-                  },
+                  onTap: () {},
                 ),
                 const Divider(height: 1, color: Color(0xFFE2E8F0), indent: 16, endIndent: 16),
                 _buildMenuItem(
                   icon: Icons.inventory_2_outlined,
                   title: 'Mis Productos Publicados',
                   subtitle: 'Tienes 1 artículo publicado',
-                  onTap: () {
-                    // Navegación de productos
-                  },
+                  onTap: () {},
                 ),
                 const Divider(height: 1, color: Color(0xFFE2E8F0), indent: 16, endIndent: 16),
                 _buildMenuItem(
                   icon: Icons.account_balance_wallet_outlined,
                   title: 'Historial de Truekes',
                   subtitle: 'Intercambios de bienes y estado financiero',
-                  onTap: () {
-                    // Navegación de historial
-                  },
+                  onTap: () {},
                 ),
               ],
             ),
@@ -157,9 +156,9 @@ class ProfileScreen extends ConsumerWidget {
           // 🚪 3. Botón de Cerrar Sesión
           OutlinedButton.icon(
             onPressed: () async {
-              await ref.read(authNotifierProvider.notifier).signOut();
+              await ref.read(authProvider.notifier).signOut();
               if (context.mounted) {
-                Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+                Navigator.pushNamedAndRemoveUntil(context, AppRoutes.auth, (route) => false);
               }
             },
             icon: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 18),
