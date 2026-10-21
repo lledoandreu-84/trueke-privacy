@@ -39,11 +39,10 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             const SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(16, 20, 16, 16),
+                padding: EdgeInsets.fromLTRB(16, 16, 16, 12),
                 child: PromoBanner(),
               ),
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 10)),
             const SliverToBoxAdapter(
               child: _SectionHeading(
                 title: 'Más buscados en tu zona',
@@ -87,15 +86,15 @@ class _HomePageState extends ConsumerState<HomePage> {
                 final displayProducts = products.take(2).toList();
 
                 return SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 85),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
                   sliver: SliverGrid(
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
-                          childAspectRatio: 0.88,
-                        ),
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 0.88,
+                    ),
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final product = displayProducts[index];
                       return GestureDetector(
@@ -134,7 +133,7 @@ class _SectionHeading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

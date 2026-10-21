@@ -8,7 +8,7 @@ class PromoBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 235,
+      height: 240,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFF1E1B4B), Color(0xFF4338CA), Color(0xFF6D28D9)],
@@ -18,9 +18,9 @@ class PromoBanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(26),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF4338CA).withValues(alpha: 0.5),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+            color: const Color(0xFF4338CA).withValues(alpha: 0.45),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -98,7 +98,7 @@ class PromoBanner extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.25),
+                            color: Colors.black.withValues(alpha: 0.22),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
