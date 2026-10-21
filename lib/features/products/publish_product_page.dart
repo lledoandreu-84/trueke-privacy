@@ -43,7 +43,6 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
     _isTrueque = widget.product != null ? widget.product!.tradeType == TradeType.trade : true;
     _existingImages = List.from(widget.product?.images ?? []);
     
-    // Limpiamos imágenes seleccionadas previas al abrir
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(publishProductProvider.notifier).clearImages();
     });
@@ -172,10 +171,10 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
     final title = _titleController.text.trim();
     final description = _descriptionController.text.trim();
     final wanted = _seekingController.text.trim();
-    const location = 'Madrid, España'; // Ubicación por defecto o de perfil
+    const location = 'Madrid, España';
     const latitude = 40.416775;
     const longitude = -3.703790;
-    final tradeType = _isTrueque ? TradeType.trade : TradeType.sell;
+    final tradeType = _isTrueque ? TradeType.trade : TradeType.sale;
 
     final notifier = ref.read(publishProductProvider.notifier);
 
@@ -240,8 +239,6 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
     final isEditing = widget.product != null;
     final publishState = ref.watch(publishProductProvider);
     final selectedFiles = publishState.selectedImages;
-
-    // Total de imágenes (existentes + nuevas locales)
     final totalImagesCount = _existingImages.length + selectedFiles.length;
 
     return Scaffold(
@@ -264,7 +261,6 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
           children: [
-            // 📸 1. Sección de Fotos Ultra Compacta
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -387,7 +383,6 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
             ),
             const SizedBox(height: 10),
 
-            // 📝 2. Tarjeta de Información Básica
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -487,7 +482,6 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
             ),
             const SizedBox(height: 10),
 
-            // 🔄 3. Modalidad & Trueke
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -577,7 +571,6 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
             ),
             const SizedBox(height: 16),
 
-            // 🚀 4. Botón de Acción Principal
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
