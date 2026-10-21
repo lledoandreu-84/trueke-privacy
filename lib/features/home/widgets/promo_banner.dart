@@ -12,9 +12,9 @@ class PromoBanner extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [
-            Color(0xFF0F172A), // Slate 900
-            Color(0xFF1E1B4B), // Indigo 950
-            Color(0xFF312E81), // Indigo 900
+            Color(0xFF0F172A),
+            Color(0xFF1E1B4B),
+            Color(0xFF312E81),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -32,7 +32,6 @@ class PromoBanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(28),
         child: Stack(
           children: [
-            // Resplandor ambiental de fondo
             Positioned(
               top: -40,
               right: -40,
@@ -60,7 +59,6 @@ class PromoBanner extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Badge Superior Glossy
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                     decoration: BoxDecoration(
@@ -88,8 +86,6 @@ class PromoBanner extends StatelessWidget {
                       ],
                     ),
                   ),
-
-                  // Titular Principal Impactante
                   const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -114,8 +110,6 @@ class PromoBanner extends StatelessWidget {
                       ),
                     ],
                   ),
-
-                  // Buscador Interactivo Integrado (Motor Principal)
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -140,15 +134,15 @@ class PromoBanner extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.search_rounded,
                             color: Color(0xFF4F46E5),
                             size: 22,
                           ),
-                          SizedBox(width: 12),
-                          Expanded(
+                          const SizedBox(width: 12),
+                          const Expanded(
                             child: Text(
                               'Buscar ropa, tecnología, consolas...',
                               style: TextStyle(
@@ -160,12 +154,12 @@ class PromoBanner extends StatelessWidget {
                             ),
                           ),
                           Container(
-                            padding: EdgeInsets.all(6),
-                            decoration: BoxDecoration(
+                            padding: const EdgeInsets.all(6),
+                            decoration: const BoxDecoration(
                               color: Color(0xFFEEF2FF),
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(
+                            child: const Icon(
                               Icons.arrow_forward_rounded,
                               color: Color(0xFF4F46E5),
                               size: 16,
