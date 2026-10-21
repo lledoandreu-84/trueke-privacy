@@ -190,7 +190,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
 
                   // 💶 Rango de Precio (€) con Slider de 5 en 5 hasta 10.000€ y Campo de Texto Editable
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.between,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
                         'Rango de Precio (€)',
