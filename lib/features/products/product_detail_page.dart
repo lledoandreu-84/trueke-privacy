@@ -134,12 +134,14 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
       orElse: () => false,
     );
 
+    final viewsText = '${widget.product.viewsCount > 0 ? widget.product.viewsCount : 1} vistas';
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
-            // 📸 1. Galería Compacta Panorámica con Vistas & Acciones
+            // 📸 1. Galería Compacta Panorámica con Vistas Real
             Stack(
               children: [
                 Container(
@@ -150,7 +152,7 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
                       ? Image.network(
                           widget.product.images.first,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => const Center(
+                          errorBuilder: (context, error, stackTrace) => const Center(
                             child: Icon(Icons.image_outlined, size: 48, color: AppColors.primary),
                           ),
                         )
@@ -182,14 +184,14 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
                       color: Colors.black.withValues(alpha: 0.65),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.remove_red_eye_rounded, size: 14, color: Colors.white),
-                        SizedBox(width: 4),
+                        const Icon(Icons.remove_red_eye_rounded, size: 14, color: Colors.white),
+                        const SizedBox(width: 4),
                         Text(
-                          '142 vistas',
-                          style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
+                          viewsText,
+                          style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
                         ),
                       ],
                     ),
