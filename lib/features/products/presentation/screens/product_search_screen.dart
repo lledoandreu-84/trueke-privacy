@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/core/theme/app_colors.dart';
 import 'package:trueke/app/routes/app_routes.dart';
-import 'package:trueke/features/products/domain/product_model.dart';
 import 'package:trueke/features/products/providers/product_filters_provider.dart';
 import 'package:trueke/features/products/providers/paginated_products_provider.dart';
 import 'package:trueke/features/home/widgets/product_card.dart';
@@ -156,7 +155,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           fontWeight: FontWeight.w600,
                         ),
                         onSelected: (selected) {
-                          ref.read(productFiltersProvider.notifier).setRadius(radius);
+                          ref.read(productFiltersProvider.notifier).setRadiusInKm(radius);
                         },
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -197,12 +196,12 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                 final products = state.products;
 
                 if (products.isEmpty) {
-                  return Center(
+                  return const Center(
                     child: Padding(
-                      padding: const EdgeInsets.all(32.0),
+                      padding: EdgeInsets.all(32.0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Icon(Icons.search_off_rounded, size: 48, color: Color(0xFF94A3B8)),
                           SizedBox(height: 16),
                           Text(
