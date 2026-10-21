@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../products/domain/models/product.dart';
+import '../../products/domain/models/product.dart';
 
 class ProductCard extends StatelessWidget {
   const ProductCard({
@@ -33,7 +33,6 @@ class ProductCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Imagen con Icono Me Gusta
             Expanded(
               child: Stack(
                 fit: StackFit.expand,
@@ -71,8 +70,6 @@ class ProductCard extends StatelessWidget {
                 ],
               ),
             ),
-
-            // Contenido Informativo
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: Column(
