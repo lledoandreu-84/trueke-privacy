@@ -42,7 +42,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     if (!mounted || !context.mounted) return;
     int selectedStars = 5;
     final commentController = TextEditingController();
-    final theme = Theme.of(context);
 
     showDialog(
       context: context,
