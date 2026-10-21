@@ -400,7 +400,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                 );
               },
               loading: () => const SizedBox.shrink(),
-              error: (_, __) => const SizedBox.shrink(),
+              error: (error, stack) => const SizedBox.shrink(),
             ),
             const SizedBox(height: 8),
 
