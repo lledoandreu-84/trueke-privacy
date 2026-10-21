@@ -49,12 +49,12 @@ class NearbyProductsScreen extends ConsumerWidget {
           final products = state.products;
 
           if (products.isEmpty) {
-            return Center(
+            return const Center(
               child: Padding(
-                padding: const EdgeInsets.all(32.0),
+                padding: EdgeInsets.all(32.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Icon(Icons.location_off_rounded, size: 48, color: Color(0xFF94A3B8)),
                     SizedBox(height: 16),
                     Text(
