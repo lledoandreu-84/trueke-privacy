@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:trueke/core/theme/app_colors.dart';
-import 'package:trueke/features/auth/providers/auth_provider.dart';
 import 'package:trueke/app/routes/app_routes.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -14,8 +14,7 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authProvider);
-    final user = authState.value;
+    final user = Supabase.instance.client.auth.currentUser;
 
     final userName = user?.userMetadata?['full_name'] ?? user?.email?.split('@').first ?? 'Usuario Trueke';
     final userEmail = user?.email ?? 'correo@ejemplo.com';
@@ -156,9 +155,9 @@ class ProfileScreen extends ConsumerWidget {
           // 🚪 3. Botón de Cerrar Sesión
           OutlinedButton.icon(
             onPressed: () async {
-              await ref.read(authProvider.notifier).signOut();
+              await Supabase.instance.client.auth.signOut();
               if (context.mounted) {
-                Navigator.pushNamedAndRemoveUntil(context, AppRoutes.auth, (route) => false);
+                Navigator.pushNamedAndRemoveUntil(context, AppRoutes.initial, (route) => false);
               }
             },
             icon: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 18),
