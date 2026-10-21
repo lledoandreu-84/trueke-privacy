@@ -158,294 +158,264 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
           children: [
-            // 📸 1. Sección de Multimedia Protagonista Interactiva
+            // 📸 1. Sección de Fotos Ultra Compacta
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: const Color(0xFFE2E8F0)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Fotografías del artículo',
+                    'Fotos del artículo',
                     style: TextStyle(
                       color: AppColors.textPrimary,
-                      fontSize: 14,
+                      fontSize: 13,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'La primera foto será la portada principal',
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 12,
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    height: 75,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _images.length + 1,
+                      separatorBuilder: (context, index) => const SizedBox(width: 10),
+                      itemBuilder: (context, index) {
+                        if (index == 0) {
+                          return InkWell(
+                            onTap: _showImageSourceDialog,
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              width: 75,
+                              decoration: BoxDecoration(
+                                color: AppColors.surfaceMint,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+                              ),
+                              child: const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.add_a_photo_rounded, color: AppColors.primary, size: 22),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    'Añadir',
+                                    style: TextStyle(
+                                      color: AppColors.primary,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+
+                        final imgIndex = index - 1;
+                        final imagePath = _images[imgIndex];
+                        final isNetwork = imagePath.startsWith('http');
+
+                        return Stack(
+                          children: [
+                            Container(
+                              width: 75,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: const Color(0xFFE2E8F0)),
+                              ),
+                              clipBehavior: Clip.antiAlias,
+                              child: isNetwork
+                                  ? Image.network(
+                                      imagePath,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) => Container(
+                                        color: AppColors.surfaceMint,
+                                        child: const Icon(Icons.image_outlined, color: AppColors.primary, size: 20),
+                                      ),
+                                    )
+                                  : Image.file(
+                                      File(imagePath),
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) => Container(
+                                        color: AppColors.surfaceMint,
+                                        child: const Icon(Icons.image_outlined, color: AppColors.primary, size: 20),
+                                      ),
+                                    ),
+                            ),
+                            Positioned(
+                              top: 3,
+                              right: 3,
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _images.removeAt(imgIndex);
+                                  });
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(3),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.black54,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.close_rounded, size: 12, color: Colors.white),
+                                ),
+                              ),
+                            ),
+                            if (imgIndex == 0)
+                              Positioned(
+                                bottom: 3,
+                                left: 3,
+                                right: 3,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(vertical: 1),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary.withValues(alpha: 0.85),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: const Text(
+                                    'Portada',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(color: Colors.white, fontSize: 8.5, fontWeight: FontWeight.w700),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  
-                  if (_images.isEmpty)
-                    Center(
-                      child: InkWell(
-                        onTap: _showImageSourceDialog,
-                        borderRadius: BorderRadius.circular(16),
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(vertical: 24),
-                          decoration: BoxDecoration(
-                            color: AppColors.background,
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: const Color(0xFFCBD5E1)),
-                          ),
-                          child: const Column(
-                            children: [
-                              Icon(Icons.add_a_photo_rounded, size: 36, color: AppColors.primary),
-                              SizedBox(height: 8),
-                              Text(
-                                'Añadir fotos (Cámara o Galería)',
-                                style: TextStyle(
-                                  color: AppColors.primary,
-                                  fontSize: 13.5,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  else
-                    SizedBox(
-                      height: 110,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _images.length + 1,
-                        separatorBuilder: (context, index) => const SizedBox(width: 12),
-                        itemBuilder: (context, index) {
-                          if (index == _images.length) {
-                            return InkWell(
-                              onTap: _showImageSourceDialog,
-                              borderRadius: BorderRadius.circular(12),
-                              child: Container(
-                                width: 100,
-                                decoration: BoxDecoration(
-                                  color: AppColors.background,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: const Color(0xFFCBD5E1)),
-                                ),
-                                child: const Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.add_rounded, color: AppColors.primary, size: 28),
-                                    SizedBox(height: 4),
-                                    Text('Añadir', style: TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.w600)),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }
-
-                          final imagePath = _images[index];
-                          final isNetwork = imagePath.startsWith('http');
-
-                          return Stack(
-                            children: [
-                              Container(
-                                width: 100,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: const Color(0xFFE2E8F0)),
-                                ),
-                                clipBehavior: Clip.antiAlias,
-                                child: isNetwork
-                                    ? Image.network(
-                                        imagePath,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) => Container(
-                                          color: AppColors.surfaceMint,
-                                          child: const Icon(Icons.image_outlined, color: AppColors.primary),
-                                        ),
-                                      )
-                                    : Image.file(
-                                        File(imagePath),
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) => Container(
-                                          color: AppColors.surfaceMint,
-                                          child: const Icon(Icons.image_outlined, color: AppColors.primary),
-                                        ),
-                                      ),
-                              ),
-                              Positioned(
-                                top: 4,
-                                right: 4,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      _images.removeAt(index);
-                                    });
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: const BoxDecoration(
-                                      color: Colors.black54,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(Icons.close_rounded, size: 14, color: Colors.white),
-                                  ),
-                                ),
-                              ),
-                              if (index == 0)
-                                Positioned(
-                                  bottom: 4,
-                                  left: 4,
-                                  right: 4,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.primary.withValues(alpha: 0.8),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: const Text(
-                                      'Portada',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w700),
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 10),
 
-            // 📝 2. Tarjeta de Información Principal
+            // 📝 2. Tarjeta de Información Básica (Agrupada)
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: const Color(0xFFE2E8F0)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Información Básica',
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
                   TextFormField(
                     controller: _titleController,
+                    style: const TextStyle(fontSize: 13.5),
                     decoration: InputDecoration(
                       labelText: 'Título del artículo',
-                      hintText: 'Ej. Bicicleta de montaña',
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       filled: true,
                       fillColor: AppColors.background,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide.none,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 10),
                   TextFormField(
                     controller: _descriptionController,
-                    maxLines: 3,
+                    maxLines: 2,
+                    style: const TextStyle(fontSize: 13.5),
                     decoration: InputDecoration(
                       labelText: 'Descripción',
-                      hintText: 'Describe el estado, uso y detalles clave...',
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       filled: true,
                       fillColor: AppColors.background,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide.none,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  DropdownButtonFormField<String>(
-                    initialValue: _selectedCategory,
-                    dropdownColor: AppColors.surface,
-                    decoration: InputDecoration(
-                      labelText: 'Categoría',
-                      filled: true,
-                      fillColor: AppColors.background,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
+                  const SizedBox(height: 10),
+
+                  // Categoría y Estado en la misma fila (2 columnas)
+                  Row(
+                    children: [
+                      Expanded(
+                        child: DropdownButtonFormField<String>(
+                          initialValue: _selectedCategory,
+                          dropdownColor: AppColors.surface,
+                          style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
+                          decoration: InputDecoration(
+                            labelText: 'Categoría',
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                            filled: true,
+                            fillColor: AppColors.background,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          items: ['Electrónica', 'Moda', 'Hogar', 'Deportes', 'Otros']
+                              .map((cat) => DropdownMenuItem(value: cat, child: Text(cat, overflow: TextOverflow.ellipsis)))
+                              .toList(),
+                          onChanged: (val) => setState(() => _selectedCategory = val ?? 'Electrónica'),
+                        ),
                       ),
-                    ),
-                    items: ['Electrónica', 'Moda', 'Hogar', 'Deportes', 'Otros']
-                        .map((cat) => DropdownMenuItem(value: cat, child: Text(cat)))
-                        .toList(),
-                    onChanged: (val) => setState(() => _selectedCategory = val ?? 'Electrónica'),
-                  ),
-                  const SizedBox(height: 16),
-                  DropdownButtonFormField<String>(
-                    initialValue: _selectedCondition,
-                    dropdownColor: AppColors.surface,
-                    decoration: InputDecoration(
-                      labelText: 'Estado de conservación',
-                      filled: true,
-                      fillColor: AppColors.background,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: DropdownButtonFormField<String>(
+                          initialValue: _selectedCondition,
+                          dropdownColor: AppColors.surface,
+                          style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
+                          decoration: InputDecoration(
+                            labelText: 'Estado',
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                            filled: true,
+                            fillColor: AppColors.background,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          items: ['Nuevo', 'Como nuevo', 'Buen estado', 'Uso aceptable']
+                              .map((cond) => DropdownMenuItem(value: cond, child: Text(cond, overflow: TextOverflow.ellipsis)))
+                              .toList(),
+                          onChanged: (val) => setState(() => _selectedCondition = val ?? 'Buen estado'),
+                        ),
                       ),
-                    ),
-                    items: ['Nuevo', 'Como nuevo', 'Buen estado', 'Uso aceptable']
-                        .map((cond) => DropdownMenuItem(value: cond, child: Text(cond)))
-                        .toList(),
-                    onChanged: (val) => setState(() => _selectedCondition = val ?? 'Buen estado'),
+                    ],
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 10),
 
-            // 🔄 3. Selector de Modalidad & Trueke
+            // 🔄 3. Modalidad & Trueke
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: const Color(0xFFE2E8F0)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Modalidad de Intercambio',
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
                   Row(
                     children: [
                       Expanded(
                         child: GestureDetector(
                           onTap: () => setState(() => _isTrueque = true),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            padding: const EdgeInsets.symmetric(vertical: 9),
                             decoration: BoxDecoration(
                               color: _isTrueque ? AppColors.surfaceMint : AppColors.background,
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(10),
                               border: Border.all(
                                 color: _isTrueque ? AppColors.primary : Colors.transparent,
                               ),
@@ -455,6 +425,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                                 'Trueke',
                                 style: TextStyle(
                                   color: _isTrueque ? AppColors.primary : AppColors.textSecondary,
+                                  fontSize: 13,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -462,15 +433,15 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 8),
                       Expanded(
                         child: GestureDetector(
                           onTap: () => setState(() => _isTrueque = false),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            padding: const EdgeInsets.symmetric(vertical: 9),
                             decoration: BoxDecoration(
                               color: !_isTrueque ? AppColors.surfaceMint : AppColors.background,
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(10),
                               border: Border.all(
                                 color: !_isTrueque ? AppColors.primary : Colors.transparent,
                               ),
@@ -480,6 +451,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                                 'Venta',
                                 style: TextStyle(
                                   color: !_isTrueque ? AppColors.primary : AppColors.textSecondary,
+                                  fontSize: 13,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -490,16 +462,19 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                     ],
                   ),
                   if (_isTrueque) ...[
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 10),
                     TextFormField(
                       controller: _seekingController,
+                      style: const TextStyle(fontSize: 13.5),
                       decoration: InputDecoration(
                         labelText: '¿Qué buscas a cambio?',
-                        hintText: 'Ej. Herramientas, videojuegos, etc.',
+                        hintText: 'Ej. Herramientas, videojuegos...',
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                         filled: true,
                         fillColor: AppColors.background,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide.none,
                         ),
                       ),
@@ -508,9 +483,9 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
 
-            // 🚀 4. Botón de Acción Principal Destacado
+            // 🚀 4. Botón de Acción Principal Visualmente Directo
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -521,23 +496,23 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                   elevation: 0,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 child: Text(
                   isEditing ? 'Guardar Cambios' : 'Publicar Artículo',
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 15,
+                    fontSize: 14.5,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 16),
           ],
         ),
       ),
