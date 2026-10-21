@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../app/routes/app_routes.dart';
+import '../../products/presentation/screens/product_search_screen.dart';
 
 class PromoBanner extends StatelessWidget {
   const PromoBanner({super.key});
@@ -71,7 +71,12 @@ class PromoBanner extends StatelessWidget {
           const SizedBox(width: 12),
           ElevatedButton(
             onPressed: () {
-              Navigator.pushNamed(context, AppRoutes.search);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ProductSearchScreen(),
+                ),
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
