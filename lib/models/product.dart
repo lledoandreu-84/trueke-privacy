@@ -44,10 +44,10 @@ class Product {
       description: json['description'] as String? ?? '',
       price: json['price'] != null ? (json['price'] as num).toDouble() : null,
       images:
-          (json['image_urls'] as List<dynamic>?)
+          (json['images'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
-          (json['images'] as List<dynamic>?)
+          (json['image_urls'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],
@@ -81,7 +81,7 @@ class Product {
       'title': title,
       'description': description,
       'price': price,
-      'image_urls': images,
+      'images': images,
       'category': category,
       'owner': owner,
       'owner_id': ownerId,
