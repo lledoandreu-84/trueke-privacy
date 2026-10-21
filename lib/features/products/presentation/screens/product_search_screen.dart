@@ -106,7 +106,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: _categories.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 8),
+                      separatorBuilder: (context, index) => const SizedBox(width: 8),
                       itemBuilder: (context, index) {
                         final category = _categories[index];
                         final isSelected = category == 'Todos'
@@ -152,7 +152,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: _radii.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 8),
+                      separatorBuilder: (context, index) => const SizedBox(width: 8),
                       itemBuilder: (context, index) {
                         final radius = _radii[index];
                         final isSelected = filters.radiusInKm == radius;
