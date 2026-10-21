@@ -140,10 +140,10 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
         ),
       );
     }
-    if (state.maxRadiusKm != 50.0) {
+    if (state.maxRadiusKm < 9900.0) {
       activeChips.add(
         _buildActiveChip(context, 'Ubicación: ${_getDistanceLabel(state.maxRadiusKm)}', () {
-          notifier.updateRadius(50.0);
+          notifier.updateRadius(9999.0);
         }),
       );
     }
