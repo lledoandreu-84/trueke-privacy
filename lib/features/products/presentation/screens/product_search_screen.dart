@@ -155,7 +155,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           fontWeight: FontWeight.w600,
                         ),
                         onSelected: (selected) {
-                          ref.read(productFiltersProvider.notifier).setRadiusInKm(radius);
+                          ref.read(productFiltersProvider.notifier).updateMaxDistance(radius);
                         },
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
