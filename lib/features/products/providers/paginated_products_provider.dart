@@ -45,14 +45,13 @@ class PaginatedProductsNotifier extends AsyncNotifier<PaginatedProductsState> {
         category: filters.category,
         userLatitude: filters.userLatitude,
         userLongitude: filters.userLongitude,
-        radiusInKm: filters.radiusInKm,
+        radiusInKm: filters.radiusInKm ?? 100.0, // Forzar 100km por defecto
         page: 0,
         limit: 20,
       );
 
       final filteredList = _applyLocalFilters(initialItems, filters);
 
-      // Persistencia asíncrona de fondo sin bloquear el hilo principal de renderizado
       unawaited(_saveCache(filteredList));
 
       return PaginatedProductsState(
@@ -60,13 +59,12 @@ class PaginatedProductsNotifier extends AsyncNotifier<PaginatedProductsState> {
         hasReachedEnd: initialItems.length < 20,
       );
     } catch (e) {
-      // Mecanismo de Recuperación Defensiva (Fallback Offline)
       final cachedItems = await _loadCache();
       if (cachedItems.isNotEmpty) {
         final filteredList = _applyLocalFilters(cachedItems, filters);
         return PaginatedProductsState(
           products: filteredList,
-          hasReachedEnd: true, // Forzar fin de paginación simulado en offline
+          hasReachedEnd: true,
         );
       }
       rethrow;
@@ -83,9 +81,7 @@ class PaginatedProductsNotifier extends AsyncNotifier<PaginatedProductsState> {
         cacheableItems.map((product) => product.toJson()).toList(),
       );
       await prefs.setString(_cacheKey, rawJson);
-    } catch (_) {
-      // Silenciar errores de escritura de caché para no comprometer la experiencia de usuario
-    }
+    } catch (_) {}
   }
 
   Future<List<Product>> _loadCache() async {
@@ -104,7 +100,34 @@ class PaginatedProductsNotifier extends AsyncNotifier<PaginatedProductsState> {
     }
   }
 
+  double _haversineDistance(
+    double lat1,
+    double lon1,
+    double lat2,
+    double lon2,
+  ) {
+    const double earthRadiusInKm = 6371.0;
+    final double dLat = (lat2 - lat1) * math.pi / 180.0;
+    final double dLon = (lon2 - lon1) * math.pi / 180.0;
+    final double rLat1 = lat1 * math.pi / 180.0;
+    final double rLat2 = lat2 * math.pi / 180.0;
+
+    final double a =
+        math.sin(dLat / 2) * math.sin(dLat / 2) +
+        math.sin(dLon / 2) *
+            math.sin(dLon / 2) *
+            math.cos(rLat1) *
+            math.cos(rLat2);
+    final double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+
+    return earthRadiusInKm * c;
+  }
+
   List<Product> _applyLocalFilters(List<Product> items, dynamic filters) {
+    final maxRadius = filters.radiusInKm ?? 100.0;
+    final uLat = filters.userLatitude;
+    final uLng = filters.userLongitude;
+
     final processedList = items.where((product) {
       final matchesTradeType =
           filters.tradeType == null || product.tradeType == filters.tradeType;
@@ -120,6 +143,20 @@ class PaginatedProductsNotifier extends AsyncNotifier<PaginatedProductsState> {
           return false;
         }
       }
+
+      // Filtro estricto por radio de 100km si hay coordenadas de GPS disponibles
+      if (uLat != null && uLng != null && product.latitude != null && product.longitude != null) {
+        final distance = _haversineDistance(
+          uLat,
+          uLng,
+          product.latitude!,
+          product.longitude!,
+        );
+        if (distance > maxRadius) {
+          return false;
+        }
+      }
+
       return matchesTradeType && matchesCondition;
     }).toList();
 
@@ -144,44 +181,18 @@ class PaginatedProductsNotifier extends AsyncNotifier<PaginatedProductsState> {
         });
         break;
       case ProductSortOption.distance:
-        if (filters.userLatitude != null && filters.userLongitude != null) {
-          final double uLat = filters.userLatitude!;
-          final double uLng = filters.userLongitude!;
-
-          double haversineDistance(
-            double lat1,
-            double lon1,
-            double lat2,
-            double lon2,
-          ) {
-            const double earthRadiusInMeters = 6371000;
-            final double dLat = (lat2 - lat1) * math.pi / 180.0;
-            final double dLon = (lon2 - lon1) * math.pi / 180.0;
-            final double rLat1 = lat1 * math.pi / 180.0;
-            final double rLat2 = lat2 * math.pi / 180.0;
-
-            final double a =
-                math.sin(dLat / 2) * math.sin(dLat / 2) +
-                math.sin(dLon / 2) *
-                    math.sin(dLon / 2) *
-                    math.cos(rLat1) *
-                    math.cos(rLat2);
-            final double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
-
-            return earthRadiusInMeters * c;
-          }
-
+        if (uLat != null && uLng != null) {
           processedList.sort((a, b) {
             if (a.latitude == null || a.longitude == null) return 1;
             if (b.latitude == null || b.longitude == null) return -1;
 
-            final double distA = haversineDistance(
+            final double distA = _haversineDistance(
               uLat,
               uLng,
               a.latitude!,
               a.longitude!,
             );
-            final double distB = haversineDistance(
+            final double distB = _haversineDistance(
               uLat,
               uLng,
               b.latitude!,
@@ -222,7 +233,7 @@ class PaginatedProductsNotifier extends AsyncNotifier<PaginatedProductsState> {
         category: filters.category,
         userLatitude: filters.userLatitude,
         userLongitude: filters.userLongitude,
-        radiusInKm: filters.radiusInKm,
+        radiusInKm: filters.radiusInKm ?? 100.0,
         page: nextPage,
         limit: 20,
       );
