@@ -69,7 +69,7 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
   ProductSearchState build() {
     return const ProductSearchState(
       query: '',
-      maxRadiusKm: 15.0,
+      maxRadiusKm: 9999.0, // Radio ilimitado por defecto para que no aplique filtro espacial restrictivo de entrada
       latitude: 40.416775,
       longitude: -3.703790,
       selectedCondition: null,
@@ -245,7 +245,7 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
   void clearAllFilters() {
     state = state.copyWith(
       query: '',
-      maxRadiusKm: 15.0,
+      maxRadiusKm: 9999.0,
       clearCondition: true,
       clearCategory: true,
       clearTradeType: true,
