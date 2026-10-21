@@ -8,7 +8,7 @@ class PromoBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 245,
+      height: 260,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [
@@ -75,7 +75,7 @@ class PromoBanner extends StatelessWidget {
                         Icon(Icons.bolt_rounded, color: Colors.amberAccent, size: 16),
                         SizedBox(width: 6),
                         Text(
-                          'Trueke Smart Exchange',
+                          'Intercambio Inteligente',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 11.5,
