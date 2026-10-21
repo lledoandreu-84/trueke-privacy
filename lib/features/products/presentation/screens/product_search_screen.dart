@@ -1,110 +1,65 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../providers/product_search_provider.dart';
-import '../../../home/widgets/product_card.dart';
-import '../../../../models/product.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../models/product.dart';
+import '../../providers/product_search_provider.dart';
+import '../widgets/product_card.dart';
 
 class ProductSearchScreen extends ConsumerStatefulWidget {
   const ProductSearchScreen({super.key});
 
   @override
-  ConsumerState<ProductSearchScreen> createState() =>
-      _ProductSearchScreenState();
+  ConsumerState<ProductSearchScreen> createState() => _ProductSearchScreenState();
 }
 
 class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
-  final TextEditingController _searchController = TextEditingController();
-  Timer? _debounceTimer;
-
-  final List<double> _distanceTiers = [
-    25.0,
-    50.0,
-    100.0,
-    150.0,
-    200.0,
-    250.0,
-    9999.0,
-  ];
+  late final TextEditingController _searchController;
+  final List<double> _distanceTiers = [25.0, 50.0, 100.0, 150.0, 200.0, 250.0, 9999.0];
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref
-          .read(productSearchNotifierProvider.notifier)
-          .initializePositionWithGPS();
+    final initialQuery = ref.read(productSearchNotifierProvider).query;
+    _searchController = TextEditingController(text: initialQuery);
+
+    Future.microtask(() {
+      ref.read(productSearchNotifierProvider.notifier).initializePositionWithGPS();
     });
   }
 
   @override
   void dispose() {
     _searchController.dispose();
-    _debounceTimer?.cancel();
     super.dispose();
   }
 
-  void _onSearchChanged(String query, ProductSearchNotifier notifier) {
-    if (_debounceTimer?.isActive ?? false) _debounceTimer?.cancel();
-    _debounceTimer = Timer(const Duration(milliseconds: 400), () {
-      notifier.updateQuery(query);
-    });
-  }
-
-  String _getTradeTypeLabel(TradeType type) {
-    switch (type) {
-      case TradeType.trade:
-        return 'Trueque puro';
-      case TradeType.sale:
-        return 'Venta directa';
-      case TradeType.tradeAndMoney:
-        return 'Trueque + €';
-    }
+  void _onSearchChanged(String value) {
+    ref.read(productSearchNotifierProvider.notifier).updateQuery(value);
   }
 
   String _getDistanceLabel(double km) {
-    if (km >= 9999.0) return 'Sin límite';
+    if (km >= 9900.0) return 'Sin límite';
     return '${km.round()} km';
   }
 
-  Widget _buildActiveChip(
-    BuildContext context,
-    String label,
-    VoidCallback onDelete,
-  ) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceMint,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.3),
-          width: 1,
+  Widget _buildActiveChip(BuildContext context, String label, VoidCallback onDeleted) {
+    return InputChip(
+      label: Text(
+        label,
+        style: const TextStyle(
+          color: AppColors.primary,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
         ),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.primary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(width: 6),
-          GestureDetector(
-            onTap: onDelete,
-            child: const Icon(
-              Icons.close_rounded,
-              size: 14,
-              color: AppColors.primary,
-            ),
-          ),
-        ],
+      backgroundColor: AppColors.surfaceMint,
+      deleteIcon: const Icon(Icons.close, size: 16, color: AppColors.primary),
+      onDeleted: onDeleted,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: const BorderSide(color: Colors.transparent),
       ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
     );
   }
 
@@ -113,34 +68,40 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
     ProductSearchState state,
     ProductSearchNotifier notifier,
   ) {
-    final List<Widget> activeChips = [];
-    if (state.selectedCategory != null) {
+    final activeChips = <Widget>[];
+
+    if (state.selectedCondition != null && state.selectedCondition!.isNotEmpty) {
       activeChips.add(
-        _buildActiveChip(
-          context,
-          state.selectedCategory!,
-          () => notifier.toggleCategory(null),
-        ),
+        _buildActiveChip(context, 'Estado: ${state.selectedCondition}', () {
+          notifier.updateCondition(null);
+        }),
       );
     }
+
+    if (state.selectedCategory != null && state.selectedCategory!.isNotEmpty) {
+      activeChips.add(
+        _buildActiveChip(context, 'Cat: ${state.selectedCategory}', () {
+          notifier.toggleCategory(null);
+        }),
+      );
+    }
+
     if (state.selectedTradeType != null) {
+      String label = state.selectedTradeType!.name;
+      if (state.selectedTradeType == TradeType.trade) {
+        label = 'Trueque puro';
+      } else if (state.selectedTradeType == TradeType.sale) {
+        label = 'Venta directa';
+      } else if (state.selectedTradeType == TradeType.tradeAndCash) {
+        label = 'Trueque + €';
+      }
       activeChips.add(
-        _buildActiveChip(
-          context,
-          _getTradeTypeLabel(state.selectedTradeType!),
-          () => notifier.updateTradeType(null),
-        ),
+        _buildActiveChip(context, 'Trato: $label', () {
+          notifier.updateTradeType(null);
+        }),
       );
     }
-    if (state.selectedCondition != null) {
-      activeChips.add(
-        _buildActiveChip(
-          context,
-          'Estado: ${state.selectedCondition!}',
-          () => notifier.updateCondition(null),
-        ),
-      );
-    }
+
     if (state.minPrice > 0.0 || state.maxPrice < 5000.0) {
       activeChips.add(
         _buildActiveChip(
@@ -150,27 +111,25 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
         ),
       );
     }
+
     if (state.maxRadiusKm < 9900.0) {
       activeChips.add(
-        _buildActiveChip(
-          context,
-          'Ubicación: ${_getDistanceLabel(state.maxRadiusKm)}',
-          () {
-            notifier.updateRadius(9999.0);
-          },
-        ),
+        _buildActiveChip(context, 'Ubicación: ${_getDistanceLabel(state.maxRadiusKm)}', () {
+          notifier.updateRadius(9999.0);
+        }),
       );
     }
+
     if (activeChips.isEmpty) return const SizedBox.shrink();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0, top: 4.0),
       child: SizedBox(
         height: 36,
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
           itemCount: activeChips.length,
-          separatorBuilder: (context, index) => const SizedBox(width: 8),
+          separatorBuilder: (_, __) => const SizedBox(width: 8),
           itemBuilder: (context, index) => activeChips[index],
         ),
       ),
@@ -218,10 +177,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(
-                            Icons.close_rounded,
-                            color: AppColors.textPrimary,
-                          ),
+                          icon: const Icon(Icons.close_rounded, color: AppColors.textPrimary),
                           onPressed: () => Navigator.pop(context),
                         ),
                       ],
@@ -269,12 +225,8 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           selectedColor: AppColors.surfaceMint,
                           backgroundColor: AppColors.background,
                           labelStyle: TextStyle(
-                            color: isSelected
-                                ? AppColors.primary
-                                : AppColors.textPrimary,
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.normal,
+                            color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                           ),
                           onSelected: (selected) {
                             if (selected) {
@@ -296,32 +248,22 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children:
-                          ['Nuevo', 'Poco uso', 'Buen estado', 'Muy usado'].map(
-                            (condition) {
-                              final isSelected =
-                                  state.selectedCondition == condition;
-                              return ChoiceChip(
-                                label: Text(condition),
-                                selected: isSelected,
-                                selectedColor: AppColors.surfaceMint,
-                                backgroundColor: AppColors.background,
-                                labelStyle: TextStyle(
-                                  color: isSelected
-                                      ? AppColors.primary
-                                      : AppColors.textPrimary,
-                                  fontWeight: isSelected
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
-                                ),
-                                onSelected: (selected) {
-                                  notifier.updateCondition(
-                                    selected ? condition : null,
-                                  );
-                                },
-                              );
-                            },
-                          ).toList(),
+                      children: ['Nuevo', 'Poco uso', 'Buen estado', 'Muy usado'].map((condition) {
+                        final isSelected = state.selectedCondition == condition;
+                        return ChoiceChip(
+                          label: Text(condition),
+                          selected: isSelected,
+                          selectedColor: AppColors.surfaceMint,
+                          backgroundColor: AppColors.background,
+                          labelStyle: TextStyle(
+                            color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          ),
+                          onSelected: (selected) {
+                            notifier.updateCondition(selected ? condition : null);
+                          },
+                        );
+                      }).toList(),
                     ),
                     const SizedBox(height: 16),
                     const Text(
@@ -338,29 +280,21 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       children: TradeType.values.map((type) {
                         final isSelected = state.selectedTradeType == type;
                         String label = type.name;
-                        if (type.name == 'trade') {
+                        if (type == TradeType.trade) {
                           label = 'Trueque puro';
-                        else if (type.name == 'sale') {
+                        } else if (type == TradeType.sale) {
                           label = 'Venta directa';
-                        }
-                          label = 'Venta directa';
-                        else if (type.name == 'tradeAndCash' || type.name == 'tradeAndMoney') {
+                        } else if (type == TradeType.tradeAndCash) {
                           label = 'Trueque + €';
                         }
-                            type.name == 'tradeAndMoney')
-                          label = 'Trueque + €';
                         return ChoiceChip(
                           label: Text(label),
                           selected: isSelected,
                           selectedColor: AppColors.surfaceMint,
                           backgroundColor: AppColors.background,
                           labelStyle: TextStyle(
-                            color: isSelected
-                                ? AppColors.primary
-                                : AppColors.textPrimary,
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.normal,
+                            color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                           ),
                           onSelected: (selected) {
                             notifier.updateTradeType(selected ? type : null);
@@ -382,10 +316,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                         onPressed: () => Navigator.pop(context),
                         child: const Text(
                           'Aplicar Filtros',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -399,68 +330,6 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
     );
   }
 
-  Widget _buildResultsSection(ProductSearchState searchState) {
-    return searchState.products.when(
-      data: (products) {
-        if (products.isEmpty) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.only(top: 80),
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.search_off_rounded,
-                    size: 48,
-                    color: AppColors.textSecondary,
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    'No hemos encontrado artículos',
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-        return GridView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: products.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 14,
-            mainAxisSpacing: 14,
-            childAspectRatio: 0.64,
-          ),
-          itemBuilder: (context, index) =>
-              ProductCard(product: products[index]),
-        );
-      },
-      loading: () => const Center(
-        child: Padding(
-          padding: EdgeInsets.only(top: 80),
-          child: CircularProgressIndicator.adaptive(
-            valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-          ),
-        ),
-      ),
-      error: (err, stack) => Center(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 80),
-          child: Text(
-            'Error: $err',
-            style: const TextStyle(color: AppColors.error),
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final searchState = ref.watch(productSearchNotifierProvider);
@@ -469,24 +338,23 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.background,
         elevation: 0,
-        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: const Text(
           'Explorar',
           style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
             color: AppColors.textPrimary,
-            letterSpacing: -0.5,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        centerTitle: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.tune_rounded, color: AppColors.primary),
-            onPressed: () =>
-                _showFilterBottomSheet(context, searchState, searchNotifier),
+            onPressed: () => _showFilterBottomSheet(context, searchState, searchNotifier),
           ),
           TextButton(
             onPressed: () {
@@ -495,72 +363,98 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
             },
             child: const Text(
               'Limpiar',
-              style: TextStyle(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
             ),
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        physics: const BouncingScrollPhysics(),
-        children: [
-          TextField(
-            controller: _searchController,
-            onChanged: (value) => _onSearchChanged(value, searchNotifier),
-            style: const TextStyle(color: AppColors.textPrimary, fontSize: 15),
-            decoration: InputDecoration(
-              hintText: '¿Qué estás buscando?',
-              hintStyle: TextStyle(
-                color: AppColors.textSecondary.withValues(alpha: 0.7),
-                fontSize: 15,
-              ),
-              prefixIcon: const Icon(
-                Icons.search_rounded,
-                color: AppColors.primary,
-                size: 22,
-              ),
-              suffixIcon: _searchController.text.isNotEmpty
-                  ? GestureDetector(
-                      onTap: () {
-                        _searchController.clear();
-                        searchNotifier.updateQuery('');
-                        setState(() {});
-                      },
-                      child: const Icon(
-                        Icons.clear_rounded,
-                        color: AppColors.textSecondary,
-                        size: 18,
-                      ),
-                    )
-                  : null,
-              filled: true,
-              fillColor: AppColors.surfaceMint.withValues(alpha: 0.3),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(color: AppColors.border, width: 1),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(
-                  color: AppColors.primary,
-                  width: 2,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          children: [
+            const SizedBox(height: 8),
+            TextField(
+              controller: _searchController,
+              onChanged: _onSearchChanged,
+              decoration: InputDecoration(
+                hintText: '¿Qué estás buscando?',
+                prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, color: AppColors.textSecondary),
+                        onPressed: () {
+                          _searchController.clear();
+                          _onSearchChanged('');
+                          setState(() {});
+                        },
+                      )
+                    : null,
+                filled: true,
+                fillColor: AppColors.surface,
+                contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                  borderSide: BorderSide.none,
                 ),
               ),
-              contentPadding: const EdgeInsets.symmetric(vertical: 12),
             ),
-          ),
-          const SizedBox(height: 12),
-          _buildActiveFiltersRow(context, searchState, searchNotifier),
-          const SizedBox(height: 8),
-          _buildResultsSection(searchState),
-        ],
+            const SizedBox(height: 8),
+            _buildActiveFiltersRow(context, searchState, searchNotifier),
+            Expanded(
+              child: searchState.products.when(
+                data: (products) {
+                  if (searchState.query.trim().isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'Escribe algo para buscar productos',
+                        style: TextStyle(color: AppColors.textSecondary),
+                      ),
+                    );
+                  }
+                  if (products.isEmpty) {
+                    return const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.search_off_rounded, size: 64, color: AppColors.textSecondary),
+                          SizedBox(height: 16),
+                          Text(
+                            'No hemos encontrado artículos',
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  return GridView.builder(
+                    padding: const EdgeInsets.only(top: 8.0, bottom: 24.0),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.7,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                    ),
+                    itemCount: products.length,
+                    itemBuilder: (context, index) {
+                      return ProductCard(product: products[index]);
+                    },
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, stack) => Center(
+                  child: Text(
+                    'Error al cargar productos: $err',
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
