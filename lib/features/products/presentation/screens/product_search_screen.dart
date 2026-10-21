@@ -104,7 +104,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 🏷️ Categoría
+                  // 🏷️ Categoría (Orden estático y color unificado)
                   const Text(
                     'Categoría',
                     style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w700),
@@ -121,10 +121,10 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       return ChoiceChip(
                         label: Text(category),
                         selected: isSelected,
-                        selectedColor: AppColors.primary,
+                        selectedColor: AppColors.surfaceMint,
                         backgroundColor: AppColors.background,
                         labelStyle: TextStyle(
-                          color: isSelected ? Colors.white : AppColors.textPrimary,
+                          color: isSelected ? AppColors.primary : AppColors.textSecondary,
                           fontSize: 11.5,
                           fontWeight: FontWeight.w600,
                         ),
@@ -215,7 +215,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                   ),
                   const SizedBox(height: 12),
 
-                  // ✨ Estado del Producto
+                  // ✨ Estado del Producto (Con opción de desmarcar)
                   const Text(
                     'Estado del Producto',
                     style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w700),
