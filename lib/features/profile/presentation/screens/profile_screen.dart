@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:trueke/core/theme/app_colors.dart';
-import 'package:trueke/app/routes/app_routes.dart';
 
 class ProfileScreen extends ConsumerWidget {
   final String? userId;
@@ -157,7 +156,7 @@ class ProfileScreen extends ConsumerWidget {
             onPressed: () async {
               await Supabase.instance.client.auth.signOut();
               if (context.mounted) {
-                Navigator.pushNamedAndRemoveUntil(context, AppRoutes.initial, (route) => false);
+                Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
               }
             },
             icon: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 18),
