@@ -487,20 +487,45 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-          onPressed: () => Navigator.pop(context),
-        ),
+        automaticallyImplyLeading: false,
+        titleSpacing: 16.0,
         title: const Text(
           'Explorar',
           style: TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.bold,
+            fontSize: 20,
           ),
         ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 2.0),
+            child: TextButton.icon(
+              onPressed: () => _showFilterBottomSheet(context, searchState, searchNotifier),
+              icon: const Icon(Icons.tune_rounded, size: 16, color: AppColors.primary),
+              label: const Text(
+                'Filtros',
+                style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              _searchController.clear();
+              searchNotifier.clearAllFilters();
+            },
+            child: const Text(
+              'Limpiar',
+              style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w600, fontSize: 13),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.arrow_forward_rounded, color: AppColors.textPrimary),
+            onPressed: () => Navigator.pop(context),
+            tooltip: 'Volver',
+          ),
+        ],
+      
             child: TextButton.icon(
               onPressed: () =>
                   _showFilterBottomSheet(context, searchState, searchNotifier),

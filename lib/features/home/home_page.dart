@@ -19,15 +19,6 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   final ScrollController _scrollController = ScrollController();
 
-  static const List<Map<String, dynamic>> _categories = [
-    {'name': 'Electrónica', 'icon': Icons.devices_rounded, 'color': Color(0xFFE3F2FD), 'iconColor': Color(0xFF1976D2)},
-    {'name': 'Moda', 'icon': Icons.checkroom_rounded, 'color': Color(0xFFFCE4EC), 'iconColor': Color(0xFFC2185B)},
-    {'name': 'Hogar', 'icon': Icons.chair_rounded, 'color': Color(0xFFFFF3E0), 'iconColor': Color(0xFFE65100)},
-    {'name': 'Gaming', 'icon': Icons.sports_esports_rounded, 'color': Color(0xFFF3E5F5), 'iconColor': Color(0xFF7B1FA2)},
-    {'name': 'Deporte', 'icon': Icons.sports_soccer_rounded, 'color': Color(0xFFE8F5E9), 'iconColor': Color(0xFF388E3C)},
-    {'name': 'Otros', 'icon': Icons.category_rounded, 'color': Color(0xFFECEFF1), 'iconColor': Color(0xFF455A64)},
-  ];
-
   @override
   void dispose() {
     _scrollController.dispose();
@@ -50,92 +41,12 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             const SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(16, 12, 16, 6),
+                padding: EdgeInsets.fromLTRB(16, 16, 16, 12),
                 child: PromoBanner(),
               ),
             ),
-            const SliverToBoxAdapter(
-              child: SizedBox(height: 16),
-            ),
-            const SliverToBoxAdapter(
-              child: _SectionHeading(
-                title: 'Categorías destacadas',
-                subtitle: 'Explora por tipo de artículo',
-                icon: Icons.grid_view_rounded,
-              ),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 8,
-                  childAspectRatio: 2.1,
-                ),
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  final cat = _categories[index];
-                  final name = cat['name'] as String;
-                  final icon = cat['icon'] as IconData;
-                  final bgColor = cat['color'] as Color;
-                  final iconColor = cat['iconColor'] as Color;
-                  final selected = filters.category == name;
 
-                  return GestureDetector(
-                    onTap: () {
-                      ref
-                          .read(productFiltersProvider.notifier)
-                          .toggleCategory(name);
-                    },
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      decoration: BoxDecoration(
-                        color: selected ? AppColors.primary : bgColor,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: selected ? AppColors.primary : iconColor.withValues(alpha: 0.25),
-                          width: selected ? 2 : 1,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: (selected ? AppColors.primary : iconColor).withValues(alpha: 0.08),
-                            blurRadius: 3,
-                            offset: const Offset(0, 1),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            icon,
-                            size: 18,
-                            color: selected ? Colors.white : iconColor,
-                          ),
-                          const SizedBox(width: 6),
-                          Flexible(
-                            child: Text(
-                              name,
-                              style: TextStyle(
-                                color: selected ? Colors.white : AppColors.textPrimary,
-                                fontSize: 12.5,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: -0.2,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }, childCount: _categories.length),
-              ),
-            ),
-            const SliverToBoxAdapter(
-              child: SizedBox(height: 18),
-            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 18)),
             const SliverToBoxAdapter(
               child: _SectionHeading(
                 title: 'Más buscados en tu zona',
@@ -155,9 +66,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                   ),
                 ),
               ),
-              error: (error, stackTrace) => const SliverToBoxAdapter(
-                child: SizedBox.shrink(),
-              ),
+              error: (error, stackTrace) =>
+                  const SliverToBoxAdapter(child: SizedBox.shrink()),
               data: (paginatedState) {
                 final products = paginatedState.products;
 
@@ -168,7 +78,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                       child: Text(
                         'No hay artículos disponibles en esta zona por el momento.',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                   );
@@ -179,12 +92,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                 return SliverPadding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 85),
                   sliver: SliverGrid(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                      childAspectRatio: 0.88,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          childAspectRatio: 0.88,
+                        ),
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final product = displayProducts[index];
                       return GestureDetector(
