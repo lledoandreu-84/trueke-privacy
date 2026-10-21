@@ -97,30 +97,15 @@ class ProductCard extends StatelessWidget {
                           color: AppColors.surfaceMint,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text(
-                          product.type ?? 'Intercambio',
-                          style: const TextStyle(
+                        child: const Text(
+                          'Intercambio',
+                          style: TextStyle(
                             color: AppColors.primary,
                             fontSize: 10,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
-                      if (product.condition != null) ...[
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            product.condition!,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ],
                     ],
                   ),
                 ],
