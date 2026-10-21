@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
+import '../products/presentation/screens/product_search_screen.dart';
 import '../products/providers/paginated_products_provider.dart';
 import 'widgets/home_header.dart';
 import 'widgets/product_card.dart';
@@ -39,15 +40,23 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             const SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(16, 16, 16, 56),
+                padding: EdgeInsets.fromLTRB(16, 16, 16, 36),
                 child: PromoBanner(),
               ),
             ),
-            const SliverToBoxAdapter(
+            SliverToBoxAdapter(
               child: _SectionHeading(
                 title: 'Más buscados en tu zona',
                 subtitle: 'Artículos relevantes cerca de tu GPS',
                 icon: Icons.near_me_rounded,
+                onSeeAllTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ProductSearchScreen(),
+                    ),
+                  );
+                },
               ),
             ),
             paginatedAsync.when(
@@ -86,7 +95,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 final displayProducts = products.take(2).toList();
 
                 return SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 28),
                   sliver: SliverGrid(
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
@@ -124,16 +133,18 @@ class _SectionHeading extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.icon,
+    this.onSeeAllTap,
   });
 
   final String title;
   final String subtitle;
   final IconData icon;
+  final VoidCallback? onSeeAllTap;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 28),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -173,6 +184,28 @@ class _SectionHeading extends StatelessWidget {
               ],
             ),
           ),
+          if (onSeeAllTap != null)
+            GestureDetector(
+              onTap: onSeeAllTap,
+              child: const Row(
+                children: [
+                  Text(
+                    'Ver todo',
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  SizedBox(width: 2),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: AppColors.primary,
+                    size: 18,
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );
