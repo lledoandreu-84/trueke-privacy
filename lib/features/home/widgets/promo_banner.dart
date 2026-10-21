@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../products/presentation/screens/product_search_screen.dart';
+
+import 'package:trueke/app/routes/app_routes.dart';
 
 class PromoBanner extends StatelessWidget {
   const PromoBanner({super.key});
@@ -7,87 +8,119 @@ class PromoBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
+      width: double.infinity,
+      height: 160,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF2575FC), Color(0xFF6A11CB)],
+          colors: [Color(0xFF2563EB), Color(0xFF4F46E5), Color(0xFF7C3AED)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF6A11CB).withValues(alpha: 0.35),
-            blurRadius: 14,
-            offset: const Offset(0, 6),
+            color: const Color(0xFF4F46E5).withValues(alpha: 0.3),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Stack(
         children: [
-          const Expanded(
+          Positioned(
+            right: -20,
+            bottom: -20,
+            child: Icon(
+              Icons.bolt_rounded,
+              size: 140,
+              color: Colors.white.withValues(alpha: 0.1),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Row(
                   children: [
-                    Icon(Icons.bolt_rounded, color: Colors.amber, size: 24),
-                    SizedBox(width: 6),
-                    Flexible(
-                      child: Text(
-                        'Intercambio Inteligente',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.3,
-                        ),
-                        overflow: TextOverflow.ellipsis,
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.bolt_rounded,
+                            color: Colors.amber,
+                            size: 16,
+                          ),
+                          SizedBox(width: 4),
+                          Text(
+                            'Exclusivo',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 8),
-                Text(
+                const SizedBox(height: 8),
+                const Text(
+                  'Intercambio Inteligente',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                const Text(
                   'Intercambia artículos o añade dinero sin comisiones de forma rápida y segura.',
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 12,
-                    height: 1.35,
-                    fontWeight: FontWeight.w400,
+                    height: 1.2,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ProductSearchScreen(),
+                const SizedBox(height: 12),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRoutes.explore);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text(
+                      'Explorar ahora',
+                      style: TextStyle(
+                        color: Color(0xFF4F46E5),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
                 ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: const Color(0xFF6A11CB),
-              elevation: 3,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-            child: const Text(
-              'Explorar',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800),
+              ],
             ),
           ),
         ],
