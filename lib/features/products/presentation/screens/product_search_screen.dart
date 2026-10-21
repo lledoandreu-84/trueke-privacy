@@ -130,7 +130,43 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 🏷️ Categoría (Posición estática garantizada)
+                  // Cabecera del panel con botón dinámico de "Limpiar filtros"
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Filtros de Búsqueda',
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      if (filters.hasActiveFilters)
+                        TextButton.icon(
+                          onPressed: () {
+                            _searchController.clear();
+                            _priceController.text = '5000';
+                            ref.read(productFiltersProvider.notifier).clearFilters();
+                          },
+                          icon: const Icon(Icons.refresh_rounded, size: 14, color: AppColors.primary),
+                          label: const Text(
+                            'Limpiar filtros',
+                            style: TextStyle(fontSize: 11.5, color: AppColors.primary, fontWeight: FontWeight.w700),
+                          ),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  const Divider(height: 1, color: Color(0xFFE2E8F0)),
+                  const SizedBox(height: 12),
+
+                  // 🏷️ Categoría
                   const Text(
                     'Categoría',
                     style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w700),
@@ -268,7 +304,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                   ),
                   const SizedBox(height: 12),
 
-                  // ✨ Estado del Producto (Permite desmarcar correctamente al pulsar el activo)
+                  // ✨ Estado del Producto
                   const Text(
                     'Estado del Producto',
                     style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w700),
@@ -346,6 +382,27 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
               ),
             ),
             const SizedBox(height: 20),
+
+            // 📦 Indicador de Resultados Dinámicos en Tiempo Real
+            paginatedAsync.when(
+              data: (state) {
+                final count = state.products.length;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                  child: Text(
+                    'Mostrando $count ${count == 1 ? 'artículo encontrado' : 'artículos encontrados'}',
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                );
+              },
+              loading: () => const SizedBox.shrink(),
+              error: (_, __) => const SizedBox.shrink(),
+            ),
+            const SizedBox(height: 8),
 
             // 📦 Listado de Resultados
             paginatedAsync.when(
