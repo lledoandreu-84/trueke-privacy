@@ -236,10 +236,12 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                         color: AppColors.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 12),
                     Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+                      spacing: 12,
+                      runSpacing: 12,
+                      alignment: WrapAlignment.start,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: _distanceTiers.map((tier) {
                         final isSelected = state.maxRadiusKm == tier;
                         return ChoiceChip(

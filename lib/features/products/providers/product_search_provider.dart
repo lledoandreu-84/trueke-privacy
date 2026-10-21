@@ -69,7 +69,8 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
   ProductSearchState build() {
     return const ProductSearchState(
       query: '',
-      maxRadiusKm: 9999.0, // Radio ilimitado por defecto para que no aplique filtro espacial restrictivo de entrada
+      maxRadiusKm:
+          9999.0, // Radio ilimitado por defecto para que no aplique filtro espacial restrictivo de entrada
       latitude: 40.416775,
       longitude: -3.703790,
       selectedCondition: null,
@@ -83,9 +84,21 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
 
   String _normalize(String input) {
     var letters = {
-      'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u',
-      'à': 'a', 'è': 'e', 'ì': 'i', 'ò': 'o', 'ù': 'u',
-      'ä': 'a', 'ë': 'e', 'ï': 'i', 'ö': 'o', 'ü': 'u',
+      'á': 'a',
+      'é': 'e',
+      'í': 'i',
+      'ó': 'o',
+      'ú': 'u',
+      'à': 'a',
+      'è': 'e',
+      'ì': 'i',
+      'ò': 'o',
+      'ù': 'u',
+      'ä': 'a',
+      'ë': 'e',
+      'ï': 'i',
+      'ö': 'o',
+      'ü': 'u',
       'ñ': 'n',
     };
     String result = input.toLowerCase();
@@ -132,14 +145,14 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
         maxRadiusMeters: radiusMeters,
       );
 
-      final normalizedQuery = _normalize(trimmedQuery);
+      // final normalizedQuery = _normalize(trimmedQuery);
 
       final filteredResults = results.where((product) {
-        if (normalizedQuery.isNotEmpty) {
-          final titleMatch = _normalize(product.title).contains(normalizedQuery);
-          final descMatch = _normalize(product.description).contains(normalizedQuery);
-          final catMatch = _normalize(product.category).contains(normalizedQuery);
-          // EXIGENCIA ESTRICTA: El texto introducido DEBE coincidir obligatoriamente con título, descripción o categoría
+        if (state.query.trim().isNotEmpty) {
+          final q = state.query.trim().toLowerCase();
+          final titleMatch = product.title.toLowerCase().contains(q);
+          final descMatch = product.description.toLowerCase().contains(q);
+          final catMatch = product.category.toLowerCase().contains(q);
           if (!titleMatch && !descMatch && !catMatch) {
             return false;
           }
@@ -156,7 +169,8 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
 
         if (state.selectedCategory != null &&
             state.selectedCategory!.isNotEmpty) {
-          if (_normalize(product.category) != _normalize(state.selectedCategory!)) {
+          if (_normalize(product.category) !=
+              _normalize(state.selectedCategory!)) {
             return false;
           }
         }
