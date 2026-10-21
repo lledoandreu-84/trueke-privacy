@@ -3,18 +3,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../models/product.dart';
 import '../../providers/product_search_provider.dart';
-import '../widgets/product_card.dart';
+import '../../home/widgets/product_card.dart';
 
 class ProductSearchScreen extends ConsumerStatefulWidget {
   const ProductSearchScreen({super.key});
 
   @override
-  ConsumerState<ProductSearchScreen> createState() => _ProductSearchScreenState();
+  ConsumerState<ProductSearchScreen> createState() =>
+      _ProductSearchScreenState();
 }
 
 class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
   late final TextEditingController _searchController;
-  final List<double> _distanceTiers = [25.0, 50.0, 100.0, 150.0, 200.0, 250.0, 9999.0];
+  final List<double> _distanceTiers = [
+    25.0,
+    50.0,
+    100.0,
+    150.0,
+    200.0,
+    250.0,
+    9999.0,
+  ];
 
   @override
   void initState() {
@@ -23,7 +32,9 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
     _searchController = TextEditingController(text: initialQuery);
 
     Future.microtask(() {
-      ref.read(productSearchNotifierProvider.notifier).initializePositionWithGPS();
+      ref
+          .read(productSearchNotifierProvider.notifier)
+          .initializePositionWithGPS();
     });
   }
 
@@ -42,7 +53,11 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
     return '${km.round()} km';
   }
 
-  Widget _buildActiveChip(BuildContext context, String label, VoidCallback onDeleted) {
+  Widget _buildActiveChip(
+    BuildContext context,
+    String label,
+    VoidCallback onDeleted,
+  ) {
     return InputChip(
       label: Text(
         label,
@@ -70,7 +85,8 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
   ) {
     final activeChips = <Widget>[];
 
-    if (state.selectedCondition != null && state.selectedCondition!.isNotEmpty) {
+    if (state.selectedCondition != null &&
+        state.selectedCondition!.isNotEmpty) {
       activeChips.add(
         _buildActiveChip(context, 'Estado: ${state.selectedCondition}', () {
           notifier.updateCondition(null);
@@ -92,7 +108,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
         label = 'Trueque puro';
       } else if (state.selectedTradeType == TradeType.sale) {
         label = 'Venta directa';
-      } else if (state.selectedTradeType == TradeType.tradeAndCash) {
+      } else {
         label = 'Trueque + €';
       }
       activeChips.add(
@@ -114,9 +130,13 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
 
     if (state.maxRadiusKm < 9900.0) {
       activeChips.add(
-        _buildActiveChip(context, 'Ubicación: ${_getDistanceLabel(state.maxRadiusKm)}', () {
-          notifier.updateRadius(9999.0);
-        }),
+        _buildActiveChip(
+          context,
+          'Ubicación: ${_getDistanceLabel(state.maxRadiusKm)}',
+          () {
+            notifier.updateRadius(9999.0);
+          },
+        ),
       );
     }
 
@@ -177,7 +197,10 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.close_rounded, color: AppColors.textPrimary),
+                          icon: const Icon(
+                            Icons.close_rounded,
+                            color: AppColors.textPrimary,
+                          ),
                           onPressed: () => Navigator.pop(context),
                         ),
                       ],
@@ -225,8 +248,12 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           selectedColor: AppColors.surfaceMint,
                           backgroundColor: AppColors.background,
                           labelStyle: TextStyle(
-                            color: isSelected ? AppColors.primary : AppColors.textPrimary,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            color: isSelected
+                                ? AppColors.primary
+                                : AppColors.textPrimary,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                           ),
                           onSelected: (selected) {
                             if (selected) {
@@ -248,22 +275,32 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children: ['Nuevo', 'Poco uso', 'Buen estado', 'Muy usado'].map((condition) {
-                        final isSelected = state.selectedCondition == condition;
-                        return ChoiceChip(
-                          label: Text(condition),
-                          selected: isSelected,
-                          selectedColor: AppColors.surfaceMint,
-                          backgroundColor: AppColors.background,
-                          labelStyle: TextStyle(
-                            color: isSelected ? AppColors.primary : AppColors.textPrimary,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                          ),
-                          onSelected: (selected) {
-                            notifier.updateCondition(selected ? condition : null);
-                          },
-                        );
-                      }).toList(),
+                      children:
+                          ['Nuevo', 'Poco uso', 'Buen estado', 'Muy usado'].map(
+                            (condition) {
+                              final isSelected =
+                                  state.selectedCondition == condition;
+                              return ChoiceChip(
+                                label: Text(condition),
+                                selected: isSelected,
+                                selectedColor: AppColors.surfaceMint,
+                                backgroundColor: AppColors.background,
+                                labelStyle: TextStyle(
+                                  color: isSelected
+                                      ? AppColors.primary
+                                      : AppColors.textPrimary,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                                onSelected: (selected) {
+                                  notifier.updateCondition(
+                                    selected ? condition : null,
+                                  );
+                                },
+                              );
+                            },
+                          ).toList(),
                     ),
                     const SizedBox(height: 16),
                     const Text(
@@ -284,7 +321,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           label = 'Trueque puro';
                         } else if (type == TradeType.sale) {
                           label = 'Venta directa';
-                        } else if (type == TradeType.tradeAndCash) {
+                        } else {
                           label = 'Trueque + €';
                         }
                         return ChoiceChip(
@@ -293,8 +330,12 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           selectedColor: AppColors.surfaceMint,
                           backgroundColor: AppColors.background,
                           labelStyle: TextStyle(
-                            color: isSelected ? AppColors.primary : AppColors.textPrimary,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            color: isSelected
+                                ? AppColors.primary
+                                : AppColors.textPrimary,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                           ),
                           onSelected: (selected) {
                             notifier.updateTradeType(selected ? type : null);
@@ -316,7 +357,10 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                         onPressed: () => Navigator.pop(context),
                         child: const Text(
                           'Aplicar Filtros',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -354,7 +398,8 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.tune_rounded, color: AppColors.primary),
-            onPressed: () => _showFilterBottomSheet(context, searchState, searchNotifier),
+            onPressed: () =>
+                _showFilterBottomSheet(context, searchState, searchNotifier),
           ),
           TextButton(
             onPressed: () {
@@ -363,7 +408,10 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
             },
             child: const Text(
               'Limpiar',
-              style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -378,10 +426,16 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
               onChanged: _onSearchChanged,
               decoration: InputDecoration(
                 hintText: '¿Qué estás buscando?',
-                prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: AppColors.textSecondary,
+                ),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear, color: AppColors.textSecondary),
+                        icon: const Icon(
+                          Icons.clear,
+                          color: AppColors.textSecondary,
+                        ),
                         onPressed: () {
                           _searchController.clear();
                           _onSearchChanged('');
@@ -416,7 +470,11 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.search_off_rounded, size: 64, color: AppColors.textSecondary),
+                          Icon(
+                            Icons.search_off_rounded,
+                            size: 64,
+                            color: AppColors.textSecondary,
+                          ),
                           SizedBox(height: 16),
                           Text(
                             'No hemos encontrado artículos',
@@ -432,12 +490,13 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                   }
                   return GridView.builder(
                     padding: const EdgeInsets.only(top: 8.0, bottom: 24.0),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.7,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.7,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                        ),
                     itemCount: products.length,
                     itemBuilder: (context, index) {
                       return ProductCard(product: products[index]);
