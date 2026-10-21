@@ -2,17 +2,18 @@ import 'package:trueke/models/review.dart';
 import 'package:trueke/features/reviews/providers/reviews_provider.dart';
 import 'package:trueke/models/transaction.dart';
 import 'package:trueke/features/transactions/providers/transaction_providers.dart';
-import "package:flutter/material.dart";
-import "package:image_picker/image_picker.dart";
-import "dart:convert";
-import "package:trueke/features/chat/presentation/widgets/chat_bubble.dart";
-import "package:trueke/features/chat/presentation/widgets/select_product_dialog.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
-import "package:trueke/features/chat/providers/chat_providers.dart";
-import "package:trueke/features/escrow/providers/escrow_notifier.dart";
-import "package:trueke/features/escrow/repositories/escrow_repository.dart";
-import "../../../auth/auth_service.dart";
-import "../../../products/domain/product_model.dart";
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:convert';
+import 'package:trueke/features/chat/presentation/widgets/chat_bubble.dart';
+import 'package:trueke/features/chat/presentation/widgets/select_product_dialog.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:trueke/features/chat/providers/chat_providers.dart';
+import 'package:trueke/features/escrow/providers/escrow_notifier.dart';
+import 'package:trueke/features/escrow/repositories/escrow_repository.dart';
+import 'package:trueke/core/theme/app_colors.dart';
+import '../../../auth/auth_service.dart';
+import '../../../products/domain/product_model.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String roomId;
@@ -47,15 +48,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       context: context,
       builder: (dialogCtx) => StatefulBuilder(
         builder: (dialogCtx, setDialogState) => AlertDialog(
-          backgroundColor: theme.colorScheme.surface,
+          backgroundColor: AppColors.surface,
           surfaceTintColor: Colors.transparent,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-          title: Text(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          title: const Text(
             "Valorar Trueke",
             style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: theme.colorScheme.onSurface,
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
               letterSpacing: -0.4,
             ),
           ),
@@ -72,45 +73,34 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           ? Icons.star_rounded
                           : Icons.star_border_rounded,
                       color: Colors.amber,
-                      size: 32,
+                      size: 30,
                     ),
                     onPressed: () =>
                         setDialogState(() => selectedStars = index + 1),
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
               TextField(
                 controller: commentController,
                 decoration: InputDecoration(
                   hintText: "Escribe un comentario breve...",
-                  hintStyle: TextStyle(
-                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                    fontSize: 14,
+                  hintStyle: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 13.5,
                   ),
                   filled: true,
-                  fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+                  fillColor: AppColors.background,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide(
-                      color: theme.colorScheme.primary,
-                      width: 1.5,
-                    ),
-                  ),
-                  contentPadding: const EdgeInsets.all(16),
+                  contentPadding: const EdgeInsets.all(14),
                 ),
                 maxLines: 2,
-                style: TextStyle(
-                  color: theme.colorScheme.onSurface,
-                  fontSize: 14,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 13.5,
                 ),
               ),
             ],
@@ -119,7 +109,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             TextButton(
               onPressed: () => Navigator.pop(dialogCtx),
               style: TextButton.styleFrom(
-                foregroundColor: theme.colorScheme.onSurfaceVariant,
+                foregroundColor: AppColors.textSecondary,
               ),
               child: const Text("Cancelar"),
             ),
@@ -139,9 +129,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 if (dialogCtx.mounted) Navigator.pop(dialogCtx);
               },
               style: FilledButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: theme.colorScheme.onPrimary,
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
                 elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
               child: const Text("Enviar"),
             ),
@@ -263,7 +256,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   Widget _buildStateBanner(List<dynamic> messages) {
-    final theme = Theme.of(context);
     dynamic lastOfferPayload;
     String? lastOfferSenderId;
     for (final msg in messages.reversed) {
@@ -294,12 +286,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       final isMyOffer = lastOfferSenderId == currentUserId;
       return Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: theme.colorScheme.tertiaryContainer.withValues(alpha: 0.4),
+          color: AppColors.surfaceMint,
           border: Border(
             bottom: BorderSide(
-              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+              color: AppColors.primary.withValues(alpha: 0.15),
             ),
           ),
         ),
@@ -308,20 +300,20 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           children: [
             Text(
               "PROPUESTA DE TRUEKE: $productTitle",
-              style: TextStyle(
-                color: theme.colorScheme.onTertiaryContainer,
+              style: const TextStyle(
+                color: AppColors.primary,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.2,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             if (!isMyOffer) ...[
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  FilledButton.tonal(
+                  FilledButton(
                     onPressed: () async {
                       try {
                         final room = await ref.read(
@@ -364,8 +356,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       } catch (_) {}
                     },
                     style: FilledButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primaryContainer,
-                      foregroundColor: theme.colorScheme.onPrimaryContainer,
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                     child: const Text(
                       "Aceptar Trueke",
@@ -375,7 +372,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
                   OutlinedButton(
                     onPressed: () async {
                       try {
@@ -394,9 +391,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       } catch (_) {}
                     },
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: theme.colorScheme.error,
-                      side: BorderSide(
-                        color: theme.colorScheme.error.withValues(alpha: 0.5),
+                      foregroundColor: AppColors.textPrimary,
+                      side: const BorderSide(color: Color(0xFFE2E8F0)),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                     child: const Text(
@@ -410,10 +409,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 ],
               ),
             ] else ...[
-              Text(
+              const Text(
                 "Esperando respuesta del otro usuario...",
                 style: TextStyle(
-                  color: theme.colorScheme.onSurfaceVariant,
+                  color: AppColors.textSecondary,
                   fontSize: 12,
                   fontStyle: FontStyle.italic,
                 ),
@@ -426,23 +425,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     if (status == "accepted" && currentOfferId != null) {
       return Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
         decoration: BoxDecoration(
-          color: theme.colorScheme.primaryContainer.withValues(alpha: 0.4),
+          color: AppColors.surfaceMint,
           border: Border(
             bottom: BorderSide(
-              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+              color: AppColors.primary.withValues(alpha: 0.15),
             ),
           ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            const Text(
               "¡TRUEKE ACEPTADO! FONDOS EN CUSTODIA SEGURA",
               style: TextStyle(
-                color: theme.colorScheme.onPrimaryContainer,
-                fontSize: 12,
+                color: AppColors.primary,
+                fontSize: 11.5,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.2,
               ),
@@ -506,15 +505,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         }
                       }
                     },
-              icon: const Icon(Icons.handshake_rounded, size: 16),
+              icon: const Icon(Icons.handshake_rounded, size: 15),
               label: const Text(
                 "Liberar fondos en mano",
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
               ),
               style: FilledButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: theme.colorScheme.onPrimary,
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
                 elevation: 0,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
           ],
@@ -524,22 +527,22 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     if (status == "completed") {
       return Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
         decoration: BoxDecoration(
-          color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.4),
+          color: AppColors.surfaceMint,
           border: Border(
             bottom: BorderSide(
-              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+              color: AppColors.primary.withValues(alpha: 0.15),
             ),
           ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            const Text(
               "🤝 ¡Trueke Finalizado con éxito en mano!",
               style: TextStyle(
-                color: theme.colorScheme.onSecondaryContainer,
+                color: AppColors.primary,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
               ),
@@ -558,15 +561,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
                 _abrirDialogoValoracionConGuardia(reviewedId, currentOfferId);
               },
-              icon: const Icon(Icons.star_rounded, size: 16),
+              icon: const Icon(Icons.star_rounded, size: 15),
               label: const Text(
                 "Valorar Interlocutor",
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
               ),
               style: FilledButton.styleFrom(
-                backgroundColor: theme.colorScheme.secondary,
-                foregroundColor: theme.colorScheme.onSecondary,
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
                 elevation: 0,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
           ],
@@ -576,20 +583,21 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     if (status == "cancelled") {
       return Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.errorContainer.withValues(alpha: 0.4),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        decoration: const BoxDecoration(
+          color: Color(0xFFFEF2F2),
           border: Border(
             bottom: BorderSide(
-              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+              color: Color(0xFFFCA5A5),
+              width: 0.5,
             ),
           ),
         ),
-        child: Center(
+        child: const Center(
           child: Text(
             "Propuesta de trueke rechazada o cancelada",
             style: TextStyle(
-              color: theme.colorScheme.onErrorContainer,
+              color: Color(0xFF991B1B),
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
@@ -604,27 +612,26 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Widget build(BuildContext context) {
     final messagesAsync = ref.watch(chatMessagesStreamProvider(widget.roomId));
     final currentUserId = AuthService.currentUserId ?? '';
-    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         scrolledUnderElevation: 0,
-        title: Text(
+        title: const Text(
           "Chat de Negociación",
           style: TextStyle(
-            color: theme.colorScheme.onSurface,
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w700,
+            fontSize: 16,
             letterSpacing: -0.4,
           ),
         ),
-        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
+        iconTheme: const IconThemeData(color: AppColors.textPrimary),
         actions: [
           IconButton(
-            icon: Icon(Icons.handshake_outlined, color: theme.colorScheme.onSurface),
+            icon: const Icon(Icons.handshake_outlined, color: AppColors.primary),
             onPressed: _showTradeOfferDialog,
             tooltip: "Proponer Trueke",
           ),
@@ -632,7 +639,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
           child: Container(
-            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+            color: const Color(0xFFE2E8F0),
             height: 0.5,
           ),
         ),
@@ -645,7 +652,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             padding: const EdgeInsets.all(24.0),
             child: Text(
               "Error al cargar mensajes: $err",
-              style: TextStyle(color: theme.colorScheme.error),
+              style: const TextStyle(color: Colors.red),
             ),
           ),
         ),
@@ -667,11 +674,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surface,
+                decoration: const BoxDecoration(
+                  color: AppColors.surface,
                   border: Border(
                     top: BorderSide(
-                      color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                      color: Color(0xFFE2E8F0),
                       width: 0.5,
                     ),
                   ),
@@ -680,9 +687,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   child: Row(
                     children: [
                       IconButton(
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.attach_file_rounded,
-                          color: theme.colorScheme.onSurfaceVariant,
+                          color: AppColors.textSecondary,
                         ),
                         onPressed: _pickAndSendImage,
                       ),
@@ -691,12 +698,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           controller: _messageController,
                           decoration: InputDecoration(
                             hintText: "Escribe un mensaje...",
-                            hintStyle: TextStyle(
-                              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                              fontSize: 14,
+                            hintStyle: const TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 13.5,
                             ),
                             filled: true,
-                            fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+                            fillColor: AppColors.background,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                               borderSide: BorderSide.none,
@@ -707,8 +714,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
-                              borderSide: BorderSide(
-                                color: theme.colorScheme.primary,
+                              borderSide: const BorderSide(
+                                color: AppColors.primary,
                                 width: 1.5,
                               ),
                             ),
@@ -717,17 +724,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                               vertical: 10,
                             ),
                           ),
-                          style: TextStyle(
-                            color: theme.colorScheme.onSurface,
-                            fontSize: 14,
+                          style: const TextStyle(
+                            color: AppColors.textPrimary,
+                            fontSize: 13.5,
                           ),
                         ),
                       ),
                       const SizedBox(width: 8),
                       IconButton(
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.send_rounded,
-                          color: theme.colorScheme.primary,
+                          color: AppColors.primary,
                         ),
                         onPressed: _sendMessage,
                       ),
