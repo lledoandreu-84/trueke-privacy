@@ -99,7 +99,14 @@ class PromoBanner extends StatelessWidget {
                 const SizedBox(height: 12),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, AppRoutes.explore);
+                    // Acción del banner de Intercambio Inteligente
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          '¡Explora los artículos disponibles en la pestaña inferior o usa el buscador!',
+                        ),
+                      ),
+                    );
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
