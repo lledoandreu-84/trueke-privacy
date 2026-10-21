@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:trueke/core/theme/app_colors.dart';
-import 'package:trueke/features/products/domain/models/product.dart';
+import 'package:trueke/models/product.dart';
 
 class ProductCard extends StatelessWidget {
   const ProductCard({
