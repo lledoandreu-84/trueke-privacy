@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:trueke/core/theme/app_colors.dart';
 import 'package:trueke/models/product.dart';
 
@@ -22,6 +24,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
   late String _selectedCondition;
   late bool _isTrueque;
   late List<String> _images;
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -45,6 +48,22 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
     _descriptionController.dispose();
     _seekingController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final XFile? pickedFile = await _picker.pickImage(
+        source: source,
+        imageQuality: 80,
+      );
+      if (pickedFile != null) {
+        setState(() {
+          _images.add(pickedFile.path);
+        });
+      }
+    } catch (e) {
+      debugPrint('Error al seleccionar imagen: $e');
+    }
   }
 
   void _showImageSourceDialog() {
@@ -90,9 +109,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
               subtitle: const Text('Usa la cámara de tu dispositivo', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
               onTap: () {
                 Navigator.pop(context);
-                setState(() {
-                  _images.add('https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500');
-                });
+                _pickImage(ImageSource.camera);
               },
             ),
             const Divider(),
@@ -106,12 +123,10 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                 child: const Icon(Icons.photo_library_rounded, color: AppColors.primary),
               ),
               title: const Text('Subir desde galería', style: TextStyle(fontWeight: FontWeight.w600)),
-              subtitle: const Text('Elige una o varias imágenes', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+              subtitle: const Text('Elige una imagen de tu galería', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
               onTap: () {
                 Navigator.pop(context);
-                setState(() {
-                  _images.add('https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500');
-                });
+                _pickImage(ImageSource.gallery);
               },
             ),
             const SizedBox(height: 12),
@@ -235,6 +250,9 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                             );
                           }
 
+                          final imagePath = _images[index];
+                          final isNetwork = imagePath.startsWith('http');
+
                           return Stack(
                             children: [
                               Container(
@@ -244,14 +262,23 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                                   border: Border.all(color: const Color(0xFFE2E8F0)),
                                 ),
                                 clipBehavior: Clip.antiAlias,
-                                child: Image.network(
-                                  _images[index],
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) => Container(
-                                    color: AppColors.surfaceMint,
-                                    child: const Icon(Icons.image_outlined, color: AppColors.primary),
-                                  ),
-                                ),
+                                child: isNetwork
+                                    ? Image.network(
+                                        imagePath,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) => Container(
+                                          color: AppColors.surfaceMint,
+                                          child: const Icon(Icons.image_outlined, color: AppColors.primary),
+                                        ),
+                                      )
+                                    : Image.file(
+                                        File(imagePath),
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) => Container(
+                                          color: AppColors.surfaceMint,
+                                          child: const Icon(Icons.image_outlined, color: AppColors.primary),
+                                        ),
+                                      ),
                               ),
                               Positioned(
                                 top: 4,
