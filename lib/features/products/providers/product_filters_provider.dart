@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../domain/product_model.dart';
+import 'domain/product_model.dart';
 
 enum ProductSortOption { relevance, priceAsc, priceDesc, distance }
 
@@ -46,7 +46,6 @@ class ProductFilters {
       maxPrice != null ||
       condition != null;
 
-  // Modificado con lógica explícita para permitir setear campos a null de forma segura
   ProductFilters copyWith({
     String? query,
     String? Function()? category,
@@ -57,7 +56,7 @@ class ProductFilters {
     ProductSortOption? sortBy,
     double? minPrice,
     double? maxPrice,
-    String? condition,
+    String? Function()? condition,
     int? page,
   }) {
     return ProductFilters(
@@ -70,7 +69,7 @@ class ProductFilters {
       sortBy: sortBy ?? this.sortBy,
       minPrice: minPrice ?? this.minPrice,
       maxPrice: maxPrice ?? this.maxPrice,
-      condition: condition ?? this.condition,
+      condition: condition != null ? condition() : this.condition,
       page: page ?? this.page,
     );
   }
@@ -114,7 +113,8 @@ class ProductFiltersNotifier extends Notifier<ProductFilters> {
   }
 
   void updateCondition(String? condition) =>
-      state = state.copyWith(condition: condition);
+      state = state.copyWith(condition: () => condition);
+
   void updatePriceRange(double? min, double? max) =>
       state = state.copyWith(minPrice: min, maxPrice: max);
 
