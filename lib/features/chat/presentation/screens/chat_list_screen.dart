@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/core/theme/app_colors.dart';
-import 'package:trueke/app/routes/app_routes.dart';
 
 class ChatListScreen extends ConsumerWidget {
   const ChatListScreen({super.key});
@@ -69,7 +68,10 @@ class ChatListScreen extends ConsumerWidget {
               // 🚀 3. Botón de Acción (Call to Action)
               ElevatedButton.icon(
                 onPressed: () {
-                  Navigator.pushNamed(context, AppRoutes.productSearch);
+                  // Si estamos en una ruta push, vuelve atrás; de lo contrario limpia la pila
+                  if (Navigator.canPop(context)) {
+                    Navigator.pop(context);
+                  }
                 },
                 icon: const Icon(Icons.search_rounded, size: 18, color: Colors.white),
                 label: const Text(
