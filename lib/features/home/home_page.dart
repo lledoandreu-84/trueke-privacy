@@ -39,7 +39,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             const SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(16, 14, 16, 14),
+                padding: EdgeInsets.fromLTRB(16, 16, 16, 22),
                 child: PromoBanner(),
               ),
             ),
@@ -86,7 +86,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 final displayProducts = products.take(2).toList();
 
                 return SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                   sliver: SliverGrid(
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
@@ -133,7 +133,7 @@ class _SectionHeading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 2, 16, 10),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
