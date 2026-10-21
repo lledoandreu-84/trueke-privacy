@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:trueke/app/routes/app_routes.dart';
 
 class PromoBanner extends StatelessWidget {
   const PromoBanner({super.key});
