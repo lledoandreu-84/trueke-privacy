@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../models/product.dart';
+import 'product_repository_provider.dart';
 import 'products_provider.dart';
 import 'paginated_products_provider.dart';
 
@@ -89,12 +90,16 @@ class PublishProductNotifier extends Notifier<PublishProductState> {
     try {
       _validateContent(title, description);
 
+      final productRepo = ref.read(productRepositoryProvider);
       final List<String> uploadedUrls = [];
-      final productsNotifier = ref.read(productsProvider.notifier);
 
       for (final file in state.selectedImages) {
         final xFile = XFile(file.path);
-        final imageUrl = await productsNotifier.uploadProductImage(xFile);
+        final bytes = await xFile.readAsBytes();
+        final fileName = 'product_${DateTime.now().millisecondsSinceEpoch}_${uploadedUrls.length}.jpg';
+        
+        // Sube directo al bucket de Supabase usando el repositorio de productos
+        final imageUrl = await productRepo.uploadProductImage(bytes, fileName);
         if (imageUrl.isNotEmpty) {
           uploadedUrls.add(imageUrl);
         }
@@ -118,9 +123,10 @@ class PublishProductNotifier extends Notifier<PublishProductState> {
         createdAt: DateTime.now(),
       );
 
-      await productsNotifier.addProduct(newProduct);
+      await productRepo.createProduct(newProduct);
 
       ref.invalidate(paginatedProductsProvider);
+      ref.invalidate(productsProvider);
 
       state = state.copyWith(isPublishing: false, isSuccess: true);
     } catch (e) {
@@ -154,12 +160,15 @@ class PublishProductNotifier extends Notifier<PublishProductState> {
     try {
       _validateContent(title, description);
 
+      final productRepo = ref.read(productRepositoryProvider);
       final List<String> finalImages = List.from(existingImages);
-      final productsNotifier = ref.read(productsProvider.notifier);
 
       for (final file in state.selectedImages) {
         final xFile = XFile(file.path);
-        final imageUrl = await productsNotifier.uploadProductImage(xFile);
+        final bytes = await xFile.readAsBytes();
+        final fileName = 'product_${DateTime.now().millisecondsSinceEpoch}_${finalImages.length}.jpg';
+        
+        final imageUrl = await productRepo.uploadProductImage(bytes, fileName);
         if (imageUrl.isNotEmpty) {
           finalImages.add(imageUrl);
         }
@@ -183,9 +192,10 @@ class PublishProductNotifier extends Notifier<PublishProductState> {
         createdAt: createdAt,
       );
 
-      await productsNotifier.updateProduct(updatedProduct);
+      await productRepo.updateProduct(updatedProduct);
 
       ref.invalidate(paginatedProductsProvider);
+      ref.invalidate(productsProvider);
 
       state = state.copyWith(isPublishing: false, isSuccess: true);
     } catch (e) {
