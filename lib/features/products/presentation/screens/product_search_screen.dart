@@ -15,6 +15,7 @@ class ProductSearchScreen extends ConsumerStatefulWidget {
 
 class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
 
   final List<String> _categories = ['Todos', 'Electrónica', 'Moda', 'Hogar', 'Gaming', 'Deporte', 'Otros'];
   final List<double?> _radii = [25.0, 50.0, 100.0, 150.0, 200.0, 250.0, null];
@@ -26,11 +27,13 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
     super.initState();
     final filters = ref.read(productFiltersProvider);
     _searchController.text = filters.query;
+    _priceController.text = (filters.maxPrice ?? 10000.0).toInt().toString();
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _priceController.dispose();
     super.dispose();
   }
 
@@ -104,7 +107,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 🏷️ Categoría (Orden estático y color unificado)
+                  // 🏷️ Categoría (Posición estática garantizada)
                   const Text(
                     'Categoría',
                     style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w700),
@@ -185,37 +188,60 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // 💶 Rango de Precio (€)
-                  const Text(
-                    'Rango de Precio (€)',
-                    style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w700),
-                  ),
-                  const SizedBox(height: 4),
+                  // 💶 Rango de Precio (€) con Slider de 5 en 5 hasta 10.000€ y Campo de Texto Editable
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.between,
                     children: [
-                      Expanded(
-                        child: Slider(
-                          value: filters.maxPrice ?? 500.0,
-                          min: 0.0,
-                          max: 1000.0,
-                          divisions: 20,
-                          activeColor: AppColors.primary,
-                          inactiveColor: const Color(0xFFE2E8F0),
-                          label: '${(filters.maxPrice ?? 500.0).toInt()} €',
-                          onChanged: (value) {
-                            ref.read(productFiltersProvider.notifier).updatePriceRange(filters.minPrice, value);
+                      const Text(
+                        'Rango de Precio (€)',
+                        style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w700),
+                      ),
+                      SizedBox(
+                        width: 90,
+                        height: 32,
+                        child: TextField(
+                          controller: _priceController,
+                          keyboardType: TextInputType.number,
+                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                          decoration: InputDecoration(
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                            suffixText: '€',
+                            filled: true,
+                            fillColor: AppColors.background,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                            ),
+                          ),
+                          onSubmitted: (value) {
+                            final parsed = double.tryParse(value);
+                            if (parsed != null) {
+                              final clamped = parsed.clamp(0.0, 10000.0);
+                              ref.read(productFiltersProvider.notifier).updatePriceRange(filters.minPrice, clamped);
+                            }
                           },
                         ),
                       ),
-                      Text(
-                        'Máx: ${(filters.maxPrice ?? 500.0).toInt()} €',
-                        style: const TextStyle(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
-                      ),
                     ],
+                  ),
+                  const SizedBox(height: 4),
+                  Slider(
+                    value: filters.maxPrice ?? 10000.0,
+                    min: 0.0,
+                    max: 10000.0,
+                    divisions: 2000, // Incrementos de 5€ (10000 / 5 = 2000 divisiones)
+                    activeColor: AppColors.primary,
+                    inactiveColor: const Color(0xFFE2E8F0),
+                    label: '${(filters.maxPrice ?? 10000.0).toInt()} €',
+                    onChanged: (value) {
+                      _priceController.text = value.toInt().toString();
+                      ref.read(productFiltersProvider.notifier).updatePriceRange(filters.minPrice, value);
+                    },
                   ),
                   const SizedBox(height: 12),
 
-                  // ✨ Estado del Producto (Con opción de desmarcar)
+                  // ✨ Estado del Producto (Permite desmarcar correctamente)
                   const Text(
                     'Estado del Producto',
                     style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w700),
@@ -237,7 +263,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           fontWeight: FontWeight.w600,
                         ),
                         onSelected: (selected) {
-                          ref.read(productFiltersProvider.notifier).updateCondition(selected ? condition : null);
+                          ref.read(productFiltersProvider.notifier).updateCondition(isSelected ? null : condition);
                         },
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -273,7 +299,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           fontWeight: FontWeight.w600,
                         ),
                         onSelected: (selected) {
-                          ref.read(productFiltersProvider.notifier).setTradeType(selected ? tradeType : null);
+                          ref.read(productFiltersProvider.notifier).setTradeType(isSelected ? null : tradeType);
                         },
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
