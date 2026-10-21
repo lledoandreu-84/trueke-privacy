@@ -504,20 +504,43 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
           ),
         ),
         actions: [
-          TextButton.icon(
-            onPressed: () =>
-                _showFilterBottomSheet(context, searchState, searchNotifier),
-            icon: const Icon(
-              Icons.tune_rounded,
-              size: 16,
-              color: AppColors.primary,
-            ),
-            label: const Text(
-              'Filtros',
-              style: TextStyle(
-                color: AppColors.primary,
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: Material(
+              color: AppColors.surfaceMint,
+              borderRadius: BorderRadius.circular(20),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: () => _showFilterBottomSheet(
+                  context,
+                  searchState,
+                  searchNotifier,
+                ),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 6,
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.tune_rounded,
+                        size: 16,
+                        color: AppColors.primary,
+                      ),
+                      SizedBox(width: 6),
+                      Text(
+                        'Filtros',
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
