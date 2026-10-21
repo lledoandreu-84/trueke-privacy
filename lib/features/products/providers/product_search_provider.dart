@@ -103,7 +103,6 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
           latitude: position.latitude,
           longitude: position.longitude,
         );
-        // Únicamente ejecutamos la búsqueda si ya existe un término de búsqueda válido
         if (state.query.trim().isNotEmpty) {
           await search();
         }
@@ -114,8 +113,6 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
   Future<void> search() async {
     final trimmedQuery = state.query.trim();
 
-    // REGRA DE ESTADO CERO ESTRICTO:
-    // Si la búsqueda está vacía, forzamos un estado de lista vacía de forma inmediata.
     if (trimmedQuery.isEmpty) {
       state = state.copyWith(products: const AsyncValue.data([]));
       return;
@@ -142,6 +139,7 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
           final titleMatch = _normalize(product.title).contains(normalizedQuery);
           final descMatch = _normalize(product.description).contains(normalizedQuery);
           final catMatch = _normalize(product.category).contains(normalizedQuery);
+          // EXIGENCIA ESTRICTA: El texto introducido DEBE coincidir obligatoriamente con título, descripción o categoría
           if (!titleMatch && !descMatch && !catMatch) {
             return false;
           }
