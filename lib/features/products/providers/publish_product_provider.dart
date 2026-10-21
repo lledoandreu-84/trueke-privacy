@@ -95,11 +95,7 @@ class PublishProductNotifier extends Notifier<PublishProductState> {
 
       for (final file in state.selectedImages) {
         final xFile = XFile(file.path);
-        final bytes = await xFile.readAsBytes();
-        final fileName = 'product_${DateTime.now().millisecondsSinceEpoch}_${uploadedUrls.length}.jpg';
-        
-        // Sube directo al bucket de Supabase usando el repositorio de productos
-        final imageUrl = await productRepo.uploadProductImage(bytes, fileName);
+        final imageUrl = await productRepo.uploadProductImage(xFile);
         if (imageUrl.isNotEmpty) {
           uploadedUrls.add(imageUrl);
         }
@@ -165,10 +161,7 @@ class PublishProductNotifier extends Notifier<PublishProductState> {
 
       for (final file in state.selectedImages) {
         final xFile = XFile(file.path);
-        final bytes = await xFile.readAsBytes();
-        final fileName = 'product_${DateTime.now().millisecondsSinceEpoch}_${finalImages.length}.jpg';
-        
-        final imageUrl = await productRepo.uploadProductImage(bytes, fileName);
+        final imageUrl = await productRepo.uploadProductImage(xFile);
         if (imageUrl.isNotEmpty) {
           finalImages.add(imageUrl);
         }
