@@ -432,7 +432,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                     children: [
                       Expanded(
                         child: DropdownButtonFormField<String>(
-                          value: _selectedCategory,
+                          initialValue: _selectedCategory,
                           dropdownColor: AppColors.surface,
                           style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
                           decoration: InputDecoration(
@@ -455,7 +455,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: DropdownButtonFormField<String>(
-                          value: _selectedCondition,
+                          initialValue: _selectedCondition,
                           dropdownColor: AppColors.surface,
                           style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
                           decoration: InputDecoration(
