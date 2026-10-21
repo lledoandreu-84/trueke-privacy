@@ -33,11 +33,7 @@ class PromoBanner extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(
-                      Icons.bolt_rounded,
-                      color: Colors.amber,
-                      size: 24,
-                    ),
+                    Icon(Icons.bolt_rounded, color: Colors.amber, size: 24),
                     SizedBox(width: 6),
                     Flexible(
                       child: Text(
@@ -91,10 +87,7 @@ class PromoBanner extends StatelessWidget {
             ),
             child: const Text(
               'Explorar',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w800,
-              ),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800),
             ),
           ),
         ],

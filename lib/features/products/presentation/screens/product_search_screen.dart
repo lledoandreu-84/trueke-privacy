@@ -487,16 +487,22 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        titleSpacing: 16.0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            color: AppColors.textPrimary,
+          ),
+          onPressed: () => Navigator.pop(context),
+          tooltip: 'Volver',
+        ),
         title: const Text(
           'Explorar',
           style: TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.bold,
-            fontSize: 22,
+            fontSize: 20,
           ),
         ),
-        automaticallyImplyLeading: false,
         actions: [
           TextButton.icon(
             onPressed: () =>
@@ -529,14 +535,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
               ),
             ),
           ),
-          IconButton(
-            icon: const Icon(
-              Icons.arrow_back_rounded,
-              color: AppColors.textPrimary,
-            ),
-            onPressed: () => Navigator.pop(context),
-            tooltip: 'Volver',
-          ),
+          const SizedBox(width: 8),
         ],
       ),
       body: Padding(
