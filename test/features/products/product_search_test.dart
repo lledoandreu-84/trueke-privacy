@@ -33,7 +33,7 @@ void main() {
       final state = container.read(productSearchNotifierProvider);
 
       expect(state.query, equals(''));
-      expect(state.maxRadiusKm, equals(15.0));
+      expect(state.maxRadiusKm, equals(9999.0));
       expect(state.latitude, equals(40.416775));
       expect(state.longitude, equals(-3.703790));
       expect(state.products.value, isEmpty);
