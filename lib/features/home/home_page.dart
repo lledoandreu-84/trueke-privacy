@@ -39,12 +39,11 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             const SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(16, 16, 16, 12),
+                padding: EdgeInsets.fromLTRB(16, 20, 16, 16),
                 child: PromoBanner(),
               ),
             ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: 18)),
+            const SliverToBoxAdapter(child: SizedBox(height: 10)),
             const SliverToBoxAdapter(
               child: _SectionHeading(
                 title: 'Más buscados en tu zona',
@@ -135,8 +134,7 @@ class _SectionHeading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      // Añadimos un pequeño margen inferior (bottom: 8) para separar el título/subtítulo de los elementos inferiores
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

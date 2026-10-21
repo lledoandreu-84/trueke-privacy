@@ -30,37 +30,37 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
       'name': 'Electrónica',
       'icon': Icons.devices_rounded,
       'color': const Color(0xFFE0E7FF),
-      'textColor': const Color(0xFF4338CA),
+      'textColor': const Color(0xFF312E81),
     },
     {
       'name': 'Moda',
       'icon': Icons.checkroom_rounded,
       'color': const Color(0xFFFCE7F3),
-      'textColor': const Color(0xFFBE185D),
+      'textColor': const Color(0xFF831843),
     },
     {
       'name': 'Hogar',
       'icon': Icons.chair_rounded,
       'color': const Color(0xFFFEF3C7),
-      'textColor': const Color(0xFFB45309),
+      'textColor': const Color(0xFF78350F),
     },
     {
       'name': 'Gaming',
       'icon': Icons.sports_esports_rounded,
       'color': const Color(0xFFF3E8FF),
-      'textColor': const Color(0xFF6B21A8),
+      'textColor': const Color(0xFF581C87),
     },
     {
       'name': 'Deporte',
       'icon': Icons.fitness_center_rounded,
       'color': const Color(0xFFD1FAE5),
-      'textColor': const Color(0xFF047857),
+      'textColor': const Color(0xFF064E3B),
     },
     {
       'name': 'Otros',
       'icon': Icons.widgets_rounded,
       'color': const Color(0xFFF1F5F9),
-      'textColor': const Color(0xFF334155),
+      'textColor': const Color(0xFF0F172A),
     },
   ];
 
@@ -487,34 +487,31 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        automaticallyImplyLeading: false,
         titleSpacing: 16.0,
         title: const Text(
           'Explorar',
           style: TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.bold,
-            fontSize: 20,
+            fontSize: 22,
           ),
         ),
+        automaticallyImplyLeading: false,
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 2.0),
-            child: TextButton.icon(
-              onPressed: () =>
-                  _showFilterBottomSheet(context, searchState, searchNotifier),
-              icon: const Icon(
-                Icons.tune_rounded,
-                size: 16,
+          TextButton.icon(
+            onPressed: () =>
+                _showFilterBottomSheet(context, searchState, searchNotifier),
+            icon: const Icon(
+              Icons.tune_rounded,
+              size: 16,
+              color: AppColors.primary,
+            ),
+            label: const Text(
+              'Filtros',
+              style: TextStyle(
                 color: AppColors.primary,
-              ),
-              label: const Text(
-                'Filtros',
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                ),
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
               ),
             ),
           ),
@@ -534,7 +531,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
           ),
           IconButton(
             icon: const Icon(
-              Icons.arrow_forward_rounded,
+              Icons.arrow_back_rounded,
               color: AppColors.textPrimary,
             ),
             onPressed: () => Navigator.pop(context),
@@ -595,7 +592,6 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
             Expanded(
               child: searchState.products.when(
                 data: (products) {
-                  // Si no hay consulta ni filtros activos, se muestra la cuadrícula de Categorías Destacadas
                   final hasActiveFilter =
                       searchState.query.trim().isNotEmpty ||
                       searchState.selectedCategory != null ||
@@ -653,28 +649,28 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
+                                      horizontal: 8,
                                       vertical: 8,
                                     ),
                                     child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Icon(
                                           cat['icon'] as IconData,
                                           color: cat['textColor'] as Color,
-                                          size: 22,
+                                          size: 24,
                                         ),
                                         const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Text(
-                                            cat['name'] as String,
-                                            style: TextStyle(
-                                              color: cat['textColor'] as Color,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 13,
-                                            ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
+                                        Text(
+                                          cat['name'] as String,
+                                          style: TextStyle(
+                                            color: cat['textColor'] as Color,
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 15,
                                           ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ],
                                     ),
