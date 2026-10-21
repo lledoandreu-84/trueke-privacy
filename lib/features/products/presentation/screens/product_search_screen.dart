@@ -340,9 +340,13 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                         String label = type.name;
                         if (type.name == 'trade') {
                           label = 'Trueque puro';
-                        } else if (type.name == 'sale')
+                        else if (type.name == 'sale') {
                           label = 'Venta directa';
-                        else if (type.name == 'tradeAndCash' ||
+                        }
+                          label = 'Venta directa';
+                        else if (type.name == 'tradeAndCash' || type.name == 'tradeAndMoney') {
+                          label = 'Trueque + €';
+                        }
                             type.name == 'tradeAndMoney')
                           label = 'Trueque + €';
                         return ChoiceChip(
