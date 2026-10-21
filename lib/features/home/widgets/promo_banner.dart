@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../products/presentation/screens/product_search_screen.dart';
 
 class PromoBanner extends StatelessWidget {
   const PromoBanner({super.key});
@@ -100,12 +101,10 @@ class PromoBanner extends StatelessWidget {
                 const SizedBox(height: 4),
                 GestureDetector(
                   onTap: () {
-                    // Acción del banner de Intercambio Inteligente
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          '¡Explora los artículos disponibles en la pestaña inferior o usa el buscador!',
-                        ),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ProductSearchScreen(),
                       ),
                     );
                   },
