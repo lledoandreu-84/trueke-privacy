@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../app/routes/app_routes.dart';
-import '../../models/product_model.dart';
-import '../providers/product_filters_provider.dart';
-import '../providers/paginated_products_provider.dart';
-import '../../../home/widgets/product_card.dart';
+import 'package:trueke/core/theme/app_colors.dart';
+import 'package:trueke/app/routes/app_routes.dart';
+import 'package:trueke/features/products/domain/product_model.dart';
+import 'package:trueke/features/products/providers/product_filters_provider.dart';
+import 'package:trueke/features/products/providers/paginated_products_provider.dart';
+import 'package:trueke/features/home/widgets/product_card.dart';
 
 class ProductSearchScreen extends ConsumerStatefulWidget {
   const ProductSearchScreen({super.key});
@@ -19,17 +19,6 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
 
   final List<String> _categories = ['Todos', 'Electrónica', 'Moda', 'Hogar', 'Gaming', 'Deporte', 'Otros'];
   final List<double> _radii = [25.0, 50.0, 100.0, 150.0, 200.0];
-  final List<ProductCondition> _conditions = [
-    ProductCondition.newCondition,
-    ProductCondition.likeNew,
-    ProductCondition.good,
-    ProductCondition.fair,
-  ];
-  final List<TradeType> _tradeTypes = [
-    TradeType.pureTrade,
-    TradeType.directSale,
-    TradeType.tradeOrCash,
-  ];
 
   @override
   void initState() {
@@ -42,30 +31,6 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
-  }
-
-  String _conditionToString(ProductCondition condition) {
-    switch (condition) {
-      case ProductCondition.newCondition:
-        return 'Nuevo';
-      case ProductCondition.likeNew:
-        return 'Poco uso';
-      case ProductCondition.good:
-        return 'Buen estado';
-      case ProductCondition.fair:
-        return 'Muy usado';
-    }
-  }
-
-  String _tradeTypeToString(TradeType type) {
-    switch (type) {
-      case TradeType.pureTrade:
-        return 'Trueke puro';
-      case TradeType.directSale:
-        return 'Venta directa';
-      case TradeType.tradeOrCash:
-        return 'Trueke + €';
-    }
   }
 
   @override
@@ -186,7 +151,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                         selectedColor: AppColors.surfaceMint,
                         backgroundColor: AppColors.background,
                         labelStyle: TextStyle(
-                          color: isSelected ? AppColors.primaryDark : AppColors.textSecondary,
+                          color: isSelected ? AppColors.primary : AppColors.textSecondary,
                           fontSize: 11.5,
                           fontWeight: FontWeight.w600,
                         ),
