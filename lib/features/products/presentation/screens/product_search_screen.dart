@@ -307,8 +307,9 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       children: TradeType.values.map((type) {
                         final isSelected = state.selectedTradeType == type;
                         String label = type.name;
-                        if (type.name == 'trade') label = 'Trueque puro';
-                        else if (type.name == 'sale') label = 'Venta directa';
+                        if (type.name == 'trade') {
+                          label = 'Trueque puro';
+                        } else if (type.name == 'sale') label = 'Venta directa';
                         else if (type.name == 'tradeAndCash' || type.name == 'tradeAndMoney') label = 'Trueque + €';
                         return ChoiceChip(
                           label: Text(label),
