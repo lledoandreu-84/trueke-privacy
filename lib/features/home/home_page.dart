@@ -39,7 +39,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             const SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(16, 16, 16, 32),
+                padding: EdgeInsets.fromLTRB(16, 16, 16, 42),
                 child: PromoBanner(),
               ),
             ),
@@ -53,7 +53,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             paginatedAsync.when(
               loading: () => const SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  padding: EdgeInsets.symmetric(vertical: 24),
                   child: Center(
                     child: CircularProgressIndicator(
                       color: AppColors.primary,
@@ -86,14 +86,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                 final displayProducts = products.take(2).toList();
 
                 return SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 28),
                   sliver: SliverGrid(
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                      childAspectRatio: 0.88,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 0.84,
                     ),
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final product = displayProducts[index];
@@ -133,20 +133,20 @@ class _SectionHeading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: 32,
-            height: 32,
+            width: 34,
+            height: 34,
             decoration: BoxDecoration(
               color: AppColors.surfaceMint,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: AppColors.primary, size: 16),
+            child: Icon(icon, color: AppColors.primary, size: 18),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,7 +156,7 @@ class _SectionHeading extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     color: AppColors.textPrimary,
-                    fontSize: 14,
+                    fontSize: 14.5,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.2,
                   ),
@@ -166,7 +166,7 @@ class _SectionHeading extends StatelessWidget {
                   subtitle,
                   style: const TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 11,
+                    fontSize: 11.5,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
