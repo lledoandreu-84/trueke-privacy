@@ -125,7 +125,6 @@ class SupabaseProductRepository implements ProductRepository {
       }
     } catch (_) {}
     
-    // Fallback en mocks si no se encuentra remoto
     try {
       return MockProductService.getFullMockProducts().firstWhere((p) => p.id == id);
     } catch (_) {
@@ -156,6 +155,28 @@ class SupabaseProductRepository implements ProductRepository {
   @override
   Future<void> deleteProductImage(String publicUrl) async {
     await _storageService.deleteProductImage(publicUrl);
+  }
+
+  @override
+  Future<void> incrementViews(String productId) async {
+    try {
+      // Intentamos actualizar directamente incrementando views_count
+      final existing = await _client
+          .from(_table)
+          .select('views_count')
+          .eq('id', productId)
+          .maybeSingle();
+      
+      if (existing != null) {
+        final currentViews = (existing['views_count'] as int?) ?? 0;
+        await _client
+            .from(_table)
+            .update({'views_count': currentViews + 1})
+            .eq('id', productId);
+      }
+    } catch (e) {
+      developer.log('⚠️ No se pudo incrementar vistas remotas: $e', name: 'trueke.repository');
+    }
   }
 
   @override

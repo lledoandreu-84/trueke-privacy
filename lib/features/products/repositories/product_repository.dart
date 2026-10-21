@@ -24,6 +24,8 @@ abstract class ProductRepository {
 
   Future<void> deleteProductImage(String publicUrl);
 
+  Future<void> incrementViews(String productId);
+
   Future<List<Product>> searchProductsAdvanced({
     required String query,
     required double longitude,
