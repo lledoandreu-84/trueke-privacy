@@ -15,6 +15,7 @@ class Product {
   final String location;
   final double? latitude;
   final double? longitude;
+  final int viewsCount;
   final DateTime createdAt;
 
   const Product({
@@ -32,6 +33,7 @@ class Product {
     required this.location,
     this.latitude,
     this.longitude,
+    this.viewsCount = 0,
     required this.createdAt,
   });
 
@@ -66,6 +68,7 @@ class Product {
       longitude: json['longitude'] != null
           ? (json['longitude'] as num).toDouble()
           : null,
+      viewsCount: json['views_count'] as int? ?? json['views'] as int? ?? 0,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)
           : DateTime.now(),
@@ -88,6 +91,7 @@ class Product {
       'location': location,
       'latitude': latitude,
       'longitude': longitude,
+      'views_count': viewsCount,
       'created_at': createdAt.toIso8601String(),
     };
   }
