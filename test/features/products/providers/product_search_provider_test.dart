@@ -63,6 +63,8 @@ void main() {
       () async {
         final notifier = container.read(productSearchNotifierProvider.notifier);
 
+        // Establecemos un query válido para cumplir con el Estado Cero Estricto
+        notifier.updateQuery('bicicleta');
         notifier.updateRadius(20.0);
         await notifier.search();
 
@@ -84,10 +86,11 @@ void main() {
       () async {
         final notifier = container.read(productSearchNotifierProvider.notifier);
 
-        // 1. Ejecutar búsqueda base inicial para asentar el AsyncData con la bicicleta de 150€
+        // 1. Establecer query válido y ejecutar búsqueda inicial
+        notifier.updateQuery('bicicleta');
         await notifier.search();
 
-        // 2. Restringir el rango de precio a un margen superior (200€ - 500€) lo cual gatilla el search() interno
+        // 2. Restringir el rango de precio a un margen superior (200€ - 500€)
         notifier.updatePriceRange(200.0, 500.0);
 
         // Permitir un tick del lazo de eventos de Dart para que complete el search() asíncrono interno
@@ -95,7 +98,7 @@ void main() {
 
         final state = container.read(productSearchNotifierProvider);
 
-        // El sumatorio elástico del bypass offline debe vaciar la lista (150€ queda fuera de 200€-500€)
+        // El filtro de precio debe vaciar la lista (150€ queda fuera de 200€-500€)
         expect(state.products.value, isEmpty);
       },
     );
