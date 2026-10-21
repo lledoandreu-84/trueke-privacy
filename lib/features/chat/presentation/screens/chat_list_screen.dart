@@ -69,7 +69,7 @@ class ChatListScreen extends ConsumerWidget {
               // 🚀 3. Botón de Acción (Call to Action)
               ElevatedButton.icon(
                 onPressed: () {
-                  Navigator.pushNamed(context, AppRoutes.search);
+                  Navigator.pushNamed(context, AppRoutes.productSearch);
                 },
                 icon: const Icon(Icons.search_rounded, size: 18, color: Colors.white),
                 label: const Text(
