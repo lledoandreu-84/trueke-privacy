@@ -130,7 +130,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 🏷️ Categoría (Sin checkmark para evitar saltos y posición estática)
+                  // 🏷️ Categoría (Posición estática garantizada)
                   const Text(
                     'Categoría',
                     style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w700),
@@ -213,7 +213,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // 💶 Rango de Precio (€) con escala exacta por intervalos
+                  // 💶 Rango de Precio (€)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -268,7 +268,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                   ),
                   const SizedBox(height: 12),
 
-                  // ✨ Estado del Producto (Permite desmarcar correctamente)
+                  // ✨ Estado del Producto (Permite desmarcar correctamente al pulsar el activo)
                   const Text(
                     'Estado del Producto',
                     style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w700),
@@ -291,7 +291,8 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           fontWeight: FontWeight.w600,
                         ),
                         onSelected: (selected) {
-                          ref.read(productFiltersProvider.notifier).updateCondition(selected ? condition : null);
+                          final newValue = isSelected ? null : condition;
+                          ref.read(productFiltersProvider.notifier).updateCondition(newValue);
                         },
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -328,7 +329,8 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           fontWeight: FontWeight.w600,
                         ),
                         onSelected: (selected) {
-                          ref.read(productFiltersProvider.notifier).setTradeType(selected ? tradeType : null);
+                          final newValue = isSelected ? null : tradeType;
+                          ref.read(productFiltersProvider.notifier).setTradeType(newValue);
                         },
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
