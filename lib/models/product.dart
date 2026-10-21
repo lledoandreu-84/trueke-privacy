@@ -1,3 +1,5 @@
+import 'dart:math';
+
 enum TradeType { trade, sale, tradeAndMoney }
 
 class Product {
@@ -36,6 +38,19 @@ class Product {
     this.viewsCount = 0,
     required this.createdAt,
   });
+
+  static String _generateUuid() {
+    final random = Random.secure();
+    final values = List<int>.generate(16, (i) => random.nextInt(256));
+    values[6] = (values[6] & 0x0f) | 0x40; // version 4
+    values[8] = (values[8] & 0x3f) | 0x80; // variant 1
+    final charCodes = values.map((b) => b.toRadixString(16).padLeft(2, '0')).toList();
+    return '${charCodes[0]}${charCodes[1]}${charCodes[2]}${charCodes[3]}-'
+        '${charCodes[4]}${charCodes[5]}-'
+        '${charCodes[6]}${charCodes[7]}-'
+        '${charCodes[8]}${charCodes[9]}-'
+        '${charCodes[10]}${charCodes[11]}${charCodes[12]}${charCodes[13]}${charCodes[14]}${charCodes[15]}';
+  }
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
@@ -76,7 +91,8 @@ class Product {
   }
 
   Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{
+    return {
+      'id': id.isNotEmpty ? id : _generateUuid(),
       'title': title,
       'description': description,
       'price': price,
@@ -91,10 +107,6 @@ class Product {
       'latitude': latitude,
       'longitude': longitude,
     };
-    if (id.isNotEmpty) {
-      map['id'] = id;
-    }
-    return map;
   }
 
   String get imageUrl => images.isNotEmpty ? images.first : '';
