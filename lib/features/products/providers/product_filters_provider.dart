@@ -10,10 +10,10 @@ class ProductFilters {
     this.tradeType,
     this.userLatitude,
     this.userLongitude,
-    this.radiusInKm = 50.0,
+    this.radiusInKm = 1000.0, // Por defecto "Sin límite"
     this.sortBy = ProductSortOption.relevance,
     this.minPrice,
-    this.maxPrice,
+    this.maxPrice = 5000.0,   // Por defecto al máximo de 5000€
     this.condition,
     this.page = 0,
   });
@@ -43,8 +43,9 @@ class ProductFilters {
       tradeType != null ||
       sortBy != ProductSortOption.relevance ||
       minPrice != null ||
-      maxPrice != null ||
-      condition != null;
+      (maxPrice != null && maxPrice! < 5000.0) ||
+      condition != null ||
+      radiusInKm < 999.0;
 
   ProductFilters copyWith({
     String? query,
