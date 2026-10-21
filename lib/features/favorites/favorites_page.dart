@@ -28,7 +28,7 @@ class FavoritesPage extends ConsumerWidget {
       body: favoritesState.when(
         data: (favorites) {
           if (favorites.isEmpty) {
-            // 🎨 4. Estado vacío con estética Pro y CTA
+            // 🎨 Estado vacío con estética Pro y CTA
             return Padding(
               padding: const EdgeInsets.all(24.0),
               child: Center(
@@ -100,7 +100,7 @@ class FavoritesPage extends ConsumerWidget {
 
           return CustomScrollView(
             slivers: [
-              // 📊 2. Header estilizado de Estadísticas / Colección
+              // 📊 Header estilizado de Estadísticas / Colección
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
@@ -149,15 +149,15 @@ class FavoritesPage extends ConsumerWidget {
                 ),
               ),
 
-              // 🛍️ 3. Grid Card Pro para mostrar los productos guardados
+              // 🛍️ Grid Card Pro adaptado a la clase Product
               SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 sliver: SliverGrid(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final item = favorites[index];
-                      final title = item['title'] ?? item['name'] ?? 'Producto guardado';
-                      final imageUrl = item['image_url'] ?? item['imageUrl'];
+                      final title = item.title;
+                      final imageUrl = item.images.isNotEmpty ? item.images.first : null;
 
                       return Container(
                         decoration: BoxDecoration(
@@ -174,11 +174,11 @@ class FavoritesPage extends ConsumerWidget {
                               child: Stack(
                                 children: [
                                   Positioned.fill(
-                                    child: imageUrl != null && imageUrl.toString().isNotEmpty
+                                    child: imageUrl != null && imageUrl.isNotEmpty
                                         ? Image.network(
                                             imageUrl,
                                             fit: BoxFit.cover,
-                                            errorBuilder: (_, __, ___) => Container(
+                                            errorBuilder: (_, _, _) => Container(
                                               color: AppColors.surfaceMint,
                                               child: const Icon(Icons.image_outlined, color: AppColors.primary, size: 32),
                                             ),
@@ -193,16 +193,13 @@ class FavoritesPage extends ConsumerWidget {
                                     top: 8,
                                     right: 8,
                                     child: Material(
-                                      color: Colors.white.withOpacity(0.9),
+                                      color: Colors.white.withValues(alpha: 0.9),
                                       shape: const CircleBorder(),
                                       elevation: 2,
                                       child: InkWell(
                                         customBorder: const CircleBorder(),
-                                        onPressed: () {
-                                          final productId = item['id']?.toString();
-                                          if (productId != null) {
-                                            ref.read(favoritesProvider.notifier).toggleFavorite(productId);
-                                          }
+                                        onTap: () {
+                                          ref.read(favoritesProvider.notifier).toggleFavorite(item);
                                         },
                                         child: const Padding(
                                           padding: EdgeInsets.all(6.0),
