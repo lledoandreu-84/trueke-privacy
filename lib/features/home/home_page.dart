@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
-import '../products/presentation/screens/product_search_screen.dart';
+import '../products/presentation/screens/nearby_products_screen.dart';
 import '../products/providers/paginated_products_provider.dart';
 import 'widgets/home_header.dart';
 import 'widgets/product_card.dart';
@@ -53,7 +53,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const ProductSearchScreen(),
+                      builder: (context) => const NearbyProductsScreen(),
                     ),
                   );
                 },
