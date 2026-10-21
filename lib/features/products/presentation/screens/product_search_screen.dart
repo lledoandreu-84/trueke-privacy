@@ -22,12 +22,20 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
   final List<String> _conditions = ['Nuevo', 'Poco uso', 'Buen estado', 'Muy usado'];
   final List<String> _tradeTypes = ['Trueke puro', 'Venta directa', 'Trueke + €'];
 
+  // Escala de precios exacta solicitada
+  final List<double> _priceSteps = [
+    0, 5, 10, 15, 20, 25,
+    50, 75, 100,
+    150, 200, 300, 400, 500,
+    1000, 2000, 3000, 4000, 5000
+  ];
+
   @override
   void initState() {
     super.initState();
     final filters = ref.read(productFiltersProvider);
     _searchController.text = filters.query;
-    _priceController.text = (filters.maxPrice ?? 10000.0).toInt().toString();
+    _priceController.text = (filters.maxPrice ?? 5000.0).toInt().toString();
   }
 
   @override
@@ -37,10 +45,25 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
     super.dispose();
   }
 
+  double _getClosestPriceIndex(double price) {
+    int closestIndex = 0;
+    double minDiff = double.infinity;
+    for (int i = 0; i < _priceSteps.length; i++) {
+      double diff = (_priceSteps[i] - price).abs();
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIndex = i;
+      }
+    }
+    return closestIndex.toDouble();
+  }
+
   @override
   Widget build(BuildContext context) {
     final filters = ref.watch(productFiltersProvider);
     final paginatedAsync = ref.watch(paginatedProductsProvider);
+    final currentMaxPrice = filters.maxPrice ?? 5000.0;
+    final sliderIndex = _getClosestPriceIndex(currentMaxPrice);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -107,7 +130,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 🏷️ Categoría (Posición estática garantizada)
+                  // 🏷️ Categoría (Sin checkmark para evitar saltos y posición estática)
                   const Text(
                     'Categoría',
                     style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w700),
@@ -124,6 +147,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       return ChoiceChip(
                         label: Text(category),
                         selected: isSelected,
+                        showCheckmark: false,
                         selectedColor: AppColors.surfaceMint,
                         backgroundColor: AppColors.background,
                         labelStyle: TextStyle(
@@ -166,6 +190,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       return ChoiceChip(
                         label: Text(label),
                         selected: isSelected,
+                        showCheckmark: false,
                         selectedColor: AppColors.surfaceMint,
                         backgroundColor: AppColors.background,
                         labelStyle: TextStyle(
@@ -188,7 +213,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // 💶 Rango de Precio (€) con Slider de 5 en 5 hasta 10.000€ y Campo de Texto Editable
+                  // 💶 Rango de Precio (€) con escala exacta por intervalos
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -217,8 +242,9 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           onSubmitted: (value) {
                             final parsed = double.tryParse(value);
                             if (parsed != null) {
-                              final clamped = parsed.clamp(0.0, 10000.0);
+                              final clamped = parsed.clamp(0.0, 5000.0);
                               ref.read(productFiltersProvider.notifier).updatePriceRange(filters.minPrice, clamped);
+                              _priceController.text = clamped.toInt().toString();
                             }
                           },
                         ),
@@ -227,16 +253,17 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                   ),
                   const SizedBox(height: 4),
                   Slider(
-                    value: filters.maxPrice ?? 10000.0,
+                    value: sliderIndex,
                     min: 0.0,
-                    max: 10000.0,
-                    divisions: 2000, // Incrementos de 5€ (10000 / 5 = 2000 divisiones)
+                    max: (_priceSteps.length - 1).toDouble(),
+                    divisions: _priceSteps.length - 1,
                     activeColor: AppColors.primary,
                     inactiveColor: const Color(0xFFE2E8F0),
-                    label: '${(filters.maxPrice ?? 10000.0).toInt()} €',
+                    label: '${currentMaxPrice.toInt()} €',
                     onChanged: (value) {
-                      _priceController.text = value.toInt().toString();
-                      ref.read(productFiltersProvider.notifier).updatePriceRange(filters.minPrice, value);
+                      final selectedPrice = _priceSteps[value.round()];
+                      _priceController.text = selectedPrice.toInt().toString();
+                      ref.read(productFiltersProvider.notifier).updatePriceRange(filters.minPrice, selectedPrice);
                     },
                   ),
                   const SizedBox(height: 12),
@@ -255,6 +282,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       return ChoiceChip(
                         label: Text(condition),
                         selected: isSelected,
+                        showCheckmark: false,
                         selectedColor: AppColors.surfaceMint,
                         backgroundColor: AppColors.background,
                         labelStyle: TextStyle(
@@ -263,7 +291,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           fontWeight: FontWeight.w600,
                         ),
                         onSelected: (selected) {
-                          ref.read(productFiltersProvider.notifier).updateCondition(isSelected ? null : condition);
+                          ref.read(productFiltersProvider.notifier).updateCondition(selected ? condition : null);
                         },
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -291,6 +319,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       return ChoiceChip(
                         label: Text(tradeType),
                         selected: isSelected,
+                        showCheckmark: false,
                         selectedColor: AppColors.surfaceMint,
                         backgroundColor: AppColors.background,
                         labelStyle: TextStyle(
@@ -299,7 +328,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           fontWeight: FontWeight.w600,
                         ),
                         onSelected: (selected) {
-                          ref.read(productFiltersProvider.notifier).setTradeType(isSelected ? null : tradeType);
+                          ref.read(productFiltersProvider.notifier).setTradeType(selected ? tradeType : null);
                         },
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
