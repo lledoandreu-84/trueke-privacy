@@ -245,6 +245,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       children: _distanceTiers.map((tier) {
                         final isSelected = state.maxRadiusKm == tier;
                         return ChoiceChip(
+                          showCheckmark: false,
                           label: Text(_getDistanceLabel(tier)),
                           selected: isSelected,
                           selectedColor: AppColors.surfaceMint,
@@ -283,6 +284,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                               final isSelected =
                                   state.selectedCondition == condition;
                               return ChoiceChip(
+                                showCheckmark: false,
                                 label: Text(condition),
                                 selected: isSelected,
                                 selectedColor: AppColors.surfaceMint,
@@ -327,6 +329,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                           label = 'Trueque + €';
                         }
                         return ChoiceChip(
+                          showCheckmark: false,
                           label: Text(label),
                           selected: isSelected,
                           selectedColor: AppColors.surfaceMint,

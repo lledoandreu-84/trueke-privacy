@@ -151,9 +151,7 @@ class ProductSearchNotifier extends Notifier<ProductSearchState> {
         if (state.query.trim().isNotEmpty) {
           final q = state.query.trim().toLowerCase();
           final titleMatch = product.title.toLowerCase().contains(q);
-          final descMatch = product.description.toLowerCase().contains(q);
-          final catMatch = product.category.toLowerCase().contains(q);
-          if (!titleMatch && !descMatch && !catMatch) {
+          if (!titleMatch) {
             return false;
           }
         }
