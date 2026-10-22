@@ -15,29 +15,54 @@ class ProductSearchScreen extends ConsumerStatefulWidget {
 
 class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
 
   final List<String> _categories = ['Todos', 'Electrónica', 'Moda', 'Hogar', 'Gaming', 'Deporte', 'Otros'];
   final List<double?> _radii = [25.0, 50.0, 100.0, 200.0, null];
   final List<String> _conditions = ['Todos', 'Nuevo', 'Poco uso', 'Buen estado', 'Muy usado'];
   final List<String> _tradeTypes = ['Todos', 'Trueke puro', 'Venta directa', 'Trueke + €'];
 
+  final List<double> _priceSteps = [
+    0, 5, 10, 15, 20, 25,
+    50, 75, 100,
+    150, 200, 300, 400, 500,
+    1000, 2000, 3000, 4000, 5000
+  ];
+
   @override
   void initState() {
     super.initState();
     final filters = ref.read(productFiltersProvider);
     _searchController.text = filters.query;
+    _priceController.text = (filters.maxPrice ?? 5000.0).toInt().toString();
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _priceController.dispose();
     super.dispose();
+  }
+
+  double _getClosestPriceIndex(double price) {
+    int closestIndex = 0;
+    double minDiff = double.infinity;
+    for (int i = 0; i < _priceSteps.length; i++) {
+      double diff = (_priceSteps[i] - price).abs();
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIndex = i;
+      }
+    }
+    return closestIndex.toDouble();
   }
 
   @override
   Widget build(BuildContext context) {
     final filters = ref.watch(productFiltersProvider);
     final paginatedAsync = ref.watch(paginatedProductsProvider);
+    final currentMaxPrice = filters.maxPrice ?? 5000.0;
+    final sliderIndex = _getClosestPriceIndex(currentMaxPrice);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -93,7 +118,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
             ),
             const SizedBox(height: 10),
 
-            // 🎛️ Filtros Compactos por Desplegables en Fila para Ganar Altura Vertical
+            // 🎛️ Filtros Avanzados Compactos
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -102,10 +127,46 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                 border: Border.all(color: const Color(0xFFE2E8F0)),
               ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Categoría
+                      const Text(
+                        'Filtros de Búsqueda',
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      if (filters.hasActiveFilters)
+                        TextButton.icon(
+                          onPressed: () {
+                            _searchController.clear();
+                            _priceController.text = '5000';
+                            ref.read(productFiltersProvider.notifier).clearFilters();
+                          },
+                          icon: const Icon(Icons.refresh_rounded, size: 13, color: AppColors.primary),
+                          label: const Text(
+                            'Limpiar',
+                            style: TextStyle(fontSize: 11, color: AppColors.primary, fontWeight: FontWeight.w700),
+                          ),
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  const Divider(height: 1, color: Color(0xFFE2E8F0)),
+                  const SizedBox(height: 10),
+
+                  // Fila 1: Categoría y Distancia
+                  Row(
+                    children: [
                       Expanded(
                         child: DropdownButtonFormField<String>(
                           initialValue: filters.category ?? 'Todos',
@@ -131,7 +192,6 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      // Distancia
                       Expanded(
                         child: DropdownButtonFormField<double?>(
                           initialValue: filters.radiusInKm >= 999.0 ? null : filters.radiusInKm,
@@ -159,9 +219,10 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                     ],
                   ),
                   const SizedBox(height: 8),
+
+                  // Fila 2: Estado y Trato
                   Row(
                     children: [
-                      // Estado
                       Expanded(
                         child: DropdownButtonFormField<String>(
                           initialValue: filters.condition ?? 'Todos',
@@ -187,7 +248,6 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      // Tipo de Trato
                       Expanded(
                         child: DropdownButtonFormField<String>(
                           initialValue: filters.tradeType ?? 'Todos',
@@ -214,34 +274,44 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       ),
                     ],
                   ),
-                  if (filters.hasActiveFilters) ...[
-                    const SizedBox(height: 8),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton.icon(
-                        onPressed: () {
-                          _searchController.clear();
-                          ref.read(productFiltersProvider.notifier).clearFilters();
-                        },
-                        icon: const Icon(Icons.refresh_rounded, size: 13, color: AppColors.primary),
-                        label: const Text(
-                          'Limpiar filtros',
-                          style: TextStyle(fontSize: 11, color: AppColors.primary, fontWeight: FontWeight.w700),
-                        ),
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
+                  const SizedBox(height: 8),
+
+                  // 💶 Rango de Precio Compacto
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Precio máx:',
+                        style: TextStyle(color: AppColors.textSecondary, fontSize: 11.5, fontWeight: FontWeight.w600),
                       ),
+                      Text(
+                        '${currentMaxPrice.toInt()} €',
+                        style: const TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.w700),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 28,
+                    child: Slider(
+                      value: sliderIndex,
+                      min: 0.0,
+                      max: (_priceSteps.length - 1).toDouble(),
+                      divisions: _priceSteps.length - 1,
+                      activeColor: AppColors.primary,
+                      inactiveColor: const Color(0xFFE2E8F0),
+                      onChanged: (value) {
+                        final selectedPrice = _priceSteps[value.round()];
+                        _priceController.text = selectedPrice.toInt().toString();
+                        ref.read(productFiltersProvider.notifier).updatePriceRange(filters.minPrice, selectedPrice);
+                      },
                     ),
-                  ],
+                  ),
                 ],
               ),
             ),
             const SizedBox(height: 12),
 
-            // 📦 Listado de Resultados con AspectRatio optimizado para mostrar 2 productos enteros sin scroll
+            // 📦 Listado de Resultados
             paginatedAsync.when(
               loading: () => const Padding(
                 padding: EdgeInsets.symmetric(vertical: 30),
@@ -302,7 +372,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                     crossAxisCount: 2,
                     crossAxisSpacing: 10,
                     mainAxisSpacing: 10,
-                    childAspectRatio: 0.95, // Idéntico a la Home para mostrar 2 productos enteros de golpe
+                    childAspectRatio: 0.95,
                   ),
                   itemCount: products.length,
                   itemBuilder: (context, index) {
