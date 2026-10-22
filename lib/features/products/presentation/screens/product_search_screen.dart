@@ -108,7 +108,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       // Categoría
                       Expanded(
                         child: DropdownButtonFormField<String>(
-                          value: filters.category ?? 'Todos',
+                          initialValue: filters.category ?? 'Todos',
                           dropdownColor: AppColors.surface,
                           isExpanded: true,
                           style: const TextStyle(fontSize: 12, color: AppColors.textPrimary, fontWeight: FontWeight.w600),
@@ -134,7 +134,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       // Distancia
                       Expanded(
                         child: DropdownButtonFormField<double?>(
-                          value: filters.radiusInKm >= 999.0 ? null : filters.radiusInKm,
+                          initialValue: filters.radiusInKm >= 999.0 ? null : filters.radiusInKm,
                           dropdownColor: AppColors.surface,
                           isExpanded: true,
                           style: const TextStyle(fontSize: 12, color: AppColors.textPrimary, fontWeight: FontWeight.w600),
@@ -164,7 +164,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       // Estado
                       Expanded(
                         child: DropdownButtonFormField<String>(
-                          value: filters.condition ?? 'Todos',
+                          initialValue: filters.condition ?? 'Todos',
                           dropdownColor: AppColors.surface,
                           isExpanded: true,
                           style: const TextStyle(fontSize: 12, color: AppColors.textPrimary, fontWeight: FontWeight.w600),
@@ -190,7 +190,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                       // Tipo de Trato
                       Expanded(
                         child: DropdownButtonFormField<String>(
-                          value: filters.tradeType ?? 'Todos',
+                          initialValue: filters.tradeType ?? 'Todos',
                           dropdownColor: AppColors.surface,
                           isExpanded: true,
                           style: const TextStyle(fontSize: 12, color: AppColors.textPrimary, fontWeight: FontWeight.w600),
