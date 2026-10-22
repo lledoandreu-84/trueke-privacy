@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/core/theme/app_colors.dart';
 import 'package:trueke/app/routes/app_routes.dart';
-import 'package0:trueke/features/products/providers/product_filters_provider.dart';
+import 'package:trueke/features/products/providers/product_filters_provider.dart';
 import 'package:trueke/features/products/providers/paginated_products_provider.dart';
 import 'package:trueke/features/home/widgets/product_card.dart';
 
