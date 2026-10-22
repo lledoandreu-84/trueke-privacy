@@ -8,5 +8,5 @@ final userProductsProvider = FutureProvider<List<Product>>((ref) async {
   final allProducts = await repository.getProducts();
   final currentUserId = Supabase.instance.client.auth.currentUser?.id;
   if (currentUserId == null) return [];
-  return allProducts.where((p) => p.userId == currentUserId).toList();
+  return allProducts.where((p) => p.ownerId == currentUserId).toList();
 });
