@@ -106,22 +106,16 @@ class SupabaseProfileRepository implements ProfileRepository {
       throw Exception('Debes iniciar sesión.');
     }
 
-    final myProfileResponse = await _client
         .from(_tableName)
         .select()
         .eq('id', myId)
         .maybeSingle();
 
-    final myName = myProfileResponse != null
-        ? (myProfileResponse['display_name'] ??
-              myProfileResponse['username'] ??
               'Usuario')
         : 'Usuario';
 
     await _client.from('user_reviews').insert({
       'reviewer_id': myId,
-      'reviewer_name': myName,
-
       'receiver_id': receiverId,
       'rating': rating,
       'comment': comment,
