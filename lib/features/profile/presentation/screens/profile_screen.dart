@@ -319,7 +319,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final userName = user?.userMetadata?['full_name'] ?? user?.email?.split('@').first ?? 'Usuario Trueke';
     final userEmail = user?.email ?? 'correo@ejemplo.com';
 
-    final productsAsync = ref.watch(productRepositoryProvider).getProducts();
+    // Usamos un FutureBuilder que se refresca cada vez que la pantalla entra en foco o se invalida el provider
+    final productsFuture = ref.watch(productRepositoryProvider).getProducts();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -337,7 +338,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
       ),
       body: FutureBuilder(
-        future: productsAsync,
+        future: productsFuture,
         builder: (context, snapshot) {
           final int publishedCount = snapshot.hasData ? (snapshot.data as List).length : 0;
           final int offersCount = 0;

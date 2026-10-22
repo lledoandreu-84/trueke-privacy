@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/core/theme/app_colors.dart';
+import 'package:trueke/core/providers/navigation_provider.dart';
 
 class FavoritesPage extends ConsumerWidget {
   const FavoritesPage({super.key});
@@ -69,9 +70,8 @@ class FavoritesPage extends ConsumerWidget {
                   ),
                 ),
                 onPressed: () {
-                  try {
-                    Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil('/', (route) => false);
-                  } catch (_) {}
+                  // Cambia instantáneamente a la pestaña de Inicio/Explorar (índice 0)
+                  ref.read(selectedTabProvider.notifier).state = 0;
                 },
                 icon: const Icon(Icons.search_rounded, size: 18),
                 label: const Text(
