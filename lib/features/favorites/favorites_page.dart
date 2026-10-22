@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/core/theme/app_colors.dart';
 
 class FavoritesPage extends ConsumerWidget {
-  const FavoritesPage({super.key});
+  final VoidCallback? onExplorePressed;
+
+  const FavoritesPage({super.key, this.onExplorePressed});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -69,7 +71,15 @@ class FavoritesPage extends ConsumerWidget {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+                  if (onExplorePressed != null) {
+                    onExplorePressed!();
+                  } else {
+                    try {
+                      DefaultTabController.of(context).animateTo(0);
+                    } catch (_) {
+                      Navigator.of(context).maybePop();
+                    }
+                  }
                 },
                 icon: const Icon(Icons.search_rounded, size: 18),
                 label: const Text(

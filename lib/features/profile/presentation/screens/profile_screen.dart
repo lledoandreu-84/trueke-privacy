@@ -116,19 +116,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 return const Center(child: CircularProgressIndicator(color: AppColors.primary));
               }
               if (snapshot.hasError || !snapshot.hasData || (snapshot.data as List).isEmpty) {
-                return const Text('No tienes productos publicados actualmente.');
+                return const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text('No tienes productos publicados actualmente.', style: TextStyle(color: AppColors.textSecondary)),
+                );
               }
               final products = snapshot.data as List;
-              return ListView.builder(
+              return ListView.separated(
                 shrinkWrap: true,
                 itemCount: products.length,
+                separatorBuilder: (context, index) => const SizedBox(height: 10),
                 itemBuilder: (context, index) {
                   final product = products[index];
-                  return ListTile(
-                    leading: const Icon(Icons.inventory_2_rounded, color: AppColors.primary),
-                    title: Text(product.title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5)),
-                    subtitle: Text('${product.price} €', style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
-                    trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary),
+                  final imageUrl = (product.imageUrls != null && product.imageUrls.isNotEmpty)
+                      ? product.imageUrls.first
+                      : '';
+
+                  return InkWell(
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.pushNamed(
@@ -137,6 +141,69 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         arguments: product,
                       );
                     },
+                    borderRadius: BorderRadius.circular(14),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppColors.background,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: const Color(0xFFE2E8F0)),
+                      ),
+                      child: Row(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: imageUrl.isNotEmpty
+                                ? Image.network(
+                                    imageUrl,
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) => Container(
+                                      width: 50,
+                                      height: 50,
+                                      color: AppColors.surfaceMint,
+                                      child: const Icon(Icons.inventory_2_rounded, color: AppColors.primary, size: 24),
+                                    ),
+                                  )
+                                : Container(
+                                    width: 50,
+                                    height: 50,
+                                    color: AppColors.surfaceMint,
+                                    child: const Icon(Icons.inventory_2_rounded, color: AppColors.primary, size: 24),
+                                  ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  product.title,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 13.5,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '${product.price} €',
+                                  style: const TextStyle(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 12.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary, size: 20),
+                        ],
+                      ),
+                    ),
                   );
                 },
               );
