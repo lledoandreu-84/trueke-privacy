@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/models/product.dart';
-import 'package:trueke/features/products/repositories/product_repository.dart';
 import 'package:trueke/features/products/providers/product_repository_provider.dart';
 import 'package:trueke/features/products/providers/product_search_provider.dart';
 

@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trueke/features/products/providers/paginated_products_provider.dart';
 import 'package:trueke/features/products/providers/product_repository_provider.dart';
-import 'package:trueke/features/products/repositories/product_repository.dart';
 import 'package:trueke/models/product.dart';
 
 class FakeCacheProductRepository extends Fake implements ProductRepository {
