@@ -6,6 +6,7 @@ import 'package:trueke/features/auth/auth_service.dart';
 import 'package:trueke/features/chat/presentation/screens/chat_screen.dart';
 import 'package:trueke/features/chat/providers/chat_providers.dart';
 import 'package:trueke/features/products/providers/product_repository_provider.dart';
+import 'package:trueke/features/products/widgets/seller_card.dart';
 import 'package:trueke/features/transactions/presentation/widgets/create_offer_dialog.dart';
 import 'package:trueke/models/product.dart';
 
@@ -28,7 +29,6 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
   void initState() {
     super.initState();
     _currentViews = widget.product.viewsCount > 0 ? widget.product.viewsCount : 1;
-    // Incrementamos las vistas de forma asíncrona al abrir el detalle
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _incrementProductViews();
     });
@@ -43,9 +43,7 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
           _currentViews += 1;
         });
       }
-    } catch (_) {
-      // Silencioso para no interrumpir la experiencia de usuario
-    }
+    } catch (_) {}
   }
 
   Future<void> _handleStartChat() async {
@@ -230,8 +228,7 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: ListView(
                   children: [
                     // Título e Indicador de Modalidad
                     Row(
@@ -318,8 +315,6 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
                           Text(
                             widget.product.description,
                             style: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary, height: 1.3),
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
                           ),
                           if (widget.product.wanted.isNotEmpty) ...[
                             const SizedBox(height: 8),
@@ -348,46 +343,10 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 12),
 
-                    // Tarjeta del Vendedor Compacta
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFFE2E8F0)),
-                      ),
-                      child: Row(
-                        children: [
-                          const CircleAvatar(
-                            radius: 18,
-                            backgroundColor: AppColors.surfaceMint,
-                            child: Icon(Icons.person_rounded, color: AppColors.primary, size: 20),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  widget.product.owner.isNotEmpty ? widget.product.owner : 'Usuario Trueke',
-                                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
-                                ),
-                                const Row(
-                                  children: [
-                                    Icon(Icons.star_rounded, size: 13, color: Colors.amber),
-                                    SizedBox(width: 3),
-                                    Text('4.9 (18 valoraciones)', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary, size: 20),
-                        ],
-                      ),
-                    ),
+                    // Tarjeta del Vendedor Dinámica y Clickeable
+                    SellerCard(product: widget.product),
                   ],
                 ),
               ),
