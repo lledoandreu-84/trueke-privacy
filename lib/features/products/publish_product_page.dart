@@ -73,76 +73,6 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
     }
   }
 
-  void _showImageSourceDialog() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: const Color(0xFFCBD5E1),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Añadir fotografía',
-              style: TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 16),
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: const BoxDecoration(
-                  color: AppColors.surfaceMint,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.camera_alt_rounded, color: AppColors.primary),
-              ),
-              title: const Text('Hacer una foto', style: TextStyle(fontWeight: FontWeight.w600)),
-              subtitle: const Text('Usa la cámara de tu dispositivo', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.camera);
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: const BoxDecoration(
-                  color: AppColors.surfaceMint,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.photo_library_rounded, color: AppColors.primary),
-              ),
-              title: const Text('Subir desde galería', style: TextStyle(fontWeight: FontWeight.w600)),
-              subtitle: const Text('Elige una imagen de tu galería', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.gallery);
-              },
-            ),
-            const SizedBox(height: 12),
-          ],
-        ),
-      ),
-    );
-  }
-
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -261,7 +191,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
           children: [
-            // Contenedor principal del formulario ordenado y espaciado
+            // Contenedor principal del formulario
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -291,7 +221,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                   ),
                   const SizedBox(height: 14),
 
-                  // 2. DESCRIPCIÓN (Con mayor altura vertical ampliada)
+                  // 2. DESCRIPCIÓN (4 líneas)
                   TextFormField(
                     controller: _descriptionController,
                     maxLines: 4,
@@ -312,7 +242,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                   ),
                   const SizedBox(height: 14),
 
-                  // 3. CATEGORÍA Y ESTADO (Alineados sin solapamientos)
+                  // 3. CATEGORÍA Y ESTADO (Corregidos sin solapamientos)
                   Row(
                     children: [
                       Expanded(
@@ -323,8 +253,9 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                           style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
                           decoration: InputDecoration(
                             labelText: 'Categoría',
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
                             isDense: true,
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                            contentPadding: const EdgeInsets.fromLTRB(12, 16, 8, 10),
                             filled: true,
                             fillColor: AppColors.background,
                             border: OutlineInputBorder(
@@ -347,8 +278,9 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                           style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
                           decoration: InputDecoration(
                             labelText: 'Estado',
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
                             isDense: true,
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                            contentPadding: const EdgeInsets.fromLTRB(12, 16, 8, 10),
                             filled: true,
                             fillColor: AppColors.background,
                             border: OutlineInputBorder(
@@ -369,7 +301,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
             ),
             const SizedBox(height: 14),
 
-            // 4. FOTOS DEL ARTÍCULO (Contenedor horizontal fluido)
+            // 4. FOTOS DEL ARTÍCULO (Título en negrita + accesos directos Cámara y Galería)
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -384,8 +316,8 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                     'Fotos del artículo',
                     style: TextStyle(
                       color: AppColors.textPrimary,
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -393,12 +325,13 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                     height: 80,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
-                      itemCount: totalImagesCount + 1,
+                      itemCount: totalImagesCount + 2, // 2 botones iniciales (Cámara + Galería) + imágenes
                       separatorBuilder: (context, index) => const SizedBox(width: 10),
                       itemBuilder: (context, index) {
+                        // BOTÓN 1: CÁMARA DIRECTA
                         if (index == 0) {
                           return InkWell(
-                            onTap: _showImageSourceDialog,
+                            onTap: () => _pickImage(ImageSource.camera),
                             borderRadius: BorderRadius.circular(12),
                             child: Container(
                               width: 80,
@@ -410,13 +343,13 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                               child: const Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.add_a_photo_rounded, color: AppColors.primary, size: 24),
+                                  Icon(Icons.camera_alt_rounded, color: AppColors.primary, size: 22),
                                   SizedBox(height: 4),
                                   Text(
-                                    'Añadir',
+                                    'Cámara',
                                     style: TextStyle(
                                       color: AppColors.primary,
-                                      fontSize: 11.5,
+                                      fontSize: 11,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
@@ -426,7 +359,38 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                           );
                         }
 
-                        final imgIndex = index - 1;
+                        // BOTÓN 2: GALERÍA DIRECTA
+                        if (index == 1) {
+                          return InkWell(
+                            onTap: () => _pickImage(ImageSource.gallery),
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              width: 80,
+                              decoration: BoxDecoration(
+                                color: AppColors.surfaceMint,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+                              ),
+                              child: const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.photo_library_rounded, color: AppColors.primary, size: 22),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    'Galería',
+                                    style: TextStyle(
+                                      color: AppColors.primary,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+
+                        final imgIndex = index - 2;
                         final bool isExisting = imgIndex < _existingImages.length;
 
                         return Stack(
