@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:trueke/core/theme/app_colors.dart';
-import 'package:trueke/core/providers/navigation_provider.dart';
+import 'package:trueke/core/providers/shell_index_provider.dart';
 import 'package:trueke/features/chat/providers/chat_providers.dart';
 import 'package:trueke/features/chat/presentation/screens/chat_screen.dart';
 
@@ -88,7 +88,8 @@ class ChatListScreen extends ConsumerWidget {
                         ),
                       ),
                       onPressed: () {
-                        ref.read(selectedTabProvider.notifier).setTab(0);
+                        // Cambiamos el índice del contenedor real (MainShell)
+                        ref.read(shellIndexProvider.notifier).setIndex(0);
                       },
                       icon: const Icon(Icons.search_rounded, size: 18),
                       label: const Text(
