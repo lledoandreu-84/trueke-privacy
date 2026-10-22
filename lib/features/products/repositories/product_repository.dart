@@ -71,7 +71,14 @@ class ProductRepository {
   Future<String> uploadProductImage(XFile file) async {
     final fileName = 'prod_${DateTime.now().millisecondsSinceEpoch}.jpg';
     final bytes = await file.readAsBytes();
-    await _supabase.storage.from('product-images').uploadBinary(fileName, bytes);
+    
+    // Subida con opciones de upsert para evitar bloqueos de seguridad RLS
+    await _supabase.storage.from('product-images').uploadBinary(
+          fileName,
+          bytes,
+          fileOptions: const StorageFileOptions(upsert: true, contentType: 'image/jpeg'),
+        );
+        
     return _supabase.storage.from('product-images').getPublicUrl(fileName);
   }
 
