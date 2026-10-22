@@ -72,11 +72,11 @@ class ProductRepository {
     final fileName = 'prod_${DateTime.now().millisecondsSinceEpoch}.jpg';
     final bytes = await file.readAsBytes();
     
-    // Subida con opciones de upsert para evitar bloqueos de seguridad RLS
+    // Subida sin el modificador const para StorageFileOptions
     await _supabase.storage.from('product-images').uploadBinary(
           fileName,
           bytes,
-          fileOptions: const StorageFileOptions(upsert: true, contentType: 'image/jpeg'),
+          fileOptions: StorageFileOptions(upsert: true, contentType: 'image/jpeg'),
         );
         
     return _supabase.storage.from('product-images').getPublicUrl(fileName);
