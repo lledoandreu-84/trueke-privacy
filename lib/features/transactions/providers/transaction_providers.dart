@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../models/transaction.dart';
+import '../data/transaction_repository.dart';
 import '../../offers/repositories/trade_offer_repository.dart';
 import '../../offers/models/trade_offer.dart';
 
@@ -13,8 +14,9 @@ final tradeOfferRepositoryProvider = Provider<TradeOfferRepository>((ref) {
   return TradeOfferRepository(ref.watch(supabaseClientProvider));
 });
 
-// Alias de compatibilidad para evitar errores en pantallas y tests antiguos
-final transactionRepositoryProvider = tradeOfferRepositoryProvider;
+final transactionRepositoryProvider = Provider<TransactionRepository>((ref) {
+  return TransactionRepository(ref.watch(supabaseClientProvider));
+});
 
 final userTransactionsProvider =
     AsyncNotifierProvider<UserTransactionsNotifier, List<ProductTransaction>>(
