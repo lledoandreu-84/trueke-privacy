@@ -11,13 +11,13 @@ class TradeOfferRepository {
     final PostgrestList response = await _client
         .from('trade_offers')
         .select()
-        .or('sender_id.eq.$userId,receiver_id.eq.$userId')
+        .or('sender_id.eq.\$userId,receiver_id.eq.\$userId')
         .order('created_at', ascending: false);
 
     return response.map((json) => TradeOffer.fromJson(json)).toList();
   }
 
-  /// Crea e inserta una nueva propuesta de trueque directo blindando el payload
+  /// Crea e inserta una nueva propuesta de trueque directo y su sala de chat asociada unificada
   Future<TradeOffer> createOffer({
     required String receiverId,
     required String senderProductId,
@@ -29,6 +29,7 @@ class TradeOfferRepository {
       throw Exception('Usuario no autenticado en el sistema');
     }
 
+    // 1. Insertar la oferta de trueque
     final PostgrestMap response = await _client
         .from('trade_offers')
         .insert({
@@ -42,7 +43,39 @@ class TradeOfferRepository {
         .select()
         .single();
 
-    return TradeOffer.fromJson(response);
+    final offer = TradeOffer.fromJson(response);
+
+    // 2. Obtener el producto receptor para asociar la sala de chat única
+    final productData = await _client
+        .from('products')
+        .select('id')
+        .eq('id', receiverProductId)
+        .maybeSingle();
+
+    if (productData != null) {
+      // 3. Crear o recuperar la sala de chat unificada entre comprador y vendedor
+      final roomResponse = await _client
+          .from('chat_rooms')
+          .upsert({
+            'product_id': receiverProductId,
+            'buyer_id': currentUser.id,
+            'seller_id': receiverId,
+          }, onConflict: 'product_id,buyer_id,seller_id')
+          .select()
+          .single();
+
+      final roomId = roomResponse['id'];
+
+      // 4. Insertar mensaje inicial de la propuesta en la conversación compartida
+      await _client.from('chat_messages').insert({
+        'room_id': roomId,
+        'sender_id': currentUser.id,
+        'message': '¡Hola! Me interesa tu artículo y te propongo un trueque.',
+        'is_system': false,
+      });
+    }
+
+    return offer;
   }
 
   /// Modifica atómicamente el estado de una oferta específica
