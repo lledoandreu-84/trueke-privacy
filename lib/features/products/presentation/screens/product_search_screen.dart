@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/core/theme/app_colors.dart';
 import 'package:trueke/app/routes/app_routes.dart';
-import 'package:trueke/features/products/providers/product_filters_provider.dart';
+import 'package0:trueke/features/products/providers/product_filters_provider.dart';
 import 'package:trueke/features/products/providers/paginated_products_provider.dart';
 import 'package:trueke/features/home/widgets/product_card.dart';
 
@@ -118,7 +118,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
             ),
             const SizedBox(height: 10),
 
-            // 🎛️ Filtros Avanzados Compactos
+            // 🎛️ Filtros Avanzados Compactos con etiquetas superiores externas
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -160,116 +160,156 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                         ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   const Divider(height: 1, color: Color(0xFFE2E8F0)),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
 
-                  // Fila 1: Categoría y Distancia
+                  // Fila 1: Categoría y Distancia (Etiquetas externas arriba)
                   Row(
                     children: [
                       Expanded(
-                        child: DropdownButtonFormField<String>(
-                          initialValue: filters.category ?? 'Todos',
-                          dropdownColor: AppColors.surface,
-                          isExpanded: true,
-                          style: const TextStyle(fontSize: 12, color: AppColors.textPrimary, fontWeight: FontWeight.w600),
-                          decoration: InputDecoration(
-                            labelText: 'Categoría',
-                            labelStyle: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
-                            isDense: true,
-                            contentPadding: const EdgeInsets.fromLTRB(10, 14, 8, 8),
-                            filled: true,
-                            fillColor: AppColors.background,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(left: 2, bottom: 4),
+                              child: Text(
+                                'Categoría',
+                                style: TextStyle(color: AppColors.textSecondary, fontSize: 11, fontWeight: FontWeight.w500),
+                              ),
                             ),
-                          ),
-                          items: _categories.map((cat) => DropdownMenuItem(value: cat, child: Text(cat, overflow: TextOverflow.ellipsis))).toList(),
-                          onChanged: (val) {
-                            ref.read(productFiltersProvider.notifier).setCategory(val == 'Todos' ? null : val);
-                          },
+                            DropdownButtonFormField<String>(
+                              initialValue: filters.category ?? 'Todos',
+                              dropdownColor: AppColors.surface,
+                              isExpanded: true,
+                              style: const TextStyle(fontSize: 12, color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+                              decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                filled: true,
+                                fillColor: AppColors.background,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                              items: _categories.map((cat) => DropdownMenuItem(value: cat, child: Text(cat, overflow: TextOverflow.ellipsis))).toList(),
+                              onChanged: (val) {
+                                ref.read(productFiltersProvider.notifier).setCategory(val == 'Todos' ? null : val);
+                              },
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: DropdownButtonFormField<double?>(
-                          initialValue: filters.radiusInKm >= 999.0 ? null : filters.radiusInKm,
-                          dropdownColor: AppColors.surface,
-                          isExpanded: true,
-                          style: const TextStyle(fontSize: 12, color: AppColors.textPrimary, fontWeight: FontWeight.w600),
-                          decoration: InputDecoration(
-                            labelText: 'Distancia',
-                            labelStyle: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
-                            isDense: true,
-                            contentPadding: const EdgeInsets.fromLTRB(10, 14, 8, 8),
-                            filled: true,
-                            fillColor: AppColors.background,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(left: 2, bottom: 4),
+                              child: Text(
+                                'Distancia',
+                                style: TextStyle(color: AppColors.textSecondary, fontSize: 11, fontWeight: FontWeight.w500),
+                              ),
                             ),
-                          ),
-                          items: _radii.map((r) => DropdownMenuItem(value: r, child: Text(r == null ? 'Sin límite' : '${r.toInt()} km', overflow: TextOverflow.ellipsis))).toList(),
-                          onChanged: (val) {
-                            ref.read(productFiltersProvider.notifier).updateMaxDistance(val ?? 1000.0);
-                          },
+                            DropdownButtonFormField<double?>(
+                              initialValue: filters.radiusInKm >= 999.0 ? null : filters.radiusInKm,
+                              dropdownColor: AppColors.surface,
+                              isExpanded: true,
+                              style: const TextStyle(fontSize: 12, color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+                              decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                filled: true,
+                                fillColor: AppColors.background,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                              items: _radii.map((r) => DropdownMenuItem(value: r, child: Text(r == null ? 'Sin límite' : '${r.toInt()} km', overflow: TextOverflow.ellipsis))).toList(),
+                              onChanged: (val) {
+                                ref.read(productFiltersProvider.notifier).updateMaxDistance(val ?? 1000.0);
+                              },
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
 
-                  // Fila 2: Estado y Trato
+                  // Fila 2: Estado y Trato (Etiquetas externas arriba)
                   Row(
                     children: [
                       Expanded(
-                        child: DropdownButtonFormField<String>(
-                          initialValue: filters.condition ?? 'Todos',
-                          dropdownColor: AppColors.surface,
-                          isExpanded: true,
-                          style: const TextStyle(fontSize: 12, color: AppColors.textPrimary, fontWeight: FontWeight.w600),
-                          decoration: InputDecoration(
-                            labelText: 'Estado',
-                            labelStyle: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
-                            isDense: true,
-                            contentPadding: const EdgeInsets.fromLTRB(10, 14, 8, 8),
-                            filled: true,
-                            fillColor: AppColors.background,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(left: 2, bottom: 4),
+                              child: Text(
+                                'Estado',
+                                style: TextStyle(color: AppColors.textSecondary, fontSize: 11, fontWeight: FontWeight.w500),
+                              ),
                             ),
-                          ),
-                          items: _conditions.map((c) => DropdownMenuItem(value: c, child: Text(c, overflow: TextOverflow.ellipsis))).toList(),
-                          onChanged: (val) {
-                            ref.read(productFiltersProvider.notifier).updateCondition(val == 'Todos' ? null : val);
-                          },
+                            DropdownButtonFormField<String>(
+                              initialValue: filters.condition ?? 'Todos',
+                              dropdownColor: AppColors.surface,
+                              isExpanded: true,
+                              style: const TextStyle(fontSize: 12, color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+                              decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                filled: true,
+                                fillColor: AppColors.background,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                              items: _conditions.map((c) => DropdownMenuItem(value: c, child: Text(c, overflow: TextOverflow.ellipsis))).toList(),
+                              onChanged: (val) {
+                                ref.read(productFiltersProvider.notifier).updateCondition(val == 'Todos' ? null : val);
+                              },
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: DropdownButtonFormField<String>(
-                          initialValue: filters.tradeType ?? 'Todos',
-                          dropdownColor: AppColors.surface,
-                          isExpanded: true,
-                          style: const TextStyle(fontSize: 12, color: AppColors.textPrimary, fontWeight: FontWeight.w600),
-                          decoration: InputDecoration(
-                            labelText: 'Trato',
-                            labelStyle: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
-                            isDense: true,
-                            contentPadding: const EdgeInsets.fromLTRB(10, 14, 8, 8),
-                            filled: true,
-                            fillColor: AppColors.background,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(left: 2, bottom: 4),
+                              child: Text(
+                                'Trato',
+                                style: TextStyle(color: AppColors.textSecondary, fontSize: 11, fontWeight: FontWeight.w500),
+                              ),
                             ),
-                          ),
-                          items: _tradeTypes.map((t) => DropdownMenuItem(value: t, child: Text(t, overflow: TextOverflow.ellipsis))).toList(),
-                          onChanged: (val) {
-                            ref.read(productFiltersProvider.notifier).setTradeType(val == 'Todos' ? null : val);
-                          },
+                            DropdownButtonFormField<String>(
+                              initialValue: filters.tradeType ?? 'Todos',
+                              dropdownColor: AppColors.surface,
+                              isExpanded: true,
+                              style: const TextStyle(fontSize: 12, color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+                              decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                filled: true,
+                                fillColor: AppColors.background,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                              items: _tradeTypes.map((t) => DropdownMenuItem(value: t, child: Text(t, overflow: TextOverflow.ellipsis))).toList(),
+                              onChanged: (val) {
+                                ref.read(productFiltersProvider.notifier).setTradeType(val == 'Todos' ? null : val);
+                              },
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -282,7 +322,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                     children: [
                       const Text(
                         'Precio máx:',
-                        style: TextStyle(color: AppColors.textSecondary, fontSize: 11.5, fontWeight: FontWeight.w600),
+                        style: TextStyle(color: AppColors.textSecondary, fontSize: 11, fontWeight: FontWeight.w500),
                       ),
                       Text(
                         '${currentMaxPrice.toInt()} €',
