@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:cross_file/cross_file.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:trueke/models/product.dart';
@@ -35,25 +34,16 @@ class ProductRepository {
   }
 
   Future<List<Product>> searchProductsAdvanced({
-    String? query,
-    String? category,
-    double? userLatitude,
-    double? userLongitude,
-    double? radiusInKm,
-    double? latitude,
-    double? longitude,
-    double? maxRadiusMeters,
-    int? page,
-    int? limit,
+    required String query,
+    required double latitude,
+    required double longitude,
+    required double maxRadiusMeters,
   }) async {
     return getProducts(
       query: query,
-      category: category,
-      userLatitude: userLatitude ?? latitude,
-      userLongitude: userLongitude ?? longitude,
-      radiusInKm: radiusInKm ?? (maxRadiusMeters != null ? maxRadiusMeters / 1000 : null),
-      page: page,
-      limit: limit,
+      userLatitude: latitude,
+      userLongitude: longitude,
+      radiusInKm: maxRadiusMeters / 1000,
     );
   }
 
