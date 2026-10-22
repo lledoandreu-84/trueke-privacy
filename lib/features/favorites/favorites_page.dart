@@ -70,7 +70,6 @@ class FavoritesPage extends ConsumerWidget {
                   ),
                 ),
                 onPressed: () {
-                  // Cambiamos al índice 0 (Inicio/Explorar) de forma limpia
                   ref.read(selectedTabProvider.notifier).setTab(0);
                 },
                 icon: const Icon(Icons.search_rounded, size: 18),

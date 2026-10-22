@@ -6,7 +6,17 @@ import 'package:trueke/features/products/providers/product_repository_provider.d
 final userProductsProvider = FutureProvider<List<Product>>((ref) async {
   final repository = ref.watch(productRepositoryProvider);
   final allProducts = await repository.getProducts();
-  final currentUserId = Supabase.instance.client.auth.currentUser?.id;
-  if (currentUserId == null) return [];
-  return allProducts.where((p) => p.ownerId == currentUserId).toList();
+  final user = Supabase.instance.client.auth.currentUser;
+  if (user == null) return [];
+
+  final currentUserId = user.id;
+  final currentEmail = user.email;
+  final currentName = user.userMetadata?['full_name'];
+
+  return allProducts.where((p) {
+    return p.ownerId == currentUserId ||
+           (currentEmail != null && p.ownerId == currentEmail) ||
+           (currentName != null && p.owner == currentName) ||
+           (currentEmail != null && p.owner == currentEmail);
+  }).toList();
 });

@@ -74,7 +74,6 @@ class ProductRepository {
     final fileName = '$userId/prod_${DateTime.now().millisecondsSinceEpoch}.jpg';
     final bytes = await file.readAsBytes();
     
-    // Subida estructurada con la carpeta del usuario para cumplir con las políticas RLS de Supabase
     await _supabase.storage.from('product-images').uploadBinary(fileName, bytes);
         
     return _supabase.storage.from('product-images').getPublicUrl(fileName);
@@ -85,7 +84,6 @@ class ProductRepository {
       final uri = Uri.parse(imageUrl);
       final pathSegments = uri.pathSegments;
       if (pathSegments.length >= 2) {
-        // Eliminar utilizando la ruta completa incluyendo el prefijo de usuario
         final fileName = '${pathSegments[pathSegments.length - 2]}/${pathSegments.last}';
         await _supabase.storage.from('product-images').remove([fileName]);
       }
