@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:trueke/core/theme/app_colors.dart';
+import 'package:trueke/app/routes/app_routes.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   final String? userId;
@@ -22,23 +23,38 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text(
           'Editar Perfil',
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
         ),
-        content: TextField(
-          controller: nameController,
-          decoration: InputDecoration(
-            labelText: 'Nombre completo',
-            labelStyle: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
-            filled: true,
-            fillColor: AppColors.background,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(left: 2, bottom: 6),
+              child: Text(
+                'Nombre completo',
+                style: TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w500),
+              ),
             ),
-          ),
+            TextField(
+              controller: nameController,
+              style: const TextStyle(fontSize: 13.5, color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+              decoration: InputDecoration(
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                filled: true,
+                fillColor: AppColors.background,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ],
         ),
         actions: [
           TextButton(
@@ -61,13 +77,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     Navigator.pop(context);
                     setState(() {});
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Perfil actualizado correctamente')),
+                      const SnackBar(content: Text('Perfil actualizado correctamente'), backgroundColor: AppColors.primary),
                     );
                   }
                 } catch (e) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error al actualizar: $e')),
+                      SnackBar(content: Text('Error al actualizar: $e'), backgroundColor: AppColors.textPrimary),
                     );
                   }
                 }
@@ -116,7 +132,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // 👤 1. Cabecera de Perfil optimizada y compacta
+                        // 👤 Cabecera de Perfil
                         Container(
                           padding: const EdgeInsets.all(18),
                           decoration: BoxDecoration(
@@ -209,9 +225,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 48), // Gran respiro generoso hacia el bloque de gestión
+                        const SizedBox(height: 32),
 
-                        // 📦 2. Opciones de Gestión con Contadores
+                        // 📦 Opciones de Gestión con Callbacks Activos
                         Material(
                           color: AppColors.surface,
                           borderRadius: BorderRadius.circular(20),
@@ -227,7 +243,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   title: 'Mis Ofertas de Trueke',
                                   subtitle: 'Gestionar intercambios propuestos',
                                   badgeText: '0',
-                                  onTap: () {},
+                                  onTap: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('No tienes ofertas de Trueke activas actualmente.')),
+                                    );
+                                  },
                                 ),
                                 const Divider(height: 1, color: Color(0xFFE2E8F0), indent: 16, endIndent: 16),
                                 _buildMenuItem(
@@ -235,7 +255,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   title: 'Mis Productos Publicados',
                                   subtitle: 'Artículos activos en el escaparate',
                                   badgeText: '1',
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.pushNamed(context, AppRoutes.search);
+                                  },
                                 ),
                                 const Divider(height: 1, color: Color(0xFFE2E8F0), indent: 16, endIndent: 16),
                                 _buildMenuItem(
@@ -243,7 +265,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   title: 'Historial de Truekes',
                                   subtitle: 'Intercambios finalizados',
                                   badgeText: '0',
-                                  onTap: () {},
+                                  onTap: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('El historial de Truekes completados se mostrará aquí.')),
+                                    );
+                                  },
                                 ),
                               ],
                             ),
@@ -251,8 +277,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24), // Espacio máximo antes de empujar el botón al fondo
-                    // 🚪 3. Contenedor estilizado para Cerrar Sesión anclado al fondo
+                    const SizedBox(height: 24),
+
+                    // 🚪 Cerrar Sesión
                     Material(
                       color: AppColors.surface,
                       borderRadius: BorderRadius.circular(20),
