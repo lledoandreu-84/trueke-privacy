@@ -103,14 +103,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         children: [
-          // 👤 1. Cabecera de Perfil optimizada
+          // 👤 1. Cabecera de Perfil optimizada y compacta
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
               border: Border.all(color: const Color(0xFFE2E8F0)),
             ),
             child: Row(
@@ -121,12 +121,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     border: Border.all(color: AppColors.primary, width: 2),
                   ),
                   child: const CircleAvatar(
-                    radius: 28,
+                    radius: 30,
                     backgroundColor: AppColors.surfaceMint,
-                    child: Icon(Icons.person_rounded, size: 32, color: AppColors.primary),
+                    child: Icon(Icons.person_rounded, size: 34, color: AppColors.primary),
                   ),
                 ),
-                const SizedBox(width: 14),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,7 +139,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               userName,
                               style: const TextStyle(
                                 color: AppColors.textPrimary,
-                                fontSize: 15.5,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w800,
                               ),
                               maxLines: 1,
@@ -155,35 +155,35 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 3),
                       Text(
                         userEmail,
                         style: const TextStyle(
                           color: AppColors.textSecondary,
-                          fontSize: 12,
+                          fontSize: 12.5,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                             decoration: BoxDecoration(
                               color: AppColors.surfaceMint,
-                              borderRadius: BorderRadius.circular(6),
+                              borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.star_rounded, size: 13, color: AppColors.primary),
+                                Icon(Icons.star_rounded, size: 14, color: AppColors.primary),
                                 SizedBox(width: 4),
                                 Text(
                                   'Sin valoraciones',
                                   style: TextStyle(
                                     color: AppColors.primary,
-                                    fontSize: 11,
+                                    fontSize: 11.5,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
@@ -198,15 +198,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 24), // Respiro generoso hacia el bloque de gestión
 
           // 📦 2. Opciones de Gestión con Contadores
           Material(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(20),
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: const Color(0xFFE2E8F0)),
               ),
               child: Column(
@@ -238,15 +238,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 24), // Respiro generoso hacia el botón de cerrar sesión
 
           // 🚪 3. Contenedor estilizado para Cerrar Sesión
           Material(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(20),
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: const Color(0xFFE2E8F0)),
               ),
               child: ListTile(
@@ -256,20 +256,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
                   }
                 },
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 leading: Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: const Color(0xFFFFF5F5),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 18),
+                  child: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 20),
                 ),
                 title: const Text(
                   'Cerrar sesión',
                   style: TextStyle(
                     color: Colors.redAccent,
-                    fontSize: 13,
+                    fontSize: 14,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -277,7 +277,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   'Finalizar sesión actual en este dispositivo',
                   style: TextStyle(
                     color: AppColors.textSecondary,
-                    fontSize: 11,
+                    fontSize: 12,
                   ),
                 ),
               ),
@@ -297,20 +297,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }) {
     return ListTile(
       onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       leading: Container(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: AppColors.surfaceMint,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(icon, color: AppColors.primary, size: 18),
+        child: Icon(icon, color: AppColors.primary, size: 20),
       ),
       title: Text(
         title,
         style: const TextStyle(
           color: AppColors.textPrimary,
-          fontSize: 13,
+          fontSize: 14,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -318,14 +318,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         subtitle,
         style: const TextStyle(
           color: AppColors.textSecondary,
-          fontSize: 11,
+          fontSize: 12,
         ),
       ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
             decoration: BoxDecoration(
               color: const Color(0xFFF1F5F9),
               borderRadius: BorderRadius.circular(10),
@@ -334,13 +334,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               badgeText,
               style: const TextStyle(
                 color: AppColors.textSecondary,
-                fontSize: 11,
+                fontSize: 12,
                 fontWeight: FontWeight.w700,
               ),
             ),
           ),
-          const SizedBox(width: 4),
-          const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary, size: 18),
+          const SizedBox(width: 6),
+          const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary, size: 20),
         ],
       ),
     );
