@@ -72,12 +72,8 @@ class ProductRepository {
     final fileName = 'prod_${DateTime.now().millisecondsSinceEpoch}.jpg';
     final bytes = await file.readAsBytes();
     
-    // Subida sin el modificador const para StorageFileOptions
-    await _supabase.storage.from('product-images').uploadBinary(
-          fileName,
-          bytes,
-          fileOptions: StorageFileOptions(upsert: true, contentType: 'image/jpeg'),
-        );
+    // Subida limpia mediante uploadBinary
+    await _supabase.storage.from('product-images').uploadBinary(fileName, bytes);
         
     return _supabase.storage.from('product-images').getPublicUrl(fileName);
   }
