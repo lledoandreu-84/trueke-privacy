@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cross_file/cross_file.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:trueke/models/product.dart';
 
@@ -39,15 +40,18 @@ class ProductRepository {
     double? userLatitude,
     double? userLongitude,
     double? radiusInKm,
+    double? latitude,
+    double? longitude,
+    double? maxRadiusMeters,
     int? page,
     int? limit,
   }) async {
     return getProducts(
       query: query,
       category: category,
-      userLatitude: userLatitude,
-      userLongitude: userLongitude,
-      radiusInKm: radiusInKm,
+      userLatitude: userLatitude ?? latitude,
+      userLongitude: userLongitude ?? longitude,
+      radiusInKm: radiusInKm ?? (maxRadiusMeters != null ? maxRadiusMeters / 1000 : null),
       page: page,
       limit: limit,
     );
@@ -74,9 +78,17 @@ class ProductRepository {
     } catch (_) {}
   }
 
-  Future<String> uploadProductImage(File imageFile, String productId) async {
-    final fileName = '${productId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
-    await _supabase.storage.from('product-images').upload(fileName, imageFile);
+  Future<String> uploadProductImage(dynamic imageFile, [String? productId]) async {
+    final idStr = productId ?? 'prod_${DateTime.now().millisecondsSinceEpoch}';
+    final fileName = '${idStr}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    
+    if (imageFile is File) {
+      await _supabase.storage.from('product-images').upload(fileName, imageFile);
+    } else if (imageFile is XFile) {
+      final bytes = await imageFile.readAsBytes();
+      await _supabase.storage.from('product-images').uploadBinary(fileName, bytes);
+    }
+    
     return _supabase.storage.from('product-images').getPublicUrl(fileName);
   }
 
