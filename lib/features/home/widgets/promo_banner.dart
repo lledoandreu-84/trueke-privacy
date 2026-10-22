@@ -44,13 +44,17 @@ class PromoBanner extends StatelessWidget {
                 ),
               ),
             ),
+            // Fondo limpio sin flechas, solo burbujas decorativas difuminadas
             Positioned(
-              right: -20,
+              right: -30,
               bottom: -30,
-              child: Icon(
-                Icons.swap_horizontal_circle_rounded,
-                size: 210,
-                color: Colors.white.withValues(alpha: 0.08),
+              child: Container(
+                width: 140,
+                height: 140,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFF4F46E5).withValues(alpha: 0.15),
+                ),
               ),
             ),
             Padding(
