@@ -69,10 +69,12 @@ class ProductRepository {
   }
 
   Future<String> uploadProductImage(XFile file) async {
-    final fileName = 'prod_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final user = _supabase.auth.currentUser;
+    final userId = user?.id ?? 'public';
+    final fileName = '$userId/prod_${DateTime.now().millisecondsSinceEpoch}.jpg';
     final bytes = await file.readAsBytes();
     
-    // Subida limpia mediante uploadBinary
+    // Subida estructurada con la carpeta del usuario para cumplir con las políticas RLS de Supabase
     await _supabase.storage.from('product-images').uploadBinary(fileName, bytes);
         
     return _supabase.storage.from('product-images').getPublicUrl(fileName);
@@ -82,8 +84,9 @@ class ProductRepository {
     try {
       final uri = Uri.parse(imageUrl);
       final pathSegments = uri.pathSegments;
-      if (pathSegments.isNotEmpty) {
-        final fileName = pathSegments.last;
+      if (pathSegments.length >= 2) {
+        // Eliminar utilizando la ruta completa incluyendo el prefijo de usuario
+        final fileName = '${pathSegments[pathSegments.length - 2]}/${pathSegments.last}';
         await _supabase.storage.from('product-images').remove([fileName]);
       }
     } catch (_) {}
