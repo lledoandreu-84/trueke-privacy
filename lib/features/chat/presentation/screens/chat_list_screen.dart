@@ -88,8 +88,7 @@ class ChatListScreen extends ConsumerWidget {
                         ),
                       ),
                       onPressed: () {
-                        // Cambia instantáneamente a la pestaña de Inicio/Explorar (índice 0)
-                        ref.read(selectedTabProvider.notifier).state = 0;
+                        ref.read(selectedTabProvider.notifier).setTab(0);
                       },
                       icon: const Icon(Icons.search_rounded, size: 18),
                       label: const Text(
