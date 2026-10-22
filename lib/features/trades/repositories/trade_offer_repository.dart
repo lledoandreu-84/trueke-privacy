@@ -12,7 +12,7 @@ class TradeOfferRepository {
     final response = await _client
         .from(_table)
         .select()
-        .or('from_user_id.eq.$userId,to_user_id.eq.$userId')
+        .or('sender_id.eq.$userId,receiver_id.eq.$userId')
         .order('created_at', ascending: false);
 
     return (response as List<dynamic>)
