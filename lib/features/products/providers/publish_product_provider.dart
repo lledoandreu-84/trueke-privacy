@@ -5,6 +5,7 @@ import '../../../models/product.dart';
 import 'product_repository_provider.dart';
 import 'products_provider.dart';
 import 'paginated_products_provider.dart';
+import 'user_products_provider.dart';
 
 class PublishProductState {
   final bool isPublishing;
@@ -121,8 +122,10 @@ class PublishProductNotifier extends Notifier<PublishProductState> {
 
       await productRepo.createProduct(newProduct);
 
+      // Invalidamos los proveedores para forzar la actualización inmediata de la UI
       ref.invalidate(paginatedProductsProvider);
       ref.invalidate(productsProvider);
+      ref.invalidate(userProductsProvider);
 
       state = state.copyWith(isPublishing: false, isSuccess: true);
     } catch (e) {
@@ -189,6 +192,7 @@ class PublishProductNotifier extends Notifier<PublishProductState> {
 
       ref.invalidate(paginatedProductsProvider);
       ref.invalidate(productsProvider);
+      ref.invalidate(userProductsProvider);
 
       state = state.copyWith(isPublishing: false, isSuccess: true);
     } catch (e) {
