@@ -32,29 +32,40 @@ class PromoBanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(28),
         child: Stack(
           children: [
+            // Burbuja superior grande con el logo de la app integrado con mayor visibilidad
             Positioned(
-              top: -40,
-              right: -40,
+              top: -30,
+              right: -30,
               child: Container(
-                width: 180,
-                height: 180,
+                width: 170,
+                height: 170,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF6366F1).withValues(alpha: 0.25),
+                  color: const Color(0xFF6366F1).withValues(alpha: 0.22),
+                ),
+                child: Center(
+                  child: Opacity(
+                    opacity: 0.16,
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      width: 95,
+                      height: 95,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
               ),
             ),
-            // Fondo con el logo de la app sutilmente integrado en la burbuja inferior
+            // Burbuja inferior limpia y difuminada
             Positioned(
               right: -30,
               bottom: -30,
-              child: Opacity(
-                opacity: 0.12,
-                child: Image.asset(
-                  'assets/images/logo.png',
-                  width: 170,
-                  height: 170,
-                  fit: BoxFit.contain,
+              child: Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFF4F46E5).withValues(alpha: 0.15),
                 ),
               ),
             ),
@@ -83,7 +94,7 @@ class PromoBanner extends StatelessWidget {
                           'Intercambio Inteligente',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 13, // Texto ligeramente más grande y legible
+                            fontSize: 13,
                             fontWeight: FontWeight.w700,
                             letterSpacing: 0.4,
                           ),
