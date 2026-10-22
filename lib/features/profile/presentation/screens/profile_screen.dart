@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:trueke/core/theme/app_colors.dart';
-import 'package:trueke/app/routes/app_routes.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   final String? userId;
@@ -256,7 +255,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   subtitle: 'Artículos activos en el escaparate',
                                   badgeText: '1',
                                   onTap: () {
-                                    Navigator.pushNamed(context, AppRoutes.search);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Tienes 1 artículo activo publicado en el escaparate.')),
+                                    );
                                   },
                                 ),
                                 const Divider(height: 1, color: Color(0xFFE2E8F0), indent: 16, endIndent: 16),
