@@ -119,15 +119,15 @@ class ChatListScreen extends ConsumerWidget {
                   backgroundColor: AppColors.surfaceMint,
                   child: Icon(Icons.person_rounded, color: AppColors.primary),
                 ),
-                title: Text(
+                title: const Text(
                   'Negociación de Artículo',
-                  style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                  style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.textPrimary),
                 ),
-                subtitle: Text(
+                subtitle: const Text(
                   'Chat activo de Trueke',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                  style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
                 ),
               );
             },
