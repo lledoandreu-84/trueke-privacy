@@ -316,7 +316,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                   ),
                   const SizedBox(height: 8),
 
-                  // 💶 Rango de Precio Compacto
+                  // 💶 Rango de Precio con Campo Editable
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -324,9 +324,34 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
                         'Precio máx:',
                         style: TextStyle(color: AppColors.textSecondary, fontSize: 11, fontWeight: FontWeight.w500),
                       ),
-                      Text(
-                        '${currentMaxPrice.toInt()} €',
-                        style: const TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.w700),
+                      SizedBox(
+                        width: 85,
+                        height: 28,
+                        child: TextField(
+                          controller: _priceController,
+                          keyboardType: TextInputType.number,
+                          style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.primary),
+                          decoration: InputDecoration(
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                            suffixText: '€',
+                            suffixStyle: const TextStyle(fontSize: 11, color: AppColors.primary),
+                            filled: true,
+                            fillColor: AppColors.background,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(6),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          onSubmitted: (value) {
+                            final parsed = double.tryParse(value);
+                            if (parsed != null) {
+                              final clamped = parsed.clamp(0.0, 5000.0);
+                              ref.read(productFiltersProvider.notifier).updatePriceRange(filters.minPrice, clamped);
+                              _priceController.text = clamped.toInt().toString();
+                            }
+                          },
+                        ),
                       ),
                     ],
                   ),
