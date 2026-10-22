@@ -44,16 +44,17 @@ class PromoBanner extends StatelessWidget {
                 ),
               ),
             ),
-            // Fondo limpio sin flechas, solo burbujas decorativas difuminadas
+            // Fondo con el logo de la app sutilmente integrado en la burbuja inferior
             Positioned(
               right: -30,
               bottom: -30,
-              child: Container(
-                width: 140,
-                height: 140,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color(0xFF4F46E5).withValues(alpha: 0.15),
+              child: Opacity(
+                opacity: 0.12,
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  width: 170,
+                  height: 170,
+                  fit: BoxFit.contain,
                 ),
               ),
             ),
@@ -64,7 +65,7 @@ class PromoBanner extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(20),
@@ -76,13 +77,13 @@ class PromoBanner extends StatelessWidget {
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.bolt_rounded, color: Colors.amberAccent, size: 16),
+                        Icon(Icons.bolt_rounded, color: Colors.amberAccent, size: 18),
                         SizedBox(width: 6),
                         Text(
                           'Intercambio Inteligente',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 11.5,
+                            fontSize: 13, // Texto ligeramente más grande y legible
                             fontWeight: FontWeight.w700,
                             letterSpacing: 0.4,
                           ),
