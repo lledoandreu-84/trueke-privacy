@@ -9,7 +9,7 @@ class ChatListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final chatRoomsAsync = ref.watch(chatRoomsProvider);
+    final chatRoomsAsync = ref.watch(userChatRoomsProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -85,7 +85,6 @@ class ChatListScreen extends ConsumerWidget {
                         ),
                       ),
                       onPressed: () {
-                        // Navega hacia atrás o redirige a la pestaña principal de navegación (Explorar)
                         Navigator.of(context).popUntil((route) => route.isFirst);
                       },
                       icon: const Icon(Icons.search_rounded, size: 18),
@@ -110,7 +109,7 @@ class ChatListScreen extends ConsumerWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ChatScreen(chatRoomId: room.id),
+                      builder: (context) => ChatScreen(roomId: room.id),
                     ),
                   );
                 },
