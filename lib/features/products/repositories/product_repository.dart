@@ -78,17 +78,10 @@ class ProductRepository {
     } catch (_) {}
   }
 
-  Future<String> uploadProductImage(dynamic imageFile, [String? productId]) async {
-    final idStr = productId ?? 'prod_${DateTime.now().millisecondsSinceEpoch}';
-    final fileName = '${idStr}_${DateTime.now().millisecondsSinceEpoch}.jpg';
-    
-    if (imageFile is File) {
-      await _supabase.storage.from('product-images').upload(fileName, imageFile);
-    } else if (imageFile is XFile) {
-      final bytes = await imageFile.readAsBytes();
-      await _supabase.storage.from('product-images').uploadBinary(fileName, bytes);
-    }
-    
+  Future<String> uploadProductImage(XFile file) async {
+    final fileName = 'prod_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final bytes = await file.readAsBytes();
+    await _supabase.storage.from('product-images').uploadBinary(fileName, bytes);
     return _supabase.storage.from('product-images').getPublicUrl(fileName);
   }
 
