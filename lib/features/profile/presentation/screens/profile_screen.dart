@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:trueke/core/theme/app_colors.dart';
 import 'package:trueke/app/routes/app_routes.dart';
 import 'package:trueke/features/products/providers/product_repository_provider.dart';
+import 'package:trueke/features/products/providers/user_products_provider.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   final String? userId;
@@ -125,6 +126,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               try {
                 await ref.read(productRepositoryProvider).deleteProduct(productId);
                 ref.invalidate(productRepositoryProvider);
+                ref.invalidate(userProductsProvider);
 
                 if (context.mounted) {
                   Navigator.pop(context); // Cierra confirmación
@@ -162,102 +164,104 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
         content: SizedBox(
           width: double.maxFinite,
-          child: FutureBuilder(
-            future: ref.read(productRepositoryProvider).getProducts(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator(color: AppColors.primary));
-              }
-              if (snapshot.hasError || !snapshot.hasData || (snapshot.data as List).isEmpty) {
-                return const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text('No tienes productos publicados actualmente.', style: TextStyle(color: AppColors.textSecondary)),
-                );
-              }
-              final products = snapshot.data as List;
-              return ListView.separated(
-                shrinkWrap: true,
-                itemCount: products.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 10),
-                itemBuilder: (context, index) {
-                  final product = products[index];
-                  final imageUrl = product.imageUrl ?? '';
+          child: Consumer(
+            builder: (context, ref, child) {
+              final productsAsync = ref.watch(userProductsProvider);
+              return productsAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                error: (err, stack) => Text('Error: $err', style: const TextStyle(color: Colors.red)),
+                data: (products) {
+                  if (products.isEmpty) {
+                    return const Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Text('No tienes productos publicados actualmente.', style: TextStyle(color: AppColors.textSecondary)),
+                    );
+                  }
+                  return ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: products.length,
+                    separatorBuilder: (context, index) => const SizedBox(height: 10),
+                    itemBuilder: (context, index) {
+                      final product = products[index];
+                      final imageUrl = product.imageUrl;
 
-                  return Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: AppColors.background,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
-                    ),
-                    child: Row(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: imageUrl.isNotEmpty
-                              ? Image.network(
-                                  imageUrl,
-                                  width: 50,
-                                  height: 50,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) => Container(
-                                    width: 50,
-                                    height: 50,
-                                    color: AppColors.surfaceMint,
-                                    child: const Icon(Icons.inventory_2_rounded, color: AppColors.primary, size: 24),
-                                  ),
-                                )
-                              : Container(
-                                  width: 50,
-                                  height: 50,
-                                  color: AppColors.surfaceMint,
-                                  child: const Icon(Icons.inventory_2_rounded, color: AppColors.primary, size: 24),
-                                ),
+                      return Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: AppColors.background,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.pop(context);
-                              Navigator.pushNamed(
-                                context,
-                                AppRoutes.product,
-                                arguments: product,
-                              );
-                            },
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  product.title,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 13.5,
-                                    color: AppColors.textPrimary,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '${product.price} €',
-                                  style: const TextStyle(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 12.5,
-                                  ),
-                                ),
-                              ],
+                        child: Row(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: imageUrl.isNotEmpty
+                                  ? Image.network(
+                                      imageUrl,
+                                      width: 50,
+                                      height: 50,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) => Container(
+                                        width: 50,
+                                        height: 50,
+                                        color: AppColors.surfaceMint,
+                                        child: const Icon(Icons.inventory_2_rounded, color: AppColors.primary, size: 24),
+                                      ),
+                                    )
+                                  : Container(
+                                      width: 50,
+                                      height: 50,
+                                      color: AppColors.surfaceMint,
+                                      child: const Icon(Icons.inventory_2_rounded, color: AppColors.primary, size: 24),
+                                    ),
                             ),
-                          ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  Navigator.pushNamed(
+                                    context,
+                                    AppRoutes.product,
+                                    arguments: product,
+                                  );
+                                },
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      product.title,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 13.5,
+                                        color: AppColors.textPrimary,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      '${product.price ?? 0} €',
+                                      style: const TextStyle(
+                                        color: AppColors.primary,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 12.5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 22),
+                              tooltip: 'Eliminar producto',
+                              onPressed: () => _showDeleteProductConfirmation(context, ref, product.id),
+                            ),
+                          ],
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 22),
-                          tooltip: 'Eliminar producto',
-                          onPressed: () => _showDeleteProductConfirmation(context, ref, product.id),
-                        ),
-                      ],
-                    ),
+                      );
+                    },
                   );
                 },
               );
@@ -315,12 +319,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final user = Supabase.instance.client.auth.currentUser;
-
     final userName = user?.userMetadata?['full_name'] ?? user?.email?.split('@').first ?? 'Usuario Trueke';
     final userEmail = user?.email ?? 'correo@ejemplo.com';
 
-    // Usamos un FutureBuilder que se refresca cada vez que la pantalla entra en foco o se invalida el provider
-    final productsFuture = ref.watch(productRepositoryProvider).getProducts();
+    final userProductsAsync = ref.watch(userProductsProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -337,10 +339,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         ),
       ),
-      body: FutureBuilder(
-        future: productsFuture,
-        builder: (context, snapshot) {
-          final int publishedCount = snapshot.hasData ? (snapshot.data as List).length : 0;
+      body: userProductsAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+        error: (err, stack) => Center(child: Text('Error: $err')),
+        data: (products) {
+          final int publishedCount = products.length;
           final int offersCount = 0;
           final int historyCount = 0;
 
