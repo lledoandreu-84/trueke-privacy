@@ -69,7 +69,9 @@ class FavoritesPage extends ConsumerWidget {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil('/', (route) => false);
+                  try {
+                    Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil('/', (route) => false);
+                  } catch (_) {}
                 },
                 icon: const Icon(Icons.search_rounded, size: 18),
                 label: const Text(
