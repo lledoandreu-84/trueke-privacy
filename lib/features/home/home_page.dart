@@ -40,23 +40,26 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             const SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(16, 20, 16, 40), // Espacio inferior ampliado notablemente
+                padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
                 child: PromoBanner(),
               ),
             ),
             SliverToBoxAdapter(
-              child: _SectionHeading(
-                title: 'Más buscados en tu zona',
-                subtitle: 'Artículos relevantes cerca de tu GPS',
-                icon: Icons.near_me_rounded,
-                onSeeAllTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const NearbyProductsScreen(),
-                    ),
-                  );
-                },
+              child: Padding(
+                padding: const EdgeInsets.only(top: 16.0), // Respiro adicional solicitado
+                child: _SectionHeading(
+                  title: 'Más buscados en tu zona',
+                  subtitle: 'Artículos relevantes cerca de tu GPS',
+                  icon: Icons.near_me_rounded,
+                  onSeeAllTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const NearbyProductsScreen(),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
             paginatedAsync.when(
