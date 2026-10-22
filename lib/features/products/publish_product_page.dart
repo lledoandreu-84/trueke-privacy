@@ -73,6 +73,74 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
     }
   }
 
+  void _showImageSourceDialog() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFFCBD5E1),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Añadir imagen',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: const BoxDecoration(
+                  color: AppColors.surfaceMint,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.camera_alt_rounded, color: AppColors.primary, size: 20),
+              ),
+              title: const Text('Tomar foto', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600)),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.camera);
+              },
+            ),
+            const Divider(height: 1),
+            ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: const BoxDecoration(
+                  color: AppColors.surfaceMint,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.photo_library_rounded, color: AppColors.primary, size: 20),
+              ),
+              title: const Text('Elegir de la galería', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600)),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+            const SizedBox(height: 12),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -191,7 +259,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
           children: [
-            // Contenedor principal del formulario
+            // 1. BLOQUE DE DATOS PRINCIPALES
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -202,12 +270,13 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 1. TÍTULO
+                  // TÍTULO
                   TextFormField(
                     controller: _titleController,
-                    style: const TextStyle(fontSize: 14),
+                    style: const TextStyle(fontSize: 13.5),
                     decoration: InputDecoration(
                       labelText: 'Título del artículo',
+                      labelStyle: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary),
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       filled: true,
@@ -221,13 +290,14 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                   ),
                   const SizedBox(height: 14),
 
-                  // 2. DESCRIPCIÓN (4 líneas)
+                  // DESCRIPCIÓN (4 líneas)
                   TextFormField(
                     controller: _descriptionController,
                     maxLines: 4,
-                    style: const TextStyle(fontSize: 14),
+                    style: const TextStyle(fontSize: 13.5),
                     decoration: InputDecoration(
                       labelText: 'Descripción',
+                      labelStyle: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary),
                       alignLabelWithHint: true,
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -242,56 +312,84 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                   ),
                   const SizedBox(height: 14),
 
-                  // 3. CATEGORÍA Y ESTADO (Corregidos sin solapamientos)
+                  // CATEGORÍA Y ESTADO CON ETIQUETAS EXTERNAS (IMPOSIBLE SOLAPAR)
                   Row(
                     children: [
                       Expanded(
-                        child: DropdownButtonFormField<String>(
-                          initialValue: _selectedCategory,
-                          dropdownColor: AppColors.surface,
-                          isExpanded: true,
-                          style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
-                          decoration: InputDecoration(
-                            labelText: 'Categoría',
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            isDense: true,
-                            contentPadding: const EdgeInsets.fromLTRB(12, 16, 8, 10),
-                            filled: true,
-                            fillColor: AppColors.background,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(left: 4, bottom: 6),
+                              child: Text(
+                                'Categoría',
+                                style: TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                             ),
-                          ),
-                          items: ['Electrónica', 'Moda', 'Hogar', 'Deportes', 'Otros']
-                              .map((cat) => DropdownMenuItem(value: cat, child: Text(cat, overflow: TextOverflow.ellipsis)))
-                              .toList(),
-                          onChanged: (val) => setState(() => _selectedCategory = val ?? 'Electrónica'),
+                            DropdownButtonFormField<String>(
+                              initialValue: _selectedCategory,
+                              dropdownColor: AppColors.surface,
+                              isExpanded: true,
+                              style: const TextStyle(fontSize: 13, color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+                              decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                filled: true,
+                                fillColor: AppColors.background,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                              items: ['Electrónica', 'Moda', 'Hogar', 'Deportes', 'Otros']
+                                  .map((cat) => DropdownMenuItem(value: cat, child: Text(cat, overflow: TextOverflow.ellipsis)))
+                                  .toList(),
+                              onChanged: (val) => setState(() => _selectedCategory = val ?? 'Electrónica'),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: DropdownButtonFormField<String>(
-                          initialValue: _selectedCondition,
-                          dropdownColor: AppColors.surface,
-                          isExpanded: true,
-                          style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
-                          decoration: InputDecoration(
-                            labelText: 'Estado',
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            isDense: true,
-                            contentPadding: const EdgeInsets.fromLTRB(12, 16, 8, 10),
-                            filled: true,
-                            fillColor: AppColors.background,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(left: 4, bottom: 6),
+                              child: Text(
+                                'Estado',
+                                style: TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                             ),
-                          ),
-                          items: ['Nuevo', 'Como nuevo', 'Buen estado', 'Uso aceptable']
-                              .map((cond) => DropdownMenuItem(value: cond, child: Text(cond, overflow: TextOverflow.ellipsis)))
-                              .toList(),
-                          onChanged: (val) => setState(() => _selectedCondition = val ?? 'Buen estado'),
+                            DropdownButtonFormField<String>(
+                              initialValue: _selectedCondition,
+                              dropdownColor: AppColors.surface,
+                              isExpanded: true,
+                              style: const TextStyle(fontSize: 13, color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+                              decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                filled: true,
+                                fillColor: AppColors.background,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                              items: ['Nuevo', 'Como nuevo', 'Buen estado', 'Uso aceptable']
+                                  .map((cond) => DropdownMenuItem(value: cond, child: Text(cond, overflow: TextOverflow.ellipsis)))
+                                  .toList(),
+                              onChanged: (val) => setState(() => _selectedCondition = val ?? 'Buen estado'),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -301,7 +399,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
             ),
             const SizedBox(height: 14),
 
-            // 4. FOTOS DEL ARTÍCULO (Título en negrita + accesos directos Cámara y Galería)
+            // 2. FOTOS DEL ARTÍCULO (Diseño estándar armonizado con el formulario)
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -315,42 +413,41 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                   const Text(
                     'Fotos del artículo',
                     style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
+                      color: AppColors.textSecondary,
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   SizedBox(
-                    height: 80,
+                    height: 72,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
-                      itemCount: totalImagesCount + 2, // 2 botones iniciales (Cámara + Galería) + imágenes
+                      itemCount: totalImagesCount + 1,
                       separatorBuilder: (context, index) => const SizedBox(width: 10),
                       itemBuilder: (context, index) {
-                        // BOTÓN 1: CÁMARA DIRECTA
                         if (index == 0) {
                           return InkWell(
-                            onTap: () => _pickImage(ImageSource.camera),
+                            onTap: _showImageSourceDialog,
                             borderRadius: BorderRadius.circular(12),
                             child: Container(
-                              width: 80,
+                              width: 72,
                               decoration: BoxDecoration(
-                                color: AppColors.surfaceMint,
+                                color: AppColors.background,
                                 borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+                                border: Border.all(color: const Color(0xFFCBD5E1), style: BorderStyle.solid),
                               ),
                               child: const Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.camera_alt_rounded, color: AppColors.primary, size: 22),
-                                  SizedBox(height: 4),
+                                  Icon(Icons.add_a_photo_outlined, color: AppColors.primary, size: 22),
+                                  SizedBox(height: 3),
                                   Text(
-                                    'Cámara',
+                                    'Añadir',
                                     style: TextStyle(
                                       color: AppColors.primary,
                                       fontSize: 11,
-                                      fontWeight: FontWeight.w700,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ],
@@ -359,44 +456,13 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                           );
                         }
 
-                        // BOTÓN 2: GALERÍA DIRECTA
-                        if (index == 1) {
-                          return InkWell(
-                            onTap: () => _pickImage(ImageSource.gallery),
-                            borderRadius: BorderRadius.circular(12),
-                            child: Container(
-                              width: 80,
-                              decoration: BoxDecoration(
-                                color: AppColors.surfaceMint,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
-                              ),
-                              child: const Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.photo_library_rounded, color: AppColors.primary, size: 22),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    'Galería',
-                                    style: TextStyle(
-                                      color: AppColors.primary,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }
-
-                        final imgIndex = index - 2;
+                        final imgIndex = index - 1;
                         final bool isExisting = imgIndex < _existingImages.length;
 
                         return Stack(
                           children: [
                             Container(
-                              width: 80,
+                              width: 72,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(color: const Color(0xFFE2E8F0)),
@@ -408,7 +474,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                                       fit: BoxFit.cover,
                                       errorBuilder: (context, error, stackTrace) => Container(
                                         color: AppColors.surfaceMint,
-                                        child: const Icon(Icons.image_outlined, color: AppColors.primary, size: 22),
+                                        child: const Icon(Icons.image_outlined, color: AppColors.primary, size: 20),
                                       ),
                                     )
                                   : Image.file(
@@ -416,13 +482,13 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                                       fit: BoxFit.cover,
                                       errorBuilder: (context, error, stackTrace) => Container(
                                         color: AppColors.surfaceMint,
-                                        child: const Icon(Icons.image_outlined, color: AppColors.primary, size: 22),
+                                        child: const Icon(Icons.image_outlined, color: AppColors.primary, size: 20),
                                       ),
                                     ),
                             ),
                             Positioned(
-                              top: 4,
-                              right: 4,
+                              top: 3,
+                              right: 3,
                               child: GestureDetector(
                                 onTap: () {
                                   setState(() {
@@ -437,12 +503,12 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                                   });
                                 },
                                 child: Container(
-                                  padding: const EdgeInsets.all(4),
+                                  padding: const EdgeInsets.all(3),
                                   decoration: const BoxDecoration(
                                     color: Colors.black54,
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Icon(Icons.close_rounded, size: 14, color: Colors.white),
+                                  child: const Icon(Icons.close_rounded, size: 12, color: Colors.white),
                                 ),
                               ),
                             ),
@@ -456,7 +522,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
             ),
             const SizedBox(height: 14),
 
-            // 5. MODALIDAD (Trueke / Venta)
+            // 3. MODALIDAD (Trueke / Venta)
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -486,7 +552,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                                 'Trueke',
                                 style: TextStyle(
                                   color: _isTrueque ? AppColors.primary : AppColors.textSecondary,
-                                  fontSize: 13.5,
+                                  fontSize: 13,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -512,7 +578,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                                 'Venta',
                                 style: TextStyle(
                                   color: !_isTrueque ? AppColors.primary : AppColors.textSecondary,
-                                  fontSize: 13.5,
+                                  fontSize: 13,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -526,9 +592,10 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: _seekingController,
-                      style: const TextStyle(fontSize: 14),
+                      style: const TextStyle(fontSize: 13.5),
                       decoration: InputDecoration(
                         labelText: '¿Qué buscas a cambio?',
+                        labelStyle: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary),
                         hintText: 'Ej. Herramientas, videojuegos...',
                         isDense: true,
                         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -546,7 +613,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
             ),
             const SizedBox(height: 20),
 
-            // BOTÓN DE ACCIÓN FINAL
+            // BOTÓN DE PUBLICAR
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
