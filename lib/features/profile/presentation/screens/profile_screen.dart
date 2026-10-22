@@ -108,7 +108,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
         ),
         content: const Text(
-          'Esta acción eliminará permanentemente tu producto publicado del escaparate.',
+          'Esta acción eliminará permanentemente tu producto y lo removerá de todas las páginas y listados.',
           style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
         ),
         actions: [
@@ -123,13 +123,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
             onPressed: () async {
               try {
+                // Ejecutamos el borrado en el repositorio
                 await ref.read(productRepositoryProvider).deleteProduct(productId);
+                
+                // Forzamos la invalidación del proveedor de productos para que se actualice todo el árbol de la app
+                ref.invalidate(productRepositoryProvider);
+
                 if (context.mounted) {
                   Navigator.pop(context); // Cierra confirmación
                   Navigator.pop(context); // Cierra modal de listado
                   setState(() {});
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Producto eliminado correctamente'), backgroundColor: AppColors.primary),
+                    const SnackBar(content: Text('Producto eliminado correctamente de la plataforma'), backgroundColor: AppColors.primary),
                   );
                 }
               } catch (e) {

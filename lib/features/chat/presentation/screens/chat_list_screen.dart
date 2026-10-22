@@ -6,9 +6,7 @@ import 'package:trueke/features/chat/providers/chat_providers.dart';
 import 'package:trueke/features/chat/presentation/screens/chat_screen.dart';
 
 class ChatListScreen extends ConsumerWidget {
-  final ValueChanged<int>? onNavigateTab;
-
-  const ChatListScreen({super.key, this.onNavigateTab});
+  const ChatListScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -89,13 +87,8 @@ class ChatListScreen extends ConsumerWidget {
                         ),
                       ),
                       onPressed: () {
-                        if (onNavigateTab != null) {
-                          onNavigateTab!(0); // Cambia a la pestaña de Home/Explorar (índice 0)
-                        } else {
-                          try {
-                            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-                          } catch (_) {}
-                        }
+                        // Navegación segura que fuerza el cambio al Home/Explorar principal
+                        Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil('/', (route) => false);
                       },
                       icon: const Icon(Icons.search_rounded, size: 18),
                       label: const Text(

@@ -3,9 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/core/theme/app_colors.dart';
 
 class FavoritesPage extends ConsumerWidget {
-  final ValueChanged<int>? onNavigateTab;
-
-  const FavoritesPage({super.key, this.onNavigateTab});
+  const FavoritesPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -71,13 +69,7 @@ class FavoritesPage extends ConsumerWidget {
                   ),
                 ),
                 onPressed: () {
-                  if (onNavigateTab != null) {
-                    onNavigateTab!(0); // Cambia a la pestaña de Home/Explorar (índice 0)
-                  } else {
-                    try {
-                      Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-                    } catch (_) {}
-                  }
+                  Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil('/', (route) => false);
                 },
                 icon: const Icon(Icons.search_rounded, size: 18),
                 label: const Text(
