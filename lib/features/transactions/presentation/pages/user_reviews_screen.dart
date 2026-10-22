@@ -1,3 +1,4 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import '../widgets/user_reviews_list_widget.dart';
 import '../widgets/add_review_dialog.dart';
@@ -59,7 +60,7 @@ class UserReviewsScreen extends StatelessWidget {
           UserReviewsListWidget(userId: userId),
         ],
       ),
-      bottomNavigationBar: SafeArea(
+      bottomNavigationBar: Supabase.instance.client.auth.currentUser?.id == userId ? null : SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           child: FilledButton(
