@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/core/theme/app_colors.dart';
-import 'package:trueke/core/providers/shell_index_provider.dart';
+import 'package:trueke/features/products/presentation/screens/product_search_screen.dart';
 
 class FavoritesPage extends ConsumerWidget {
   const FavoritesPage({super.key});
@@ -70,8 +70,13 @@ class FavoritesPage extends ConsumerWidget {
                   ),
                 ),
                 onPressed: () {
-                  // Cambiamos el índice del contenedor real (MainShell)
-                  ref.read(shellIndexProvider.notifier).setIndex(0);
+                  // Navegamos directamente a la pantalla de Explorar (ProductSearchScreen)
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ProductSearchScreen(),
+                    ),
+                  );
                 },
                 icon: const Icon(Icons.search_rounded, size: 18),
                 label: const Text(
