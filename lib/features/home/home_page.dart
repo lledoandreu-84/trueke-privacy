@@ -44,9 +44,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                 child: PromoBanner(),
               ),
             ),
-            // Espacio de respiro máximo ampliado para una separación superior
+            // Respiro máximo ampliado para aprovechar por completo el espacio vertical
             const SliverToBoxAdapter(
-              child: SizedBox(height: 52), 
+              child: SizedBox(height: 64), 
             ),
             SliverToBoxAdapter(
               child: _SectionHeading(
@@ -102,14 +102,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                 final displayProducts = products.take(2).toList();
 
                 return SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                   sliver: SliverGrid(
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
-                      childAspectRatio: 0.84, // Ajuste perfecto para equilibrar el espacio inferior
+                      childAspectRatio: 0.88, // Proporción ideal para llenar elegantemente el espacio inferior
                     ),
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final product = displayProducts[index];
