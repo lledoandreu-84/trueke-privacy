@@ -32,7 +32,7 @@ class PromoBanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(28),
         child: Stack(
           children: [
-            // Burbuja superior grande con el logo de la app integrado con mayor visibilidad
+            // Burbuja superior con el logo ocupando la totalidad del círculo
             Positioned(
               top: -30,
               right: -30,
@@ -43,14 +43,14 @@ class PromoBanner extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: const Color(0xFF6366F1).withValues(alpha: 0.22),
                 ),
-                child: Center(
+                child: ClipOval(
                   child: Opacity(
-                    opacity: 0.16,
+                    opacity: 0.18,
                     child: Image.asset(
                       'assets/images/logo.png',
-                      width: 95,
-                      height: 95,
-                      fit: BoxFit.contain,
+                      width: 170,
+                      height: 170,
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
