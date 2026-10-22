@@ -6,7 +6,9 @@ import 'package:trueke/features/chat/providers/chat_providers.dart';
 import 'package:trueke/features/chat/presentation/screens/chat_screen.dart';
 
 class ChatListScreen extends ConsumerWidget {
-  const ChatListScreen({super.key});
+  final VoidCallback? onExplorePressed;
+
+  const ChatListScreen({super.key, this.onExplorePressed});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -87,8 +89,14 @@ class ChatListScreen extends ConsumerWidget {
                         ),
                       ),
                       onPressed: () {
-                        // Navega a la pantalla principal o resetea a la vista de exploración
-                        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+                        if (onExplorePressed != null) {
+                          onExplorePressed!();
+                        } else {
+                          // Si no hay callback directo, buscamos un PageController o simplemente navegamos al inicio
+                          try {
+                            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+                          } catch (_) {}
+                        }
                       },
                       icon: const Icon(Icons.search_rounded, size: 18),
                       label: const Text(
