@@ -40,27 +40,30 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             const SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+                padding: EdgeInsets.fromLTRB(16, 20, 16, 24),
                 child: PromoBanner(),
               ),
             ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 12), // Espacio de respiro claro entre banner y sección
+            ),
             SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 16.0), // Respiro adicional solicitado
-                child: _SectionHeading(
-                  title: 'Más buscados en tu zona',
-                  subtitle: 'Artículos relevantes cerca de tu GPS',
-                  icon: Icons.near_me_rounded,
-                  onSeeAllTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const NearbyProductsScreen(),
-                      ),
-                    );
-                  },
-                ),
+              child: _SectionHeading(
+                title: 'Más buscados en tu zona',
+                subtitle: 'Artículos relevantes cerca de tu GPS',
+                icon: Icons.near_me_rounded,
+                onSeeAllTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const NearbyProductsScreen(),
+                    ),
+                  );
+                },
               ),
+            ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 8),
             ),
             paginatedAsync.when(
               loading: () => const SliverToBoxAdapter(
@@ -98,14 +101,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                 final displayProducts = products.take(2).toList();
 
                 return SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 28),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                   sliver: SliverGrid(
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
-                      childAspectRatio: 0.92,
+                      childAspectRatio: 0.88, // Proporción equilibrada para ver completos los productos sin scroll
                     ),
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final product = displayProducts[index];
@@ -147,7 +150,7 @@ class _SectionHeading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
