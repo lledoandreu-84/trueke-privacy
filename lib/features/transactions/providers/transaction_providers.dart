@@ -9,15 +9,12 @@ final supabaseClientProvider = Provider<SupabaseClient>((ref) {
   return Supabase.instance.client;
 });
 
-
-// Alias de compatibilidad para repositorios de transacciones
-final transactionRepositoryProvider = Provider<TransactionRepository>((ref) {
-  return TransactionRepository(ref.watch(supabaseClientProvider));
-});
-
 final tradeOfferRepositoryProvider = Provider<TradeOfferRepository>((ref) {
   return TradeOfferRepository(ref.watch(supabaseClientProvider));
 });
+
+// Alias de compatibilidad para evitar errores en pantallas y tests antiguos
+final transactionRepositoryProvider = tradeOfferRepositoryProvider;
 
 final userTransactionsProvider =
     AsyncNotifierProvider<UserTransactionsNotifier, List<ProductTransaction>>(
@@ -33,10 +30,8 @@ class UserTransactionsNotifier extends AsyncNotifier<List<ProductTransaction>> {
     final user = client.auth.currentUser;
     if (user == null) return [];
     
-    // Obtenemos las ofertas desde el repositorio unificado de trade_offers
     final offers = await ref.read(tradeOfferRepositoryProvider).fetchOffersByUserId(user.id);
     
-    // Mapeamos TradeOffer a ProductTransaction para mantener compatibilidad con la UI de Mi Cuenta / Historial
     return offers.map((o) => ProductTransaction(
       id: o.id,
       productId: o.receiverProductId,
@@ -57,12 +52,11 @@ class UserTransactionsNotifier extends AsyncNotifier<List<ProductTransaction>> {
   Future<void> createOffer(ProductTransaction transaction) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      // Creamos la oferta de forma unificada (crea oferta, chat y mensaje inicial atómicamente)
       await ref
           .read(tradeOfferRepositoryProvider)
           .createOffer(
             receiverId: transaction.sellerId,
-            senderProductId: transaction.productId, // O producto emisor si aplica
+            senderProductId: transaction.productId,
             receiverProductId: transaction.productId,
             additionalCash: transaction.price ?? 0.0,
           );
@@ -94,7 +88,7 @@ class UserTransactionsNotifier extends AsyncNotifier<List<ProductTransaction>> {
     state = await AsyncValue.guard(() async {
       final statusEnum = newStatus == 'accepted' 
           ? TradeOfferStatus.accepted 
-          : (newStatus == 'rejected' ? TradeOfferStatus.declined : TradeOfferStatus.pending);
+          : (newStatus == 'declined' || newStatus == 'cancelled' ? TradeOfferStatus.declined : TradeOfferStatus.pending);
           
       await ref
           .read(tradeOfferRepositoryProvider)
