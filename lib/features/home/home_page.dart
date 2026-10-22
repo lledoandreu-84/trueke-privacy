@@ -40,7 +40,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             const SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(16, 20, 16, 28), // Espacio optimizado
+                padding: EdgeInsets.fromLTRB(16, 20, 16, 40), // Espacio inferior ampliado notablemente
                 child: PromoBanner(),
               ),
             ),
@@ -102,7 +102,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                       crossAxisCount: 2,
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
-                      childAspectRatio: 0.92, // Ajustado para ver 2 productos completos sin scroll innecesario
+                      childAspectRatio: 0.92,
                     ),
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final product = displayProducts[index];
