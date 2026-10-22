@@ -1,7 +1,8 @@
 import "package:flutter/foundation.dart";
 
 @immutable
-class ChatRoom {
+class ChatRoom {  final int unreadCount;
+
   final String id;
   final String productId;
   final String sellerId;
@@ -9,6 +10,7 @@ class ChatRoom {
   final DateTime createdAt;
 
   const ChatRoom({
+    this.unreadCount = 0,
     required this.id,
     required this.productId,
     required this.sellerId,
