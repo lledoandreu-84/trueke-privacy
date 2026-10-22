@@ -33,7 +33,7 @@ void main() {
 
         final profile = await repository.getProfile('usr_david_123');
 
-        expect(profile.id, equals('usr_david_123'));
+        expect(profile!.id, equals('usr_david_123'));
         expect(profile.displayName, equals('David Andreu'));
       },
     );
@@ -45,8 +45,10 @@ void main() {
 
         final repository = SupabaseProfileRepository(
           fakeClient,
-          mockUpdateProfileInterceptor: (updates) async {
-            capturedUpdates = updates;
+          mockUpdateProfileInterceptor: (profile) async {
+            final m = Map<String, dynamic>.from(profile.toJson());
+            m.remove('created_at');
+            capturedUpdates = m;
           },
         );
 

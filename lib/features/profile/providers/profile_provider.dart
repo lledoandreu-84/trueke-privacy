@@ -13,7 +13,7 @@ final supabaseProfileRepositoryProvider =
 final userProfileProvider = FutureProvider.autoDispose
     .family<UserProfile, String>((ref, userId) async {
       final repository = ref.watch(supabaseProfileRepositoryProvider);
-      return repository.getProfile(userId);
+      return (await repository.getProfile(userId))!;
     });
 
 class ProfileMutationNotifier extends AsyncNotifier<void> {
