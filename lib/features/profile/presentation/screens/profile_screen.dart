@@ -128,9 +128,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 separatorBuilder: (context, index) => const SizedBox(height: 10),
                 itemBuilder: (context, index) {
                   final product = products[index];
-                  final imageUrl = (product.imageUrls != null && product.imageUrls.isNotEmpty)
-                      ? product.imageUrls.first
-                      : '';
+                  final imageUrl = product.imageUrl ?? '';
 
                   return InkWell(
                     onTap: () {

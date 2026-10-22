@@ -6,9 +6,7 @@ import 'package:trueke/features/chat/providers/chat_providers.dart';
 import 'package:trueke/features/chat/presentation/screens/chat_screen.dart';
 
 class ChatListScreen extends ConsumerWidget {
-  final VoidCallback? onExplorePressed;
-
-  const ChatListScreen({super.key, this.onExplorePressed});
+  const ChatListScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -89,16 +87,9 @@ class ChatListScreen extends ConsumerWidget {
                         ),
                       ),
                       onPressed: () {
-                        if (onExplorePressed != null) {
-                          onExplorePressed!();
-                        } else {
-                          // Intentamos cambiar al primer tab o retornar al inicio si hay un PageController/TabController superior
-                          try {
-                            DefaultTabController.of(context).animateTo(0);
-                          } catch (_) {
-                            Navigator.of(context).maybePop();
-                          }
-                        }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Usa la barra inferior para explorar productos')),
+                        );
                       },
                       icon: const Icon(Icons.search_rounded, size: 18),
                       label: const Text(
