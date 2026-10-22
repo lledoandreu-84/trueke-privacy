@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/core/theme/app_colors.dart';
 
 class FavoritesPage extends ConsumerWidget {
-  final VoidCallback? onExplorePressed;
+  final ValueChanged<int>? onNavigateTab;
 
-  const FavoritesPage({super.key, this.onExplorePressed});
+  const FavoritesPage({super.key, this.onNavigateTab});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -71,8 +71,8 @@ class FavoritesPage extends ConsumerWidget {
                   ),
                 ),
                 onPressed: () {
-                  if (onExplorePressed != null) {
-                    onExplorePressed!();
+                  if (onNavigateTab != null) {
+                    onNavigateTab!(0); // Cambia a la pestaña de Home/Explorar (índice 0)
                   } else {
                     try {
                       Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
