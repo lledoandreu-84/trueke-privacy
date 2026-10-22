@@ -97,6 +97,57 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
+  void _showDeleteProductConfirmation(BuildContext context, WidgetRef ref, String productId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          '¿Estás seguro?',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+        ),
+        content: const Text(
+          'Esta acción eliminará permanentemente tu producto publicado del escaparate.',
+          style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar', style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () async {
+              try {
+                await ref.read(productRepositoryProvider).deleteProduct(productId);
+                if (context.mounted) {
+                  Navigator.pop(context); // Cierra confirmación
+                  Navigator.pop(context); // Cierra modal de listado
+                  setState(() {});
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Producto eliminado correctamente'), backgroundColor: AppColors.primary),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error al eliminar: $e'), backgroundColor: Colors.redAccent),
+                  );
+                }
+              }
+            },
+            child: const Text('Eliminar', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showPublishedProductsModal(BuildContext context, WidgetRef ref) async {
     showDialog(
       context: context,
@@ -130,49 +181,48 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   final product = products[index];
                   final imageUrl = product.imageUrl ?? '';
 
-                  return InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(
-                        context,
-                        AppRoutes.product,
-                        arguments: product,
-                      );
-                    },
-                    borderRadius: BorderRadius.circular(14),
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: AppColors.background,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: const Color(0xFFE2E8F0)),
-                      ),
-                      child: Row(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: imageUrl.isNotEmpty
-                                ? Image.network(
-                                    imageUrl,
-                                    width: 50,
-                                    height: 50,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) => Container(
-                                      width: 50,
-                                      height: 50,
-                                      color: AppColors.surfaceMint,
-                                      child: const Icon(Icons.inventory_2_rounded, color: AppColors.primary, size: 24),
-                                    ),
-                                  )
-                                : Container(
+                  return Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.background,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                    ),
+                    child: Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: imageUrl.isNotEmpty
+                              ? Image.network(
+                                  imageUrl,
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) => Container(
                                     width: 50,
                                     height: 50,
                                     color: AppColors.surfaceMint,
                                     child: const Icon(Icons.inventory_2_rounded, color: AppColors.primary, size: 24),
                                   ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
+                                )
+                              : Container(
+                                  width: 50,
+                                  height: 50,
+                                  color: AppColors.surfaceMint,
+                                  child: const Icon(Icons.inventory_2_rounded, color: AppColors.primary, size: 24),
+                                ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.pushNamed(
+                                context,
+                                AppRoutes.product,
+                                arguments: product,
+                              );
+                            },
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -198,9 +248,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               ],
                             ),
                           ),
-                          const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary, size: 20),
-                        ],
-                      ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 22),
+                          tooltip: 'Eliminar producto',
+                          onPressed: () => _showDeleteProductConfirmation(context, ref, product.id),
+                        ),
+                      ],
                     ),
                   );
                 },
@@ -212,6 +266,44 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Cerrar', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSignOutConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          '¿Estás seguro?',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+        ),
+        content: const Text(
+          '¿Deseas cerrar sesión en este dispositivo?',
+          style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar', style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () async {
+              await Supabase.instance.client.auth.signOut();
+              if (context.mounted) {
+                Navigator.pop(context);
+                Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+              }
+            },
+            child: const Text('Cerrar sesión', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
           ),
         ],
       ),
@@ -421,7 +513,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                     const SizedBox(height: 24),
 
-                    // 🚪 Cerrar Sesión
+                    // 🚪 Cerrar Sesión con Confirmación
                     Material(
                       color: AppColors.surface,
                       borderRadius: BorderRadius.circular(20),
@@ -431,12 +523,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           border: Border.all(color: const Color(0xFFE2E8F0)),
                         ),
                         child: ListTile(
-                          onTap: () async {
-                            await Supabase.instance.client.auth.signOut();
-                            if (context.mounted) {
-                              Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
-                            }
-                          },
+                          onTap: () => _showSignOutConfirmation(context),
                           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                           leading: Container(
                             padding: const EdgeInsets.all(10),

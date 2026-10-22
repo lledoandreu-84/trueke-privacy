@@ -87,9 +87,8 @@ class ChatListScreen extends ConsumerWidget {
                         ),
                       ),
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Usa la barra inferior para explorar productos')),
-                        );
+                        // Navega a la pantalla principal o resetea a la vista de exploración
+                        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
                       },
                       icon: const Icon(Icons.search_rounded, size: 18),
                       label: const Text(

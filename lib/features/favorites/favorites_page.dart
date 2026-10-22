@@ -69,9 +69,7 @@ class FavoritesPage extends ConsumerWidget {
                   ),
                 ),
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Usa la barra inferior para explorar productos')),
-                  );
+                  Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
                 },
                 icon: const Icon(Icons.search_rounded, size: 18),
                 label: const Text(
