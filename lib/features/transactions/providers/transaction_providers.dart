@@ -9,6 +9,12 @@ final supabaseClientProvider = Provider<SupabaseClient>((ref) {
   return Supabase.instance.client;
 });
 
+
+// Alias de compatibilidad para repositorios de transacciones
+final transactionRepositoryProvider = Provider<TransactionRepository>((ref) {
+  return TransactionRepository(ref.watch(supabaseClientProvider));
+});
+
 final tradeOfferRepositoryProvider = Provider<TradeOfferRepository>((ref) {
   return TradeOfferRepository(ref.watch(supabaseClientProvider));
 });
@@ -42,7 +48,7 @@ class UserTransactionsNotifier extends AsyncNotifier<List<ProductTransaction>> {
       price: o.additionalCash,
       status: o.status == TradeOfferStatus.accepted 
           ? TransactionStatus.accepted 
-          : (o.status == TradeOfferStatus.rejected ? TransactionStatus.rejected : TransactionStatus.pending),
+          : (o.status == TradeOfferStatus.declined ? TransactionStatus.cancelled : TransactionStatus.pending),
       createdAt: o.createdAt,
       updatedAt: o.createdAt,
     )).toList();
@@ -76,7 +82,7 @@ class UserTransactionsNotifier extends AsyncNotifier<List<ProductTransaction>> {
         price: o.additionalCash,
         status: o.status == TradeOfferStatus.accepted 
             ? TransactionStatus.accepted 
-            : (o.status == TradeOfferStatus.rejected ? TransactionStatus.rejected : TransactionStatus.pending),
+            : (o.status == TradeOfferStatus.declined ? TransactionStatus.cancelled : TransactionStatus.pending),
         createdAt: o.createdAt,
         updatedAt: o.createdAt,
       )).toList();
@@ -88,7 +94,7 @@ class UserTransactionsNotifier extends AsyncNotifier<List<ProductTransaction>> {
     state = await AsyncValue.guard(() async {
       final statusEnum = newStatus == 'accepted' 
           ? TradeOfferStatus.accepted 
-          : (newStatus == 'rejected' ? TradeOfferStatus.rejected : TradeOfferStatus.pending);
+          : (newStatus == 'rejected' ? TradeOfferStatus.declined : TradeOfferStatus.pending);
           
       await ref
           .read(tradeOfferRepositoryProvider)
@@ -109,7 +115,7 @@ class UserTransactionsNotifier extends AsyncNotifier<List<ProductTransaction>> {
         price: o.additionalCash,
         status: o.status == TradeOfferStatus.accepted 
             ? TransactionStatus.accepted 
-            : (o.status == TradeOfferStatus.rejected ? TransactionStatus.rejected : TransactionStatus.pending),
+            : (o.status == TradeOfferStatus.declined ? TransactionStatus.cancelled : TransactionStatus.pending),
         createdAt: o.createdAt,
         updatedAt: o.createdAt,
       )).toList();
