@@ -95,7 +95,7 @@ class SupabaseProfileRepository implements ProfileRepository {
     await _client.from('user_reviews').insert({
       'reviewer_id': myId,
       'receiver_id': receiverId,
-      'rating': rating,
+      'rating': rating.toInt(),
       'comment': comment,
     });
   }
