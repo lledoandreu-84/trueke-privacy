@@ -102,188 +102,205 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-        children: [
-          // 👤 1. Cabecera de Perfil optimizada y compacta
-          Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: const Color(0xFFE2E8F0)),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.primary, width: 2),
-                  ),
-                  child: const CircleAvatar(
-                    radius: 30,
-                    backgroundColor: AppColors.surfaceMint,
-                    child: Icon(Icons.person_rounded, size: 34, color: AppColors.primary),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              userName,
-                              style: const TextStyle(
-                                color: AppColors.textPrimary,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w800,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // 👤 1. Cabecera de Perfil optimizada y compacta
+                        Container(
+                          padding: const EdgeInsets.all(18),
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: const Color(0xFFE2E8F0)),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: AppColors.primary, width: 2),
+                                ),
+                                child: const CircleAvatar(
+                                  radius: 30,
+                                  backgroundColor: AppColors.surfaceMint,
+                                  child: Icon(Icons.person_rounded, size: 34, color: AppColors.primary),
+                                ),
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            userName,
+                                            style: const TextStyle(
+                                              color: AppColors.textPrimary,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w800,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.edit_rounded, size: 18, color: AppColors.primary),
+                                          onPressed: () => _showEditProfileDialog(context, userName),
+                                          constraints: const BoxConstraints(),
+                                          padding: EdgeInsets.zero,
+                                          tooltip: 'Editar perfil',
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      userEmail,
+                                      style: const TextStyle(
+                                        color: AppColors.textSecondary,
+                                        fontSize: 12.5,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.surfaceMint,
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: const Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(Icons.star_rounded, size: 14, color: AppColors.primary),
+                                              SizedBox(width: 4),
+                                              Text(
+                                                'Sin valoraciones',
+                                                style: TextStyle(
+                                                  color: AppColors.primary,
+                                                  fontSize: 11.5,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.edit_rounded, size: 18, color: AppColors.primary),
-                            onPressed: () => _showEditProfileDialog(context, userName),
-                            constraints: const BoxConstraints(),
-                            padding: EdgeInsets.zero,
-                            tooltip: 'Editar perfil',
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 3),
-                      Text(
-                        userEmail,
-                        style: const TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 12.5,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                        const SizedBox(height: 48), // Gran respiro generoso hacia el bloque de gestión
+
+                        // 📦 2. Opciones de Gestión con Contadores
+                        Material(
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(20),
+                          child: Container(
                             decoration: BoxDecoration(
-                              color: AppColors.surfaceMint,
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: const Color(0xFFE2E8F0)),
                             ),
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
+                            child: Column(
                               children: [
-                                Icon(Icons.star_rounded, size: 14, color: AppColors.primary),
-                                SizedBox(width: 4),
-                                Text(
-                                  'Sin valoraciones',
-                                  style: TextStyle(
-                                    color: AppColors.primary,
-                                    fontSize: 11.5,
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                                _buildMenuItem(
+                                  icon: Icons.swap_horiz_rounded,
+                                  title: 'Mis Ofertas de Trueke',
+                                  subtitle: 'Gestionar intercambios propuestos',
+                                  badgeText: '0',
+                                  onTap: () {},
+                                ),
+                                const Divider(height: 1, color: Color(0xFFE2E8F0), indent: 16, endIndent: 16),
+                                _buildMenuItem(
+                                  icon: Icons.inventory_2_outlined,
+                                  title: 'Mis Productos Publicados',
+                                  subtitle: 'Artículos activos en el escaparate',
+                                  badgeText: '1',
+                                  onTap: () {},
+                                ),
+                                const Divider(height: 1, color: Color(0xFFE2E8F0), indent: 16, endIndent: 16),
+                                _buildMenuItem(
+                                  icon: Icons.account_balance_wallet_outlined,
+                                  title: 'Historial de Truekes',
+                                  subtitle: 'Intercambios finalizados',
+                                  badgeText: '0',
+                                  onTap: () {},
                                 ),
                               ],
                             ),
                           ),
-                        ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24), // Espacio máximo antes de empujar el botón al fondo
+                    // 🚪 3. Contenedor estilizado para Cerrar Sesión anclado al fondo
+                    Material(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                        ),
+                        child: ListTile(
+                          onTap: () async {
+                            await Supabase.instance.client.auth.signOut();
+                            if (context.mounted) {
+                              Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+                            }
+                          },
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                          leading: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFF5F5),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 20),
+                          ),
+                          title: const Text(
+                            'Cerrar sesión',
+                            style: TextStyle(
+                              color: Colors.redAccent,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          subtitle: const Text(
+                            'Finalizar sesión actual en este dispositivo',
+                            style: TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
                       ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24), // Respiro generoso hacia el bloque de gestión
-
-          // 📦 2. Opciones de Gestión con Contadores
-          Material(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(20),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
-              ),
-              child: Column(
-                children: [
-                  _buildMenuItem(
-                    icon: Icons.swap_horiz_rounded,
-                    title: 'Mis Ofertas de Trueke',
-                    subtitle: 'Gestionar intercambios propuestos',
-                    badgeText: '0',
-                    onTap: () {},
-                  ),
-                  const Divider(height: 1, color: Color(0xFFE2E8F0), indent: 16, endIndent: 16),
-                  _buildMenuItem(
-                    icon: Icons.inventory_2_outlined,
-                    title: 'Mis Productos Publicados',
-                    subtitle: 'Artículos activos en el escaparate',
-                    badgeText: '1',
-                    onTap: () {},
-                  ),
-                  const Divider(height: 1, color: Color(0xFFE2E8F0), indent: 16, endIndent: 16),
-                  _buildMenuItem(
-                    icon: Icons.account_balance_wallet_outlined,
-                    title: 'Historial de Truekes',
-                    subtitle: 'Intercambios finalizados',
-                    badgeText: '0',
-                    onTap: () {},
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 24), // Respiro generoso hacia el botón de cerrar sesión
-
-          // 🚪 3. Contenedor estilizado para Cerrar Sesión
-          Material(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(20),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
-              ),
-              child: ListTile(
-                onTap: () async {
-                  await Supabase.instance.client.auth.signOut();
-                  if (context.mounted) {
-                    Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
-                  }
-                },
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                leading: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFF5F5),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 20),
-                ),
-                title: const Text(
-                  'Cerrar sesión',
-                  style: TextStyle(
-                    color: Colors.redAccent,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                subtitle: const Text(
-                  'Finalizar sesión actual en este dispositivo',
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 12,
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
