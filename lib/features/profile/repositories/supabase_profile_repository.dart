@@ -117,14 +117,11 @@ class SupabaseProfileRepository implements ProfileRepository {
               myProfileResponse['username'] ??
               'Usuario')
         : 'Usuario';
-    final myAvatar = myProfileResponse != null
-        ? (myProfileResponse['avatar_url'] ?? '')
-        : '';
 
     await _client.from('user_reviews').insert({
       'reviewer_id': myId,
       'reviewer_name': myName,
-      'reviewer_avatar': myAvatar,
+
       'receiver_id': receiverId,
       'rating': rating,
       'comment': comment,
