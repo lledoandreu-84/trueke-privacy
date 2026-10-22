@@ -71,6 +71,9 @@ class FavoritesPage extends ConsumerWidget {
                 ),
                 onPressed: () {
                   ref.read(selectedTabProvider.notifier).setTab(0);
+                  try {
+                    Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil('/', (route) => false);
+                  } catch (_) {}
                 },
                 icon: const Icon(Icons.search_rounded, size: 18),
                 label: const Text(
