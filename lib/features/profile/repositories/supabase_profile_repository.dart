@@ -1,65 +1,41 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:trueke/features/profile/models/user_profile.dart';
-import '../../../models/user_review.dart';
-
-abstract class ProfileRepository {
-  Future<UserProfile> getProfile(String id);
-  Future<void> updateProfile(UserProfile profile);
-  Future<List<UserReview>> getUserReviews(String userId);
-  Future<void> createReview({
-    required String receiverId,
-    required double rating,
-    required String comment,
-  });
-}
+import '../../models/user_profile.dart';
+import '../../models/user_review.dart';
+import '../domain/profile_repository.dart';
 
 class SupabaseProfileRepository implements ProfileRepository {
   final SupabaseClient _client;
-  static const _tableName = 'profiles';
 
-  // Interceptores nominales opcionales diseñados exclusivamente para pruebas unitarias
-  final Future<Map<String, dynamic>> Function(String id)?
-  mockGetProfileInterceptor;
-  final Future<void> Function(Map<String, dynamic> json)?
-  mockUpdateProfileInterceptor;
+  SupabaseProfileRepository(this._client);
 
-  SupabaseProfileRepository(
-    this._client, {
-    this.mockGetProfileInterceptor,
-    this.mockUpdateProfileInterceptor,
-  });
+  static const String _tableName = 'profiles';
 
   @override
-  Future<UserProfile> getProfile(String id) async {
-    if (id.isEmpty) {
-      throw Exception('ID de usuario inválido o no autenticado');
-    }
+  Future<UserProfile?> getProfile(String userId) async {
+    try {
+      final response = await _client
+          .from(_tableName)
+          .select()
+          .eq('id', userId)
+          .maybeSingle();
 
-    if (mockGetProfileInterceptor != null) {
-      final response = await mockGetProfileInterceptor!(id);
+      if (response == null) return null;
       return UserProfile.fromJson(response);
+    } catch (_) {
+      return null;
     }
-
-    final response = await _client
-        .from(_tableName)
-        .select()
-        .eq('id', id)
-        .single();
-    return UserProfile.fromJson(response);
   }
 
   @override
   Future<void> updateProfile(UserProfile profile) async {
-    final updates = profile.toJson();
-    updates.remove('created_at');
-    updates['updated_at'] = DateTime.now().toIso8601String();
-
-    if (mockUpdateProfileInterceptor != null) {
-      await mockUpdateProfileInterceptor!(updates);
-      return;
+    try {
+      await _client
+          .from(_tableName)
+          .update(profile.toJson())
+          .eq('id', profile.id);
+    } catch (e) {
+      throw Exception('Error al actualizar el perfil: $e');
     }
-
-    await _client.from(_tableName).update(updates).eq('id', profile.id);
   }
 
   @override
@@ -67,25 +43,13 @@ class SupabaseProfileRepository implements ProfileRepository {
     try {
       final response = await _client
           .from('user_reviews')
-          .select(
-            '*, profiles!user_reviews_reviewer_id_fkey(display_name, avatar_url)',
-          )
+          .select('*, profiles!user_reviews_reviewer_id_fkey(display_name, avatar_url)')
           .eq('receiver_id', userId)
           .order('created_at', ascending: false);
 
-      return (response as List<dynamic>).map((json) {
-        final map = json as Map<String, dynamic>;
-        final profile = map['profiles'] as Map<String, dynamic>?;
-        return UserReview(
-          id: map['id'] as String,
-          truekeId: map['trueke_id'] as String? ?? '',
-          reviewerId: map['reviewer_id'] as String? ?? '',
-          reviewedId: map['receiver_id'] as String? ?? '',
-          rating: (map['rating'] as num? ?? 0.0).toDouble(),
-          comment: map['comment'] as String? ?? '',
-          createdAt: map['created_at'] != null
-              ? DateTime.parse(map['created_at'] as String)
-              : DateTime.now(),
+      return (response as List).map((json) {
+        final profile = json['profiles'] as Map<String, dynamic>?;
+        return UserReview.fromJson(json).copyWith(
           reviewerName: profile?['display_name'] as String? ?? 'Usuario',
           reviewerAvatar: profile?['avatar_url'] as String? ?? '',
         );
@@ -105,14 +69,6 @@ class SupabaseProfileRepository implements ProfileRepository {
     if (myId == null) {
       throw Exception('Debes iniciar sesión.');
     }
-
-        .from(_tableName)
-        .select()
-        .eq('id', myId)
-        .maybeSingle();
-
-              'Usuario')
-        : 'Usuario';
 
     await _client.from('user_reviews').insert({
       'reviewer_id': myId,
