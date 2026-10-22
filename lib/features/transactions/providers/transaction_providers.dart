@@ -1,15 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../models/transaction.dart';
-import '../data/transaction_repository.dart';
+import '../../offers/repositories/trade_offer_repository.dart';
+import '../../offers/models/trade_offer.dart';
 
-// Proveedor del cliente de Supabase para permitir desacoplamiento en tests
+// Proveedor del cliente de Supabase
 final supabaseClientProvider = Provider<SupabaseClient>((ref) {
   return Supabase.instance.client;
 });
 
-final transactionRepositoryProvider = Provider<TransactionRepository>((ref) {
-  return TransactionRepository(ref.watch(supabaseClientProvider));
+final tradeOfferRepositoryProvider = Provider<TradeOfferRepository>((ref) {
+  return TradeOfferRepository(ref.watch(supabaseClientProvider));
 });
 
 final userTransactionsProvider =
@@ -25,61 +26,101 @@ class UserTransactionsNotifier extends AsyncNotifier<List<ProductTransaction>> {
     final client = ref.watch(supabaseClientProvider);
     final user = client.auth.currentUser;
     if (user == null) return [];
-    return ref.read(transactionRepositoryProvider).getUserTransactions(user.id);
+    
+    // Obtenemos las ofertas desde el repositorio unificado de trade_offers
+    final offers = await ref.read(tradeOfferRepositoryProvider).fetchOffersByUserId(user.id);
+    
+    // Mapeamos TradeOffer a ProductTransaction para mantener compatibilidad con la UI de Mi Cuenta / Historial
+    return offers.map((o) => ProductTransaction(
+      id: o.id,
+      productId: o.receiverProductId,
+      productTitle: 'Intercambio de Artículo',
+      sellerId: o.receiverId,
+      sellerName: 'Vendedor',
+      buyerId: o.senderId,
+      buyerName: 'Comprador',
+      price: o.additionalCash,
+      status: o.status == TradeOfferStatus.accepted 
+          ? TransactionStatus.accepted 
+          : (o.status == TradeOfferStatus.rejected ? TransactionStatus.rejected : TransactionStatus.pending),
+      createdAt: o.createdAt,
+      updatedAt: o.createdAt,
+    )).toList();
   }
 
   Future<void> createOffer(ProductTransaction transaction) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
+      // Creamos la oferta de forma unificada (crea oferta, chat y mensaje inicial atómicamente)
       await ref
-          .read(transactionRepositoryProvider)
-          .createTransaction(transaction);
+          .read(tradeOfferRepositoryProvider)
+          .createOffer(
+            receiverId: transaction.sellerId,
+            senderProductId: transaction.productId, // O producto emisor si aplica
+            receiverProductId: transaction.productId,
+            additionalCash: transaction.price ?? 0.0,
+          );
+
       final client = ref.read(supabaseClientProvider);
       final user = client.auth.currentUser;
-      return ref
-          .read(transactionRepositoryProvider)
-          .getUserTransactions(user?.id ?? '');
+      
+      final offers = await ref.read(tradeOfferRepositoryProvider).fetchOffersByUserId(user?.id ?? '');
+      return offers.map((o) => ProductTransaction(
+        id: o.id,
+        productId: o.receiverProductId,
+        productTitle: 'Intercambio de Artículo',
+        sellerId: o.receiverId,
+        sellerName: 'Vendedor',
+        buyerId: o.senderId,
+        buyerName: 'Comprador',
+        price: o.additionalCash,
+        status: o.status == TradeOfferStatus.accepted 
+            ? TransactionStatus.accepted 
+            : (o.status == TradeOfferStatus.rejected ? TransactionStatus.rejected : TransactionStatus.pending),
+        createdAt: o.createdAt,
+        updatedAt: o.createdAt,
+      )).toList();
     });
   }
 
   Future<void> changeStatus(String transactionId, String newStatus) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
+      final statusEnum = newStatus == 'accepted' 
+          ? TradeOfferStatus.accepted 
+          : (newStatus == 'rejected' ? TradeOfferStatus.rejected : TradeOfferStatus.pending);
+          
       await ref
-          .read(transactionRepositoryProvider)
-          .updateTransactionStatus(transactionId, newStatus);
+          .read(tradeOfferRepositoryProvider)
+          .updateOfferStatus(transactionId, statusEnum);
+
       final client = ref.read(supabaseClientProvider);
       final user = client.auth.currentUser;
-      return ref
-          .read(transactionRepositoryProvider)
-          .getUserTransactions(user?.id ?? '');
+      
+      final offers = await ref.read(tradeOfferRepositoryProvider).fetchOffersByUserId(user?.id ?? '');
+      return offers.map((o) => ProductTransaction(
+        id: o.id,
+        productId: o.receiverProductId,
+        productTitle: 'Intercambio de Artículo',
+        sellerId: o.receiverId,
+        sellerName: 'Vendedor',
+        buyerId: o.senderId,
+        buyerName: 'Comprador',
+        price: o.additionalCash,
+        status: o.status == TradeOfferStatus.accepted 
+            ? TransactionStatus.accepted 
+            : (o.status == TradeOfferStatus.rejected ? TransactionStatus.rejected : TransactionStatus.pending),
+        createdAt: o.createdAt,
+        updatedAt: o.createdAt,
+      )).toList();
     });
   }
 
-  /// Procesa el cambio de estado de forma atómica actualizando el producto en base de datos
-  /// e invalidando las transacciones locales del usuario para reflejar el cambio.
   Future<void> procesarCambioEstadoTrueque({
     required String transactionId,
     required String productId,
     required TransactionStatus nuevoEstado,
   }) async {
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
-      // 1. Ejecutar la mutación atómica en el repositorio via RPC
-      await ref
-          .read(transactionRepositoryProvider)
-          .actualizarEstadoTransaccionAtomica(
-            transactionId: transactionId,
-            productId: productId,
-            nuevoEstado: nuevoEstado.name,
-          );
-
-      // 2. Retornar el estado actualizado de transacciones del usuario
-      final client = ref.read(supabaseClientProvider);
-      final user = client.auth.currentUser;
-      return ref
-          .read(transactionRepositoryProvider)
-          .getUserTransactions(user?.id ?? '');
-    });
+    await changeStatus(transactionId, nuevoEstado.name);
   }
 }
