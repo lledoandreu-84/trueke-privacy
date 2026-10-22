@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:trueke/core/theme/app_colors.dart';
 import 'package:trueke/features/chat/providers/chat_providers.dart';
 import 'package:trueke/features/chat/presentation/screens/chat_screen.dart';
@@ -9,7 +10,8 @@ class ChatListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final chatRoomsAsync = ref.watch(userChatRoomsProvider);
+    final currentUserId = Supabase.instance.client.auth.currentUser?.id ?? '';
+    final chatRoomsAsync = ref.watch(userChatRoomsStreamProvider(currentUserId));
 
     return Scaffold(
       backgroundColor: AppColors.background,
