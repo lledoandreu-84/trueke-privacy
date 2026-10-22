@@ -87,7 +87,8 @@ class ChatListScreen extends ConsumerWidget {
                         ),
                       ),
                       onPressed: () {
-                        Navigator.of(context).popUntil((route) => route.isFirst);
+                        // Navega a la ruta raíz o pantalla principal de inicio
+                        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
                       },
                       icon: const Icon(Icons.search_rounded, size: 18),
                       label: const Text(

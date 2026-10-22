@@ -69,8 +69,7 @@ class FavoritesPage extends ConsumerWidget {
                   ),
                 ),
                 onPressed: () {
-                  // Regresa al inicio o ruta principal para explorar
-                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
                 },
                 icon: const Icon(Icons.search_rounded, size: 18),
                 label: const Text(

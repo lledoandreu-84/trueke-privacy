@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:trueke/core/theme/app_colors.dart';
 import 'package:trueke/app/routes/app_routes.dart';
+import 'package:trueke/features/products/providers/product_repository_provider.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   final String? userId;
@@ -96,6 +97,62 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
+  void _showPublishedProductsModal(BuildContext context, WidgetRef ref) async {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Mis Productos Publicados',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+        ),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: FutureBuilder(
+            future: ref.read(productRepositoryProvider).getProducts(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+              }
+              if (snapshot.hasError || !snapshot.hasData || (snapshot.data as List).isEmpty) {
+                return const Text('No tienes productos publicados actualmente.');
+              }
+              final products = snapshot.data as List;
+              return ListView.builder(
+                shrinkWrap: true,
+                itemCount: products.length,
+                itemBuilder: (context, index) {
+                  final product = products[index];
+                  return ListTile(
+                    leading: const Icon(Icons.inventory_2_rounded, color: AppColors.primary),
+                    title: Text(product.title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5)),
+                    subtitle: Text('${product.price} €', style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                    trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(
+                        context,
+                        AppRoutes.product,
+                        arguments: product,
+                      );
+                    },
+                  );
+                },
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cerrar', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = Supabase.instance.client.auth.currentUser;
@@ -103,7 +160,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final userName = user?.userMetadata?['full_name'] ?? user?.email?.split('@').first ?? 'Usuario Trueke';
     final userEmail = user?.email ?? 'correo@ejemplo.com';
 
-    // Supongamos contadores reales o mock (aquí 1 producto publicado, 0 ofertas, 0 historial)
     final int offersCount = 0;
     final int publishedCount = 1;
     final int historyCount = 0;
@@ -232,7 +288,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                         const SizedBox(height: 32),
 
-                        // 📦 Opciones de Gestión condicionales según datos reales
+                        // 📦 Opciones de Gestión
                         Material(
                           color: AppColors.surface,
                           borderRadius: BorderRadius.circular(20),
@@ -250,7 +306,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   badgeText: '$offersCount',
                                   onTap: () {
                                     if (offersCount > 0) {
-                                      // Navegar a la pantalla de ofertas activas
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(content: Text('Abriendo listado de ofertas de Trueke...')),
                                       );
@@ -269,10 +324,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   badgeText: '$publishedCount',
                                   onTap: () {
                                     if (publishedCount > 0) {
-                                      // Al tener productos publicados, navegamos al detalle o gestión del producto
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Abriendo tus productos publicados...')),
-                                      );
+                                      _showPublishedProductsModal(context, ref);
                                     } else {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(content: Text('No tienes productos publicados en este momento.')),
