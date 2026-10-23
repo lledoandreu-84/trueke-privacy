@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:trueke/core/theme/app_colors.dart';
-import 'package:trueke/app/routes/app_routes.dart';
-import 'package:trueke/features/products/providers/product_repository_provider.dart';
-import 'package:trueke/features/products/providers/user_products_provider.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   final String? userId;
@@ -19,555 +14,191 @@ class ProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
-  void _showEditProfileDialog(BuildContext context, String currentName) {
-    final TextEditingController nameController = TextEditingController(text: currentName);
+  final _commentController = TextEditingController();
 
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          'Editar Perfil',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(left: 2, bottom: 6),
-              child: Text(
-                'Nombre completo',
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w500),
-              ),
-            ),
-            TextField(
-              controller: nameController,
-              style: const TextStyle(fontSize: 13.5, color: AppColors.textPrimary, fontWeight: FontWeight.w600),
-              decoration: InputDecoration(
-                isDense: true,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                filled: true,
-                fillColor: AppColors.background,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar', style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ),
-            onPressed: () async {
-              final newName = nameController.text.trim();
-              if (newName.isNotEmpty) {
-                try {
-                  await Supabase.instance.client.auth.updateUser(
-                    UserAttributes(data: {'full_name': newName}),
-                  );
-                  if (context.mounted) {
-                    Navigator.pop(context);
-                    setState(() {});
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Perfil actualizado correctamente'), backgroundColor: AppColors.primary),
-                    );
-                  }
-                } catch (e) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error al actualizar: $e'), backgroundColor: AppColors.textPrimary),
-                    );
-                  }
-                }
-              }
-            },
-            child: const Text('Guardar', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
-          ),
-        ],
-      ),
-    );
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
   }
 
-  void _showDeleteProductConfirmation(BuildContext context, WidgetRef ref, String productId) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          '¿Estás seguro?',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
-        ),
-        content: const Text(
-          'Esta acción eliminará permanentemente tu producto y lo removerá de todas las páginas y listados.',
-          style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar', style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ),
-            onPressed: () async {
-              try {
-                await ref.read(productRepositoryProvider).deleteProduct(productId);
-                ref.invalidate(productRepositoryProvider);
-                ref.invalidate(userProductsProvider);
+  void _submitComment() {
+    final comment = _commentController.text.trim();
+    if (comment.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor, escribe un comentario o sugerencia.')),
+      );
+      return;
+    }
 
-                if (context.mounted) {
-                  Navigator.pop(context); // Cierra confirmación
-                  Navigator.pop(context); // Cierra modal de listado
-                  setState(() {});
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Producto eliminado correctamente de la plataforma'), backgroundColor: AppColors.primary),
-                  );
-                }
-              } catch (e) {
-                if (context.mounted) {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error al eliminar: $e'), backgroundColor: Colors.redAccent),
-                  );
-                }
-              }
-            },
-            child: const Text('Eliminar', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showPublishedProductsModal(BuildContext context, WidgetRef ref) async {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          'Mis Productos Publicados',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
-        ),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: Consumer(
-            builder: (context, ref, child) {
-              final productsAsync = ref.watch(userProductsProvider);
-              return productsAsync.when(
-                loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
-                error: (err, stack) => Text('Error: $err', style: const TextStyle(color: Colors.red)),
-                data: (products) {
-                  if (products.isEmpty) {
-                    return const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text('No tienes productos publicados actualmente.', style: TextStyle(color: AppColors.textSecondary)),
-                    );
-                  }
-                  return ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: products.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 10),
-                    itemBuilder: (context, index) {
-                      final product = products[index];
-                      final imageUrl = product.imageUrl;
-
-                      return Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: AppColors.background,
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
-                        ),
-                        child: Row(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: imageUrl.isNotEmpty
-                                  ? Image.network(
-                                      imageUrl,
-                                      width: 50,
-                                      height: 50,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) => Container(
-                                        width: 50,
-                                        height: 50,
-                                        color: AppColors.surfaceMint,
-                                        child: const Icon(Icons.inventory_2_rounded, color: AppColors.primary, size: 24),
-                                      ),
-                                    )
-                                  : Container(
-                                      width: 50,
-                                      height: 50,
-                                      color: AppColors.surfaceMint,
-                                      child: const Icon(Icons.inventory_2_rounded, color: AppColors.primary, size: 24),
-                                    ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  Navigator.pushNamed(
-                                    context,
-                                    AppRoutes.product,
-                                    arguments: product,
-                                  );
-                                },
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      product.title,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 13.5,
-                                        color: AppColors.textPrimary,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      '${product.price ?? 0} €',
-                                      style: const TextStyle(
-                                        color: AppColors.primary,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 12.5,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 22),
-                              tooltip: 'Eliminar producto',
-                              onPressed: () => _showDeleteProductConfirmation(context, ref, product.id),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  );
-                },
-              );
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cerrar', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showSignOutConfirmation(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          '¿Estás seguro?',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
-        ),
-        content: const Text(
-          '¿Deseas cerrar sesión en este dispositivo?',
-          style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar', style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ),
-            onPressed: () async {
-              await Supabase.instance.client.auth.signOut();
-              if (context.mounted) {
-                Navigator.pop(context);
-                Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
-              }
-            },
-            child: const Text('Cerrar sesión', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
-          ),
-        ],
-      ),
+    _commentController.clear();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('¡Gracias por tus comentarios! Nos ayudan a mejorar.')),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final user = Supabase.instance.client.auth.currentUser;
-    final userName = user?.userMetadata?['full_name'] ?? user?.email?.split('@').first ?? 'Usuario Trueke';
-    final userEmail = user?.email ?? 'correo@ejemplo.com';
-
-    final userProductsAsync = ref.watch(userProductsProvider);
+    const publishedCount = 0;
+    const historyCount = 0;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
+        title: const Text('Mi Perfil'),
         elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          'Mi Cuenta',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
       ),
-      body: userProductsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
-        error: (err, stack) => Center(child: Text('Error: $err')),
-        data: (products) {
-          final int publishedCount = products.length;
-          final int offersCount = 0;
-          final int historyCount = 0;
-
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
                           children: [
-                            // 👤 Cabecera de Perfil
-                            Container(
-                              padding: const EdgeInsets.all(18),
-                              decoration: BoxDecoration(
-                                color: AppColors.surface,
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: const Color(0xFFE2E8F0)),
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(color: AppColors.primary, width: 2),
-                                    ),
-                                    child: const CircleAvatar(
-                                      radius: 30,
-                                      backgroundColor: AppColors.surfaceMint,
-                                      child: Icon(Icons.person_rounded, size: 34, color: AppColors.primary),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                userName,
-                                                style: const TextStyle(
-                                                  color: AppColors.textPrimary,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w800,
-                                                ),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                            IconButton(
-                                              icon: const Icon(Icons.edit_rounded, size: 18, color: AppColors.primary),
-                                              onPressed: () => _showEditProfileDialog(context, userName),
-                                              constraints: const BoxConstraints(),
-                                              padding: EdgeInsets.zero,
-                                              tooltip: 'Editar perfil',
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 3),
-                                        Text(
-                                          userEmail,
-                                          style: const TextStyle(
-                                            color: AppColors.textSecondary,
-                                            fontSize: 12.5,
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Row(
-                                          children: [
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                                              decoration: BoxDecoration(
-                                                color: AppColors.surfaceMint,
-                                                borderRadius: BorderRadius.circular(8),
-                                              ),
-                                              child: const Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Icon(Icons.star_rounded, size: 14, color: AppColors.primary),
-                                                  SizedBox(width: 4),
-                                                  Text(
-                                                    'Sin valoraciones',
-                                                    style: TextStyle(
-                                                      color: AppColors.primary,
-                                                      fontSize: 11.5,
-                                                      fontWeight: FontWeight.w700,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            const CircleAvatar(
+                              radius: 40,
+                              child: Icon(Icons.person, size: 40),
                             ),
-                            const SizedBox(height: 32),
-
-                            // 📦 Opciones de Gestión
-                            Material(
-                              color: AppColors.surface,
-                              borderRadius: BorderRadius.circular(20),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: const Color(0xFFE2E8F0)),
-                                ),
-                                child: Column(
-                                  children: [
-                                    _buildMenuItem(
-                                        icon: Icons.chat_bubble_outline_rounded,
-                                        title: 'Mis Conversaciones',
-                                        subtitle: 'Negociaciones activas por productos',
-                                        badgeText: 'Chat',
-                                        onTap: () {
-                                          Navigator.pushNamed(context, '/notifications');
-                                        },
-                                      ),
-                                          );
-                                        } else {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(content: Text('No tienes ofertas de Trueke activas actualmente.')),
-                                          );
-                                        }
-                                      },
-                                    ),
-                                    const Divider(height: 1, color: Color(0xFFE2E8F0), indent: 16, endIndent: 16),
-                                    _buildMenuItem(
-                                      icon: Icons.inventory_2_outlined,
-                                      title: 'Mis Productos Publicados',
-                                      subtitle: 'Artículos activos en el escaparate',
-                                      badgeText: '$publishedCount',
-                                      onTap: () {
-                                        if (publishedCount > 0) {
-                                          _showPublishedProductsModal(context, ref);
-                                        } else {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(content: Text('No tienes productos publicados en este momento.')),
-                                          );
-                                        }
-                                      },
-                                    ),
-                                    const Divider(height: 1, color: Color(0xFFE2E8F0), indent: 16, endIndent: 16),
-                                    _buildMenuItem(
-                                      icon: Icons.account_balance_wallet_outlined,
-                                      title: 'Historial de Truekes',
-                                      subtitle: 'Intercambios finalizados',
-                                      badgeText: '$historyCount',
-                                      onTap: () {
-                                        if (historyCount > 0) {
-                                          Navigator.pushNamed(context, AppRoutes.transactions);
-                                        } else {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(content: Text('El historial de Truekes completados se mostrará aquí.')),
-                                          );
-                                        }
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Usuario Trueke',
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Comunidad Trueke',
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Colors.grey[600],
+                                  ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 24),
-
-                        // 🚪 Cerrar Sesión con Confirmación
-                        Material(
-                          color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(20),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: const Color(0xFFE2E8F0)),
-                            ),
-                            child: ListTile(
-                              onTap: () => _showSignOutConfirmation(context),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                              leading: Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFFFF5F5),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 20),
-                              ),
-                              title: const Text(
-                                'Cerrar sesión',
-                                style: TextStyle(
-                                  color: Colors.redAccent,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              subtitle: const Text(
-                                'Finalizar sesión actual en este dispositivo',
-                                style: TextStyle(
-                                  color: AppColors.textSecondary,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Actividad y Ofertas',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    const SizedBox(height: 12),
+                    Material(
+                      color: Colors.transparent,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Colors.grey.withValues(alpha: 0.2),
                           ),
                         ),
-                      ],
+                        child: Column(
+                          children: [
+                            _buildMenuItem(
+                              icon: Icons.chat_bubble_outline_rounded,
+                              title: 'Mis Conversaciones',
+                              subtitle: 'Negociaciones activas por productos',
+                              badgeText: 'Chat',
+                              onTap: () {
+                                Navigator.pushNamed(context, '/notifications');
+                              },
+                            ),
+                            const Divider(height: 1),
+                            _buildMenuItem(
+                              icon: Icons.inventory_2_outlined,
+                              title: 'Mis Productos Publicados',
+                              subtitle: 'Gestiona tus artículos expuestos',
+                              badgeText: '$publishedCount',
+                              onTap: () {
+                                if (publishedCount > 0) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Abriendo listado de productos publicados...')),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('No tienes productos publicados actualmente.')),
+                                  );
+                                }
+                              },
+                            ),
+                            const Divider(height: 1),
+                            _buildMenuItem(
+                              icon: Icons.history_rounded,
+                              title: 'Historial de Intercambios',
+                              subtitle: 'Truekes completados con éxito',
+                              badgeText: '$historyCount',
+                              onTap: () {
+                                if (historyCount > 0) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Abriendo historial de Truekes...')),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Aún no has completado ningún Trueke.')),
+                                  );
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Sugerencias y Feedback',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    const SizedBox(height: 12),
+                    Card(
+                      elevation: 1,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            TextField(
+                              controller: _commentController,
+                              maxLines: 3,
+                              decoration: const InputDecoration(
+                                hintText: '¿Cómo podemos mejorar tu experiencia en Trueke?',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            ElevatedButton.icon(
+                              onPressed: _submitComment,
+                              icon: const Icon(Icons.send_rounded),
+                              label: const Text('Enviar Sugerencia'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              );
-            },
+              ),
+            ),
           );
         },
       ),
@@ -582,53 +213,38 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     required VoidCallback onTap,
   }) {
     return ListTile(
-      onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      leading: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceMint,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(icon, color: AppColors.primary, size: 20),
+      leading: CircleAvatar(
+        backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+        child: Icon(icon, color: Theme.of(context).primaryColor),
       ),
       title: Text(
         title,
-        style: const TextStyle(
-          color: AppColors.textPrimary,
-          fontSize: 14,
-          fontWeight: FontWeight.w700,
-        ),
+        style: const TextStyle(fontWeight: FontWeight.bold),
       ),
-      subtitle: Text(
-        subtitle,
-        style: const TextStyle(
-          color: AppColors.textSecondary,
-          fontSize: 12,
-        ),
-      ),
+      subtitle: Text(subtitle),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: const Color(0xFFF1F5F9),
-              borderRadius: BorderRadius.circular(10),
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
               badgeText,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontWeight: FontWeight.bold,
                 fontSize: 12,
-                fontWeight: FontWeight.w700,
               ),
             ),
           ),
-          const SizedBox(width: 6),
-          const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary, size: 20),
+          const SizedBox(width: 8),
+          const Icon(Icons.chevron_right_rounded),
         ],
       ),
+      onTap: onTap,
     );
   }
 }
