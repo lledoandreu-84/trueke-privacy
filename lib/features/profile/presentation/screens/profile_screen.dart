@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'my_published_products_screen.dart';
 import 'package:trueke/features/products/providers/user_products_provider.dart';
 import 'package:trueke/features/auth/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -146,8 +147,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   void _showVendorProducts(BuildContext context, {required bool isOwn}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(isOwn ? 'Aún no has publicado ningún producto.' : 'Este usuario no tiene productos en venta.')),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const MyPublishedProductsScreen(),
+      ),
     );
   }
 
