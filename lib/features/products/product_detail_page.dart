@@ -21,7 +21,6 @@ class ProductDetailPage extends ConsumerWidget {
     final location = product?.location ?? 'Madrid, España';
     final description = product?.description ?? 'Sin descripción disponible';
     final imageUrl = product?.images.isNotEmpty == true ? product!.images.first : (product as dynamic).imageUrl;
-    final sellerId = product?.ownerId ?? 'lledoandreu84';
     final productId = product?.id ?? 'prod_default';
 
     final isFav = ref.watch(favoritesProvider).contains(productId);
@@ -182,7 +181,7 @@ class ProductDetailPage extends ConsumerWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ProfileScreen(userId: sellerId.toString()),
+                              builder: (context) => const ProfileScreen(userId: 'lledoandreu84'),
                             ),
                           );
                         },

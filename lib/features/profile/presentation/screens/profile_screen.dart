@@ -106,7 +106,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ProductDetailPage(
-                        hideVendorCard: true, // Rompe la cadena cuando estamos en el perfil
+                        hideVendorCard: true,
                         product: Product(
                           id: 'prod_1',
                           title: 'Artículo en venta 1',
@@ -152,7 +152,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ProductDetailPage(
-                        hideVendorCard: true, // Rompe la cadena cuando estamos en el perfil
+                        hideVendorCard: true,
                         product: Product(
                           id: 'prod_2',
                           title: 'Artículo en venta 2',
@@ -232,14 +232,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Es mi propio perfil si userId es nulo, 'me', o 'pruebatrueke'
+    // Si userId es nulo, vacio, 'me', 'pruebatrueke', o no es expresamente un id de vendedor de producto, es Mi Perfil
     final bool isOwnProfile = widget.userId == null || 
+                              widget.userId == '' || 
                               widget.userId == 'me' || 
-                              widget.userId == 'pruebatrueke';
+                              widget.userId == 'pruebatrueke' ||
+                              widget.userId == 'user_me';
 
     final String profileTitle = isOwnProfile ? 'Mi Perfil' : 'Perfil del Vendedor';
-    
-    // Si es propio muestra 'pruebatrueke', si no 'lledoandreu84'
     final String displayName = isOwnProfile ? 'pruebatrueke' : 'lledoandreu84';
     final String displaySubtitle = isOwnProfile ? 'Comunidad Trueke' : 'Miembro verificado';
 
