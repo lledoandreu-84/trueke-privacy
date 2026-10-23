@@ -60,7 +60,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  void _showVendorProducts(BuildContext context, {bool isOwn = true}) {
+  void _showVendorProducts(BuildContext context, {required bool isOwn}) {
     const String imgUrl1 = 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=300';
     const String imgUrl2 = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300';
 
@@ -106,7 +106,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ProductDetailPage(
-                        hideVendorCard: isOwn ? false : true,
+                        hideVendorCard: true, // Rompe la cadena cuando estamos en el perfil
                         product: Product(
                           id: 'prod_1',
                           title: 'Artículo en venta 1',
@@ -117,7 +117,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           createdAt: DateTime.now(),
                           images: const [imgUrl1],
                           owner: isOwn ? 'pruebatrueke' : 'lledoandreu84',
-                          ownerId: isOwn ? 'user_me' : 'user_1',
+                          ownerId: isOwn ? 'user_me' : 'user_vendor',
                           tradeType: TradeType.trade,
                           wanted: 'Cualquier cosa',
                         ),
@@ -152,7 +152,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ProductDetailPage(
-                        hideVendorCard: isOwn ? false : true,
+                        hideVendorCard: true, // Rompe la cadena cuando estamos en el perfil
                         product: Product(
                           id: 'prod_2',
                           title: 'Artículo en venta 2',
@@ -163,7 +163,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           createdAt: DateTime.now(),
                           images: const [imgUrl2],
                           owner: isOwn ? 'pruebatrueke' : 'lledoandreu84',
-                          ownerId: isOwn ? 'user_me' : 'user_1',
+                          ownerId: isOwn ? 'user_me' : 'user_vendor',
                           tradeType: TradeType.trade,
                           wanted: 'Cualquier cosa',
                         ),
@@ -232,14 +232,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isOwnProfile = widget.userId == null || widget.userId == 'me' || widget.userId == 'pruebatrueke';
+    // Es mi propio perfil si userId es nulo, 'me', o 'pruebatrueke'
+    final bool isOwnProfile = widget.userId == null || 
+                              widget.userId == 'me' || 
+                              widget.userId == 'pruebatrueke';
+
     final String profileTitle = isOwnProfile ? 'Mi Perfil' : 'Perfil del Vendedor';
     
-    String displayName = 'pruebatrueke';
-    if (!isOwnProfile) {
-      displayName = widget.userId!;
-    }
-
+    // Si es propio muestra 'pruebatrueke', si no 'lledoandreu84'
+    final String displayName = isOwnProfile ? 'pruebatrueke' : 'lledoandreu84';
     final String displaySubtitle = isOwnProfile ? 'Comunidad Trueke' : 'Miembro verificado';
 
     const publishedCount = 2;
