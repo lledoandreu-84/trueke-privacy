@@ -1,3 +1,4 @@
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../features/auth/auth_service.dart';
@@ -27,28 +28,7 @@ class WalletScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        
-        scrolledUnderElevation: 0,
-        title: Text(
-          'Mi Cartera',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-            letterSpacing: -0.4,
-            color: theme.colorScheme.onSurface,
-          ),
-        ),
-        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(
-            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-            height: 0.5,
-          ),
-        ),
-      ),
+      appBar: const CustomAppBar(titleText: 'Mi Cartera'),
       body: walletAsync.when(
         loading: () => Center(
           child: CircularProgressIndicator.adaptive(
