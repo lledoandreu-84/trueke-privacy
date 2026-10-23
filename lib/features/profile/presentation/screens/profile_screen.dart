@@ -288,19 +288,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          profileTitle,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title: Text(profileTitle),
         centerTitle: true,
         elevation: 0,
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -318,19 +312,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
+                          padding: const EdgeInsets.symmetric(vertical: 18.0, horizontal: 16.0),
                           child: Column(
                             children: [
                               const CircleAvatar(
-                                radius: 32,
-                                child: Icon(Icons.person, size: 32),
+                                radius: 36,
+                                child: Icon(Icons.person, size: 36),
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: 10),
                               Text(
                                 displayName,
                                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 18,
                                     ),
                               ),
                               const SizedBox(height: 2),
@@ -338,10 +331,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 displaySubtitle,
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                       color: Colors.grey[600],
-                                      fontSize: 12,
                                     ),
                               ),
-                              const SizedBox(height: 6),
+                              const SizedBox(height: 8),
                               _buildRatingBadge(
                                 rating: userRating,
                                 totalReviews: totalReviews,
@@ -350,15 +342,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 14),
                       Text(
                         isOwnProfile ? 'Actividad y Ofertas' : 'Artículos del Vendedor',
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
-                              fontSize: 14,
                             ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       Material(
                         color: Colors.transparent,
                         child: Container(
@@ -410,15 +401,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 14),
                       Text(
                         isOwnProfile ? 'Sugerencias y Feedback' : 'Valorar al Vendedor',
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
-                              fontSize: 14,
                             ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       Card(
                         elevation: 1,
                         margin: EdgeInsets.zero,
@@ -426,7 +416,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
                           child: isOwnProfile
                               ? Row(
                                   children: [
@@ -441,7 +431,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                             borderRadius: BorderRadius.all(Radius.circular(10)),
                                           ),
                                           isDense: true,
-                                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                                         ),
                                       ),
                                     ),
@@ -452,7 +442,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                       style: IconButton.styleFrom(
                                         backgroundColor: const Color(0xFF6750A4),
                                         foregroundColor: Colors.white,
-                                        padding: const EdgeInsets.all(10),
+                                        padding: const EdgeInsets.all(12),
                                       ),
                                     ),
                                   ],
@@ -539,7 +529,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
               ),
               if (isOwnProfile) ...[
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
                 TextButton.icon(
                   onPressed: _confirmLogout,
                   icon: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 18),
@@ -548,12 +538,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     style: TextStyle(
                       color: Colors.redAccent,
                       fontWeight: FontWeight.bold,
-                      fontSize: 13,
+                      fontSize: 13.5,
                     ),
                   ),
                   style: TextButton.styleFrom(
                     backgroundColor: Colors.red.withValues(alpha: 0.08),
-                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 11),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -576,22 +566,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }) {
     return ListTile(
       dense: true,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 1),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 3),
       leading: CircleAvatar(
-        radius: 16,
+        radius: 17,
         backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-        child: Icon(icon, color: Theme.of(context).primaryColor, size: 18),
+        child: Icon(icon, color: Theme.of(context).primaryColor, size: 19),
       ),
       title: Text(
         title,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5),
       ),
-      subtitle: Text(subtitle, style: const TextStyle(fontSize: 11)),
+      subtitle: Text(subtitle, style: const TextStyle(fontSize: 11.5)),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
             decoration: BoxDecoration(
               color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
@@ -601,7 +591,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               style: TextStyle(
                 color: Theme.of(context).primaryColor,
                 fontWeight: FontWeight.bold,
-                fontSize: 11,
+                fontSize: 11.5,
               ),
             ),
           ),
