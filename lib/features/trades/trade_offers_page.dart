@@ -1,3 +1,4 @@
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'domain/models/trade_offer.dart';
@@ -15,31 +16,7 @@ class TradeOffersPage extends ConsumerWidget {
       length: 2,
       child: Scaffold(
         backgroundColor: theme.colorScheme.surface,
-        appBar: AppBar(
-          backgroundColor: theme.colorScheme.surface,
-          
-          scrolledUnderElevation: 0,
-          title: Text(
-            'Propuestas de Trueke',
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-              fontSize: 18,
-              letterSpacing: -0.4,
-              color: theme.colorScheme.onSurface,
-            ),
-          ),
-          iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
-          bottom: TabBar(
-            labelColor: theme.colorScheme.primary,
-            unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
-            indicatorColor: theme.colorScheme.primary,
-            dividerColor: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-            tabs: const [
-              Tab(text: 'Recibidas'),
-              Tab(text: 'Enviadas'),
-            ],
-          ),
-        ),
+      appBar: const CustomAppBar(titleText: 'Propuestas de Trueke'),
         body: offersAsync.when(
           data: (offers) {
             final incoming = offers.where((o) => o.isIncoming).toList();
