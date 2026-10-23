@@ -23,7 +23,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // 1. Título absolutamente centrado en toda la pantalla
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 56.0),
                 child: Text(
@@ -37,7 +36,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                 ),
               ),
-              // 2. Botón izquierdo (Leading o retroceso automático)
               Positioned(
                 left: 4,
                 child: leading ??
@@ -48,7 +46,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                           )
                         : const SizedBox.shrink()),
               ),
-              // 3. Acciones derechas
               if (actions != null && actions!.isNotEmpty)
                 Positioned(
                   right: 4,
