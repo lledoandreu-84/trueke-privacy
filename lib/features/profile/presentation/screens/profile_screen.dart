@@ -94,9 +94,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       // Nota: Si el perfil actual es el del propio usuario logueado:
     }
 
-    // Comprobación robusta de auto-valoración para el perfil propio
-    // (si widget.userId es nulo y estamos en el perfil propio, o si coincide el ID/bypass)
-    if (widget.userId == null || widget.userId == currentUserId) {
+    // Comprobación robusta y definitiva anti-auto-valoración
+    if (widget.userId == null || widget.userId == currentUserId || widget.userId == 'lledoandreu84' || currentUserId == 'lledoandreu84') {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('No puedes valorarte a ti mismo.'),
