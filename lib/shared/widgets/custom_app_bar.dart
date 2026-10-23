@@ -14,17 +14,18 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final bool canPop = Navigator.canPop(context);
     final Widget? computedLeading = leading ?? 
         (canPop 
             ? IconButton(
-                icon: const Icon(Icons.arrow_back_rounded, color: Colors.black87),
+                icon: Icon(Icons.arrow_back_rounded, color: theme.colorScheme.onSurface),
                 onPressed: () => Navigator.of(context).pop(),
               ) 
             : null);
 
     return Container(
-      color: Colors.white,
+      color: theme.colorScheme.surface,
       child: SafeArea(
         bottom: false,
         child: SizedBox(
@@ -41,8 +42,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       titleText,
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.black87,
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurface,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
