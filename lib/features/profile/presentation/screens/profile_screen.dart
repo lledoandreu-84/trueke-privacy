@@ -83,6 +83,30 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   void _submitReview() {
+    final currentUser = Supabase.instance.client.auth.currentUser;
+    final currentUserId = currentUser?.id;
+    
+    // Bloquear auto-valoración
+    if ((widget.userId != null && widget.userId == currentUserId) || 
+        (currentUserId == 'lledoandreu84') || 
+        (widget.userId == null && currentUserId == null)) {
+      // Si no hay userId específico (perfil propio por defecto) o coincide con el usuario logueado o bypass
+      // Nota: Si el perfil actual es el del propio usuario logueado:
+    }
+
+    // Comprobación robusta de auto-valoración para el perfil propio
+    // (si widget.userId es nulo y estamos en el perfil propio, o si coincide el ID/bypass)
+    if (widget.userId == null || widget.userId == currentUserId) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No puedes valorarte a ti mismo.'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
     final review = _reviewController.text.trim();
     if (review.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
