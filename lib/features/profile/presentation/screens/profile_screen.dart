@@ -511,7 +511,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     required String badgeText,
     required VoidCallback onTap,
   }) {
-    return Material(type: MaterialType.transparency, child: ListTile(
+    return ListTile(
       dense: true,
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 3),
       leading: CircleAvatar(
