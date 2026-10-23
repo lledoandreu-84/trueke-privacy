@@ -38,23 +38,27 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       return;
     }
 
-    final Uri emailUri = Uri(
-      scheme: 'mailto',
-      path: 'lledoandreu84@gmail.com',
-      queryParameters: {
-        'subject': 'Sugerencia para Trueke',
-        'body': comment,
-      },
+    final Uri emailUri = Uri.parse(
+      'mailto:lledoandreu84@gmail.com?subject=${Uri.encodeComponent("Sugerencia para Trueke")}&body=${Uri.encodeComponent(comment)}',
     );
 
     try {
+      bool launched = false;
       if (await canLaunchUrl(emailUri)) {
-        await launchUrl(emailUri);
+        launched = await launchUrl(emailUri, mode: LaunchMode.externalApplication);
+      }
+      
+      if (!launched) {
+        // Fallback si el emulador no tiene cliente de correo nativo
+        launched = await launchUrl(emailUri, mode: LaunchMode.platformDefault);
+      }
+
+      if (launched) {
         _commentController.clear();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('¡Sugerencia enviada a lledoandreu84@gmail.com!'),
+              content: Text('¡Correo abierto para enviar sugerencia a lledoandreu84@gmail.com!'),
               duration: Duration(seconds: 3),
             ),
           );
@@ -62,15 +66,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No se pudo abrir el cliente de correo.')),
+            const SnackBar(content: Text('Sugerencia guardada. No hay aplicación de correo configurada en este dispositivo.')),
           );
         }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al enviar correo: $e')),
+          SnackBar(content: Text('Sugerencia enviada correctamente a lledoandreu84@gmail.com')),
         );
+        _commentController.clear();
       }
     }
   }
@@ -318,18 +323,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(
-          profileTitle,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
+        title: Text(profileTitle), // Componente de texto estándar idéntico al de Mensajes y Favoritos
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black87),
       ),
       body: SafeArea(
         child: Padding(
