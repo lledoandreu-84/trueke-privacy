@@ -49,7 +49,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       }
       
       if (!launched) {
-        // Fallback si el emulador no tiene cliente de correo nativo
         launched = await launchUrl(emailUri, mode: LaunchMode.platformDefault);
       }
 
@@ -73,7 +72,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Sugerencia enviada correctamente a lledoandreu84@gmail.com')),
+          const SnackBar(content: Text('Sugerencia enviada correctamente a lledoandreu84@gmail.com')),
         );
         _commentController.clear();
       }
@@ -166,8 +165,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       imgUrl1,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
-                        color: const Color(0xFF6750A4).withValues(alpha: 0.15),
-                        child: const Icon(Icons.image_rounded, color: Color(0xFF6750A4), size: 28),
+                        color: const Color(0xFF6750A4),
+                        child: const Icon(Icons.image_rounded, color: Colors.white, size: 28),
                       ),
                     ),
                   ),
@@ -212,8 +211,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       imgUrl2,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
-                        color: const Color(0xFF6750A4).withValues(alpha: 0.15),
-                        child: const Icon(Icons.devices_rounded, color: Color(0xFF6750A4), size: 28),
+                        color: const Color(0xFF6750A4),
+                        child: const Icon(Icons.devices_rounded, color: Colors.white, size: 28),
                       ),
                     ),
                   ),
@@ -323,7 +322,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(profileTitle), // Componente de texto estándar idéntico al de Mensajes y Favoritos
+        title: Text(profileTitle),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -385,9 +384,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                       ),
                       const SizedBox(height: 14),
-                      Text(
-                        isOwnProfile ? 'Actividad y Ofertas' : 'Artículos del Vendedor',
-                        style: const TextStyle(
+                      const Text(
+                        'Actividad y Ofertas',
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
