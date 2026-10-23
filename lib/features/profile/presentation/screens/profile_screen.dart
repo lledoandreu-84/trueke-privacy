@@ -81,8 +81,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   child: Container(
                     width: 56,
                     height: 56,
-                    color: Colors.green[100],
-                    child: const Icon(Icons.image_rounded, color: Colors.green, size: 28),
+                    color: Colors.green[200],
+                    child: const Icon(Icons.image_rounded, color: Colors.white, size: 28),
                   ),
                 ),
                 title: const Text('Artículo en venta 1', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -120,8 +120,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   child: Container(
                     width: 56,
                     height: 56,
-                    color: Colors.blue[100],
-                    child: const Icon(Icons.image_rounded, color: Colors.blue, size: 28),
+                    color: Colors.blue[200],
+                    child: const Icon(Icons.devices_rounded, color: Colors.white, size: 28),
                   ),
                 ),
                 title: const Text('Artículo en venta 2', style: TextStyle(fontWeight: FontWeight.bold)),

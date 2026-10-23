@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../models/product.dart';
-import '../profile/presentation/screens/profile_screen.dart';
 
 class ProductDetailPage extends StatelessWidget {
   final Product? product;
@@ -17,7 +16,11 @@ class ProductDetailPage extends StatelessWidget {
     final location = product?.location ?? 'Madrid, España';
     final description = product?.description ?? 'Sin descripción disponible';
     final imageUrl = product?.imageUrl;
-    final sellerId = product?.id ?? 'lledoandreu84';
+    final productId = product?.id ?? '';
+
+    // Color y icono distintivo según el producto
+    final Color placeholderColor = productId == 'prod_2' ? Colors.blue[200]! : Colors.green[200]!;
+    final IconData placeholderIcon = productId == 'prod_2' ? Icons.devices : Icons.image;
 
     return Scaffold(
       appBar: AppBar(
@@ -58,13 +61,13 @@ class ProductDetailPage extends StatelessWidget {
                       imageUrl,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
-                        color: Colors.grey[300],
-                        child: const Icon(Icons.image_not_supported, size: 64, color: Colors.grey),
+                        color: placeholderColor,
+                        child: Icon(placeholderIcon, size: 80, color: Colors.white),
                       ),
                     )
                   : Container(
-                      color: Colors.green[200],
-                      child: const Icon(Icons.image, size: 80, color: Colors.white),
+                      color: placeholderColor,
+                      child: Icon(placeholderIcon, size: 80, color: Colors.white),
                     ),
             ),
             Padding(
@@ -126,56 +129,6 @@ class ProductDetailPage extends StatelessWidget {
                   Text(
                     description,
                     style: TextStyle(color: Colors.grey[700]),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'Vendedor',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                  const SizedBox(height: 8),
-                  Card(
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      side: BorderSide(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: ListTile(
-                      leading: const CircleAvatar(
-                        child: Icon(Icons.person),
-                      ),
-                      title: const Text(
-                        'lledoandreu84',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Miembro verificado', style: TextStyle(fontSize: 12)),
-                          const SizedBox(height: 2),
-                          Row(
-                            children: [
-                              const Icon(Icons.star, size: 14, color: Colors.amber),
-                              const SizedBox(width: 2),
-                              Text(
-                                '0.0 (0)',
-                                style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ProfileScreen(userId: sellerId.toString()),
-                          ),
-                        );
-                      },
-                    ),
                   ),
                 ],
               ),
