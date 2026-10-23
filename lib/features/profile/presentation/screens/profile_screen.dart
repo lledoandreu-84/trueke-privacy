@@ -37,10 +37,62 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
+  Widget _buildRatingBadge({required double rating, required int totalReviews}) {
+    if (totalReviews == 0) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.grey.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.star_outline_rounded, size: 16, color: Colors.grey[600]),
+            const SizedBox(width: 4),
+            Text(
+              'Sin valoraciones aún',
+              style: TextStyle(
+                color: Colors.grey[700],
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.amber.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.star_rounded, size: 16, color: Colors.amber),
+          const SizedBox(width: 4),
+          Text(
+            '${rating.toStringAsFixed(1)} ($totalReviews)',
+            style: const TextStyle(
+              color: Colors.amber,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     const publishedCount = 0;
     const historyCount = 0;
+    const double userRating = 0.0;
+    const int totalReviews = 0;
 
     return Scaffold(
       appBar: AppBar(
@@ -85,6 +137,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: Colors.grey[600],
                                   ),
+                            ),
+                            const SizedBox(height: 10),
+                            _buildRatingBadge(
+                              rating: userRating,
+                              totalReviews: totalReviews,
                             ),
                           ],
                         ),
