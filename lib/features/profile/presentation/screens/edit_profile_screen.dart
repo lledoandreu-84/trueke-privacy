@@ -1,3 +1,4 @@
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -134,19 +135,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        
-        scrolledUnderElevation: 0,
-        title: Text(
-          'Editar Perfil',
-          style: TextStyle(
-            color: theme.colorScheme.onSurface,
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-            letterSpacing: -0.4,
-          ),
-        ),
+      appBar: CustomAppBar(
+        titleText: 'Editar Perfil',
         leading: IconButton(
           icon: Icon(Icons.close_rounded, color: theme.colorScheme.onSurface),
           onPressed: isLoading ? null : () => Navigator.pop(context),
@@ -175,13 +165,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   ),
           ),
         ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(
-            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-            height: 1,
-          ),
-        ),
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
