@@ -1,3 +1,4 @@
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/core/supabase/supabase_client.dart';
@@ -14,10 +15,7 @@ class TradeOffersScreen extends ConsumerWidget {
 
     if (currentUser == null) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Intercambios Directos'),
-          
-        ),
+        appBar: CustomAppBar(titleText: 'Intercambios Directos'),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
@@ -55,14 +53,7 @@ class TradeOffersScreen extends ConsumerWidget {
     final offersAsync = ref.watch(userTradeOffersProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Intercambios Directos',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 20,
-            letterSpacing: -0.5,
-          ),
+      appBar: CustomAppBar(titleText: 'Intercambios Directos'),
         ),
         
         
