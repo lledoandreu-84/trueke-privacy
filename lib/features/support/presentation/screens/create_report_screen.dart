@@ -1,3 +1,4 @@
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../features/auth/auth_service.dart';
@@ -89,21 +90,7 @@ class _CreateReportScreenState extends ConsumerState<CreateReportScreen> {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        
-        scrolledUnderElevation: 0,
-        title: Text(
-          'Enviar Reporte',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-            color: theme.colorScheme.onSurface,
-            letterSpacing: -0.4,
-          ),
-        ),
-        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
-      ),
+      appBar: const CustomAppBar(titleText: 'Enviar Reporte'),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
