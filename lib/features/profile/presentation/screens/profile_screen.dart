@@ -144,28 +144,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   void _showVendorProducts(BuildContext context, {required bool isOwn}) {
-
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                isOwn ? 'Mis Productos Publicados' : 'Productos en Venta',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-            ],
-          ),
-        );
-      },
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(isOwn ? 'Aún no has publicado ningún producto.' : 'Este usuario no tiene productos en venta.')),
     );
   }
 
@@ -227,7 +207,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final String displayName = isOwnProfile ? 'pruebatrueke' : 'lledoandreu84';
     final String displaySubtitle = isOwnProfile ? 'Comunidad Trueke' : 'Miembro verificado';
 
-    const publishedCount = 2;
+    const publishedCount = 0;
     const historyCount = 0;
     
     final reviews = ref.watch(vendorReviewsProvider);
@@ -322,7 +302,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   subtitle: 'Negociaciones activas por productos',
                                   badgeText: 'Chat',
                                   onTap: () {
-                                    Navigator.pushNamed(context, '/notifications');
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Aún no tienes ninguna conversación activa.')),
+                                    );
                                   },
                                 ),
                                 const Divider(height: 1, color: Color(0xFFEEEEEE)),
