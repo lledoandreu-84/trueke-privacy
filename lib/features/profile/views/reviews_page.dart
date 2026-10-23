@@ -1,3 +1,4 @@
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:trueke/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,21 +33,7 @@ class ReviewsPage extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        
-        scrolledUnderElevation: 0,
-        title: Text(
-          'Valoraciones',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-            letterSpacing: -0.4,
-            color: theme.colorScheme.onSurface,
-          ),
-        ),
-        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
-      ),
+      appBar: const CustomAppBar(titleText: 'Valoraciones'),
       body: reviewsAsync.when(
         loading: () =>
             const Center(child: CircularProgressIndicator.adaptive()),
