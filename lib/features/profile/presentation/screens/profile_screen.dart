@@ -1,3 +1,4 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:trueke/features/auth/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -201,10 +202,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isOwnProfile = widget.userId != 'lledoandreu84' && widget.userId != 'user_vendor';
+     final currentUser = Supabase.instance.client.auth.currentUser;
+     final userEmail = currentUser?.email ?? 'Usuario';
+     final currentUsername = userEmail.contains('@') ? userEmail.split('@')[0] : userEmail;
 
-    final String profileTitle = isOwnProfile ? 'Mi Perfil' : 'Perfil del Vendedor';
-    final String displayName = isOwnProfile ? 'pruebatrueke' : 'lledoandreu84';
+     final bool isOwnProfile = widget.userId == null || widget.userId == currentUser?.id;
+
+     final String profileTitle = isOwnProfile ? 'Mi Perfil' : 'Perfil del Vendedor';
+     final String displayName = isOwnProfile ? currentUsername : (widget.userId ?? 'Usuario');
+
     final String displaySubtitle = isOwnProfile ? 'Comunidad Trueke' : 'Miembro verificado';
 
     const publishedCount = 0;
