@@ -7,14 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 import 'package:trueke/features/chat/presentation/widgets/chat_bubble.dart';
-import 'package:trueke/features/chat/presentation/widgets/select_product_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/features/chat/providers/chat_providers.dart';
 import 'package:trueke/features/escrow/providers/escrow_notifier.dart';
 import 'package:trueke/features/escrow/repositories/escrow_repository.dart';
 import 'package:trueke/core/theme/app_colors.dart';
 import '../../../auth/auth_service.dart';
-import '../../../products/domain/product_model.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String roomId;
