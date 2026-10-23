@@ -323,8 +323,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(profileTitle),
-        centerTitle: true,
-        automaticallyImplyLeading: true, // Asegura la flecha de retroceso en todas las pantallas
+        centerTitle: false, // Alineado a la izquierda exactamente igual que Publicar Producto
+        automaticallyImplyLeading: true, // Muestra la flecha de retroceso
         backgroundColor: Colors.white,
         elevation: 0,
       ),
