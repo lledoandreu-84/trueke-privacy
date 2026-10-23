@@ -70,7 +70,7 @@ class NotificationsScreen extends ConsumerWidget {
                       width: 1,
                     ),
                   ),
-                  child: Material(color: Colors.transparent, child: ListTile(
+                  child: ListTile(
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 8,

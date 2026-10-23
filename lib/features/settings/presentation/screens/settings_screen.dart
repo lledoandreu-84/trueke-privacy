@@ -135,7 +135,7 @@ class SettingsScreen extends ConsumerWidget {
                     color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
                   ),
                 ),
-                child: SwitchMaterial(color: Colors.transparent, child: ListTile(
+                child: SwitchListTile(
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 4,
