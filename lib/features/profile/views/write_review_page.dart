@@ -1,3 +1,4 @@
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:trueke/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -78,21 +79,7 @@ class _WriteReviewPageState extends ConsumerState<WriteReviewPage> {
     final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        
-        scrolledUnderElevation: 0,
-        title: Text(
-          'Dejar Valoración',
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-            letterSpacing: -0.4,
-            color: theme.colorScheme.onSurface,
-          ),
-        ),
-        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
-      ),
+      appBar: const CustomAppBar(titleText: 'Dejar Valoración'),
       body: SafeArea(
         child: _isSaving
             ? const Center(child: CircularProgressIndicator.adaptive())
