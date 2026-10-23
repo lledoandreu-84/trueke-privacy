@@ -102,7 +102,7 @@ class ChatListScreen extends ConsumerWidget {
             separatorBuilder: (context, index) => const Divider(height: 1, color: Color(0xFFE2E8F0)),
             itemBuilder: (context, index) {
               final room = rooms[index];
-              return ListTile(
+              return Material(color: Colors.transparent, child: ListTile(
                 onTap: () {
                   Navigator.push(
                     context,

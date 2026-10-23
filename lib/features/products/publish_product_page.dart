@@ -105,7 +105,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
               ),
             ),
             const SizedBox(height: 16),
-            ListTile(
+            Material(color: Colors.transparent, child: ListTile(
               leading: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: const BoxDecoration(
@@ -121,7 +121,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
               },
             ),
             const Divider(height: 1),
-            ListTile(
+            Material(color: Colors.transparent, child: ListTile(
               leading: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: const BoxDecoration(
