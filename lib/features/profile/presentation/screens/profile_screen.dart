@@ -324,16 +324,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       appBar: AppBar(
         title: Text(profileTitle),
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
-          onPressed: () {
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
-            } else {
-              Navigator.of(context).pushReplacementNamed('/');
-            }
-          },
-        ),
+        automaticallyImplyLeading: false, // Sin flecha de retroceso innecesaria en pestaña raíz
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -638,7 +629,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
             decoration: BoxDecoration(
               color: const Color(0xFF6750A4).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
