@@ -25,6 +25,29 @@ class FakeAuth extends Fake implements GoTrueClient {
 
 class FakeSupabaseClient extends Fake implements SupabaseClient {
   @override
+  SupabaseQueryBuilder from(String table) => FakeSupabaseQueryBuilder();
+}
+
+class FakeSupabaseQueryBuilder extends Fake implements SupabaseQueryBuilder {
+  @override
+  PostgrestFilterBuilder<PostgrestList> select([String? columns]) => FakePostgrestFilterBuilder();
+}
+
+class FakePostgrestFilterBuilder extends Fake implements PostgrestFilterBuilder<PostgrestList> {
+  @override
+  PostgrestFilterBuilder<PostgrestList> or(String filters, {String? referencedTable}) => this;
+
+  @override
+  PostgrestTransformBuilder<PostgrestList> order(String column, {bool ascending = true, bool nullsFirst = false, String? referencedTable}) => FakePostgrestTransformBuilder();
+}
+
+class FakePostgrestTransformBuilder extends Fake implements PostgrestTransformBuilder<PostgrestList> {
+  @override
+  Future<PostgrestList> then<T>(FutureOr<PostgrestList> Function(PostgrestList) onValue, {Function? onError}) async {
+    return onValue([]);
+  }
+}
+  @override
   GoTrueClient get auth => FakeAuth();
 }
 
