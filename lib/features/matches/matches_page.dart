@@ -1,3 +1,4 @@
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/favorites_provider.dart';
@@ -13,19 +14,7 @@ class MatchesPage extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        
-        scrolledUnderElevation: 0,
-        title: Text(
-          'Mis Matches',
-          style: TextStyle(
-            color: theme.colorScheme.onSurface,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
-      ),
+      appBar: const CustomAppBar(titleText: 'Mis Matches'),
       body: favoritesAsync.when(
         loading: () => Center(
           child: CircularProgressIndicator.adaptive(
