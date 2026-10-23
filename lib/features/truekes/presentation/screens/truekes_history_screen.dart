@@ -1,3 +1,4 @@
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/features/truekes/data/repositories/trueke_repository.dart';
@@ -25,18 +26,7 @@ class TruekesHistoryScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        
-        scrolledUnderElevation: 0,
-        title: Text(
-          'Historial de Truekes',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            letterSpacing: -0.4,
-          ),
-        ),
-      ),
+      appBar: const CustomAppBar(titleText: 'Historial de Truekes'),
       body: truekesAsync.when(
         data: (truekes) {
           if (truekes.isEmpty) {
