@@ -68,7 +68,7 @@ class MyPublishedProductsScreen extends ConsumerWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute<void>(
-                        builder: (context) => ProductDetailPage(product: product),
+                        builder: (context) => ProductDetailPage(product: product, hideVendorCard: true),
                       ),
                     );
                   },
