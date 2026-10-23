@@ -1,8 +1,6 @@
 import 'package:trueke/features/auth/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:trueke/models/product.dart';
-import 'package:trueke/features/products/product_detail_page.dart';
 import 'package:trueke/providers/app_providers.dart';
 import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -146,8 +144,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   void _showVendorProducts(BuildContext context, {required bool isOwn}) {
-    const String imgUrl1 = 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=300';
-    const String imgUrl2 = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300';
 
     showModalBottomSheet(
       context: context,
