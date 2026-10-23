@@ -117,11 +117,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               child: const Text('Cancelar'),
             ),
             ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Sesión cerrada correctamente.')),
-                );
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  try {
+                    await ref.read(authServiceProvider).signOut();
+                    if (context.mounted) {
+                      Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error al cerrar sesión: $e')),
+                      );
+                    }
+                  }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,
