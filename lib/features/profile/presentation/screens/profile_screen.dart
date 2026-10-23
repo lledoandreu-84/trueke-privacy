@@ -155,7 +155,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     if (totalReviews == 0) {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-        decoration: 
+        decoration: BoxDecoration(
           color: Colors.grey.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
         ),
@@ -179,7 +179,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-      decoration: 
+      decoration: BoxDecoration(
         color: Colors.amber.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
       ),
@@ -294,7 +294,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       Material(
                         color: Colors.transparent,
                         child: Container(
-                          decoration: 
+                          decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
@@ -511,7 +511,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     required String badgeText,
     required VoidCallback onTap,
   }) {
-    return Material(color: Colors.transparent, child: ListTile(
+    return ListTile(
       dense: true,
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 3),
       leading: CircleAvatar(
@@ -529,7 +529,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-            decoration: 
+            decoration: BoxDecoration(
               color: const Color(0xFF6750A4).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
