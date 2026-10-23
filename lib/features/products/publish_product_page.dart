@@ -147,9 +147,20 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
     if (!_formKey.currentState!.validate()) return;
 
     final userId = AuthService.currentUserId;
-    final currentUser = Supabase.instance.client.auth.currentUser;
-    final userEmail = currentUser?.email ?? 'Usuario';
-    final currentUsername = userEmail.contains('@') ? userEmail.split('@')[0] : userEmail;
+    String currentUsername = 'Usuario';
+    if (userId != null) {
+      try {
+        final profileData = await Supabase.instance.client
+            .from('profiles')
+            .select('username')
+            .eq('id', userId)
+            .maybeSingle();
+        if (profileData != null && profileData['username'] != null) {
+          currentUsername = profileData['username'] as String;
+        }
+      } catch (_) {}
+    }
+    if (!mounted) return;
     if (userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

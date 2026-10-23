@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/features/auth/auth_service.dart';
 import 'package:trueke/features/products/providers/products_provider.dart';
 import 'package:trueke/features/products/publish_product_page.dart';
+import 'package:trueke/features/products/product_detail_page.dart';
 
 class MyPublishedProductsScreen extends ConsumerWidget {
   const MyPublishedProductsScreen({super.key});
@@ -24,7 +25,7 @@ class MyPublishedProductsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
-      appBar: const CustomAppBar(titleText: 'Mis Productos'),
+      appBar: const CustomAppBar(titleText: 'Mis Productos Publicados'),
       body: productsAsync.when(
         data: (products) {
           final myProducts = products
@@ -74,6 +75,14 @@ class MyPublishedProductsScreen extends ConsumerWidget {
                       horizontal: 16,
                       vertical: 8,
                     ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (context) => ProductDetailPage(product: product),
+                        ),
+                      );
+                    },
                     leading: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Container(
@@ -133,16 +142,16 @@ class MyPublishedProductsScreen extends ConsumerWidget {
                             final confirm = await showDialog<bool>(
                               context: context,
                               builder: (context) => AlertDialog(
-                                title: const Text("Eliminar producto"),
-                                content: const Text("¿Estás seguro de que deseas eliminar este producto de tu escaparate?"),
+                                title: const Text('Eliminar producto'),
+                                content: const Text('¿Estás seguro de que deseas eliminar este producto de tu escaparate?'),
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(context, false),
-                                    child: const Text("Cancelar"),
+                                    child: const Text('Cancelar'),
                                   ),
                                   TextButton(
                                     onPressed: () => Navigator.pop(context, true),
-                                    child: const Text("Eliminar", style: TextStyle(color: Colors.red)),
+                                    child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
                                   ),
                                 ],
                               ),

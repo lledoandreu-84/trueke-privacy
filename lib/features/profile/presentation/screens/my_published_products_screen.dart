@@ -1,81 +1,183 @@
 import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../products/providers/products_provider.dart';
-import '../../../home/widgets/product_card.dart';
+import 'package:trueke/features/auth/auth_service.dart';
+import 'package:trueke/features/products/providers/products_provider.dart';
+import 'package:trueke/features/products/publish_product_page.dart';
+import 'package:trueke/features/products/product_detail_page.dart';
 
 class MyPublishedProductsScreen extends ConsumerWidget {
   const MyPublishedProductsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final myProductsAsync = ref.watch(myProductsProvider);
-    final width = MediaQuery.of(context).size.width;
     final theme = Theme.of(context);
+    final currentUserId = AuthService.currentUserId;
 
-    final int crossAxisCount = width < 700 ? 2 : (width < 1000 ? 3 : 4);
+    if (currentUserId == null) {
+      return Scaffold(
+        backgroundColor: theme.colorScheme.surface,
+        body: const Center(child: Text('Usuario no autenticado')),
+      );
+    }
+
+    final productsAsync = ref.watch(productsProvider);
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
       appBar: const CustomAppBar(titleText: 'Mis Productos Publicados'),
-      body: myProductsAsync.when(
+      body: productsAsync.when(
         data: (products) {
-          if (products.isEmpty) {
+          final myProducts = products
+              .where((p) => p.ownerId == currentUserId)
+              .toList();
+
+          if (myProducts.isEmpty) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(32.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.storefront_outlined,
-                      size: 64,
-                      color: theme.colorScheme.outline,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Aún no has publicado ningún artículo.\n¡Sube tu primer producto para empezar a hacer truekes!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 14.5,
-                        color: theme.colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w500,
-                        height: 1.4,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  'Aún no has publicado ningún artículo en tu escaparate.',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
             );
           }
 
-          return GridView.builder(
+          return ListView.separated(
             padding: const EdgeInsets.all(16),
-            itemCount: products.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: crossAxisCount,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 0.62,
-            ),
+            physics: const BouncingScrollPhysics(),
+            itemCount: myProducts.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
-              return ProductCard(product: products[index]);
+              final product = myProducts[index];
+              final hasImg =
+                  product.images.isNotEmpty && product.images.first.isNotEmpty;
+              final productImg = hasImg ? product.images.first : '';
+
+              return Container(
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: theme.colorScheme.outlineVariant,
+                    width: 0.5,
+                  ),
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(16),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (context) => ProductDetailPage(product: product),
+                        ),
+                      );
+                    },
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        width: 52,
+                        height: 52,
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        child: productImg.isNotEmpty
+                            ? Image.network(
+                                productImg,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(
+                                  Icons.image_not_supported_rounded,
+                                  size: 20,
+                                ),
+                              )
+                            : const Icon(Icons.image_rounded, size: 20),
+                      ),
+                    ),
+                    title: Text(
+                      product.title,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 4.0),
+                      child: Text(
+                        product.price != null
+                            ? '${product.price!.toStringAsFixed(0)}€'
+                            : 'Trueque Puro',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.edit_outlined, color: theme.colorScheme.primary, size: 20),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (context) => PublishProductPage(product: product),
+                              ),
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete_outline_rounded, color: theme.colorScheme.error, size: 20),
+                          onPressed: () async {
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Eliminar producto'),
+                                content: const Text('¿Estás seguro de que deseas eliminar este producto de tu escaparate?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, false),
+                                    child: const Text('Cancelar'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, true),
+                                    child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+                                  ),
+                                ],
+                              ),
+                            );
+                            if (confirm == true) {
+                              await ref.read(productsProvider.notifier).deleteProduct(product);
+                              ref.invalidate(productsProvider);
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
             },
           );
         },
-        loading: () => const Center(
-          child: CircularProgressIndicator.adaptive(),
-        ),
-        error: (error, _) => Center(
+        loading: () =>
+            const Center(child: CircularProgressIndicator.adaptive()),
+        error: (err, _) => Center(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: Text(
-              'Error cargando tus productos: $error',
-              style: TextStyle(
-                color: theme.colorScheme.error,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
+              'Error al cargar escaparate: $err',
+              style: TextStyle(color: theme.colorScheme.error),
             ),
           ),
         ),
