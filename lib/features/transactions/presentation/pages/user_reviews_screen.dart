@@ -20,7 +20,7 @@ class UserReviewsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
-      appBar: CustomAppBar(titleText: 'Opiniones de \$userName'),
+      appBar: CustomAppBar(titleText: 'Opiniones de $userName'),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 16),
         children: [
