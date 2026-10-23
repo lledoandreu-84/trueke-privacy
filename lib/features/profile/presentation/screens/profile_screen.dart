@@ -309,7 +309,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   title: 'Mis Conversaciones',
                                   subtitle: 'Negociaciones activas por productos',
                                   badgeText: 'Chat',
-                                  onTap: () {
+                                  )
+onTap: () {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(content: Text('Aún no tienes ninguna conversación activa.')),
                                     );
@@ -322,7 +323,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 title: isOwnProfile ? 'Mis Productos Publicados' : 'Productos en Venta',
                                 subtitle: isOwnProfile ? 'Gestiona tus artículos expuestos' : 'Ver artículos expuestos',
                                 badgeText: '$publishedCount',
-                                onTap: () {
+                                )
+onTap: () {
                                   _showVendorProducts(context, isOwn: isOwnProfile);
                                 },
                               ),
@@ -333,7 +335,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   title: 'Historial de Intercambios',
                                   subtitle: 'Truekes completados con éxito',
                                   badgeText: '$historyCount',
-                                  onTap: () {
+                                  )
+onTap: () {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(content: Text('Aún no has completado ningún Trueke.')),
                                     );
@@ -546,7 +549,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           const Icon(Icons.chevron_right_rounded, size: 20, color: Colors.grey),
         ],
       ),
-      onTap: onTap,
+      )
+onTap: onTap,
     );
   }
 }
