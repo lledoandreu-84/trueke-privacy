@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/models/product.dart';
 import 'package:trueke/features/products/product_detail_page.dart';
 import 'package:trueke/providers/app_providers.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   final String? userId;
@@ -28,7 +29,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     super.dispose();
   }
 
-  void _submitComment() {
+  Future<void> _submitComment() async {
     final comment = _commentController.text.trim();
     if (comment.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -37,13 +38,41 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       return;
     }
 
-    _commentController.clear();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('¡Sugerencia enviada a davidlledoandreu@gmail.com! Gracias por ayudarnos a mejorar.'),
-        duration: Duration(seconds: 3),
-      ),
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: 'lledoandreu84@gmail.com',
+      queryParameters: {
+        'subject': 'Sugerencia para Trueke',
+        'body': comment,
+      },
     );
+
+    try {
+      if (await canLaunchUrl(emailUri)) {
+        await launchUrl(emailUri);
+        _commentController.clear();
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('¡Sugerencia enviada a lledoandreu84@gmail.com!'),
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No se pudo abrir el cliente de correo.')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al enviar correo: $e')),
+        );
+      }
+    }
   }
 
   void _submitReview() {
@@ -132,15 +161,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       imgUrl1,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
-                        color: Theme.of(context).primaryColor.withValues(alpha: 0.15),
-                        child: Icon(Icons.image_rounded, color: Theme.of(context).primaryColor, size: 28),
+                        color: const Color(0xFF6750A4).withValues(alpha: 0.15),
+                        child: const Icon(Icons.image_rounded, color: Color(0xFF6750A4), size: 28),
                       ),
                     ),
                   ),
                 ),
                 title: const Text('Artículo en venta 1', style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: const Text('Buen estado • Madrid'),
-                trailing: Text('Trueke', style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor)),
+                trailing: const Text('Trueke', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF6750A4))),
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -178,15 +207,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       imgUrl2,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
-                        color: Theme.of(context).primaryColor.withValues(alpha: 0.15),
-                        child: Icon(Icons.devices_rounded, color: Theme.of(context).primaryColor, size: 28),
+                        color: const Color(0xFF6750A4).withValues(alpha: 0.15),
+                        child: const Icon(Icons.devices_rounded, color: Color(0xFF6750A4), size: 28),
                       ),
                     ),
                   ),
                 ),
                 title: const Text('Artículo en venta 2', style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: const Text('Como nuevo • Madrid'),
-                trailing: Text('Trueke', style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor)),
+                trailing: const Text('Trueke', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF6750A4))),
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -287,9 +316,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final totalReviews = ref.read(vendorReviewsProvider.notifier).totalReviews;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(profileTitle), // Estándar nativo idéntico a Mensajes, Favoritos, etc.
+        title: Text(
+          profileTitle,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.white,
         elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black87),
       ),
       body: SafeArea(
         child: Padding(
@@ -305,10 +345,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Card(
-                        elevation: 1.5,
+                        elevation: 1,
+                        color: Colors.white,
                         margin: EdgeInsets.zero,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
+                          side: BorderSide(color: Colors.grey.withValues(alpha: 0.15)),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 18.0, horizontal: 16.0),
@@ -316,22 +358,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             children: [
                               CircleAvatar(
                                 radius: 36,
-                                backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.15),
-                                child: Icon(Icons.person, size: 36, color: Theme.of(context).primaryColor),
+                                backgroundColor: const Color(0xFF6750A4).withValues(alpha: 0.15),
+                                child: const Icon(Icons.person, size: 36, color: Color(0xFF6750A4)),
                               ),
                               const SizedBox(height: 10),
                               Text(
                                 displayName,
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
                               ),
                               const SizedBox(height: 2),
                               Text(
                                 displaySubtitle,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Colors.grey[600],
-                                    ),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
                               ),
                               const SizedBox(height: 8),
                               _buildRatingBadge(
@@ -345,19 +390,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       const SizedBox(height: 14),
                       Text(
                         isOwnProfile ? 'Actividad y Ofertas' : 'Artículos del Vendedor',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Material(
                         color: Colors.transparent,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Theme.of(context).cardColor,
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: Colors.grey.withValues(alpha: 0.2),
+                              color: Colors.grey.withValues(alpha: 0.15),
                             ),
                           ),
                           child: Column(
@@ -372,7 +419,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                     Navigator.pushNamed(context, '/notifications');
                                   },
                                 ),
-                                const Divider(height: 1),
+                                const Divider(height: 1, color: Color(0xFFEEEEEE)),
                               ],
                               _buildMenuItem(
                                 icon: Icons.inventory_2_outlined,
@@ -384,7 +431,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 },
                               ),
                               if (isOwnProfile) ...[
-                                const Divider(height: 1),
+                                const Divider(height: 1, color: Color(0xFFEEEEEE)),
                                 _buildMenuItem(
                                   icon: Icons.history_rounded,
                                   title: 'Historial de Intercambios',
@@ -404,16 +451,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       const SizedBox(height: 14),
                       Text(
                         isOwnProfile ? 'Sugerencias y Feedback' : 'Valorar al Vendedor',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Card(
                         elevation: 1,
+                        color: Colors.white,
                         margin: EdgeInsets.zero,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
+                          side: BorderSide(color: Colors.grey.withValues(alpha: 0.15)),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
@@ -440,7 +491,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                       onPressed: _submitComment,
                                       icon: const Icon(Icons.send_rounded, size: 18),
                                       style: IconButton.styleFrom(
-                                        backgroundColor: Theme.of(context).primaryColor,
+                                        backgroundColor: const Color(0xFF6750A4),
                                         foregroundColor: Colors.white,
                                         padding: const EdgeInsets.all(12),
                                       ),
@@ -490,7 +541,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                       icon: const Icon(Icons.rate_review_rounded),
                                       label: const Text('Enviar Reseña y Valoración'),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: Theme.of(context).primaryColor,
+                                        backgroundColor: const Color(0xFF6750A4),
                                         foregroundColor: Colors.white,
                                       ),
                                     ),
@@ -569,34 +620,34 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 3),
       leading: CircleAvatar(
         radius: 17,
-        backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-        child: Icon(icon, color: Theme.of(context).primaryColor, size: 19),
+        backgroundColor: const Color(0xFF6750A4).withValues(alpha: 0.15),
+        child: Icon(icon, color: const Color(0xFF6750A4), size: 19),
       ),
       title: Text(
         title,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5),
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5, color: Colors.black87),
       ),
-      subtitle: Text(subtitle, style: const TextStyle(fontSize: 11.5)),
+      subtitle: Text(subtitle, style: TextStyle(fontSize: 11.5, color: Colors.grey[600])),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
             decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+              color: const Color(0xFF6750A4).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
               badgeText,
-              style: TextStyle(
-                color: Theme.of(context).primaryColor,
+              style: const TextStyle(
+                color: Color(0xFF6750A4),
                 fontWeight: FontWeight.bold,
                 fontSize: 11.5,
               ),
             ),
           ),
           const SizedBox(width: 4),
-          const Icon(Icons.chevron_right_rounded, size: 20),
+          const Icon(Icons.chevron_right_rounded, size: 20, color: Colors.grey),
         ],
       ),
       onTap: onTap,
