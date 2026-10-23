@@ -132,8 +132,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       imgUrl1,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
-                        color: Colors.green[200],
-                        child: const Icon(Icons.image_rounded, color: Colors.white, size: 28),
+                        color: Colors.purple[100],
+                        child: Icon(Icons.image_rounded, color: Theme.of(context).primaryColor, size: 28),
                       ),
                     ),
                   ),
@@ -178,8 +178,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       imgUrl2,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
-                        color: Colors.green[200],
-                        child: const Icon(Icons.devices_rounded, color: Colors.white, size: 28),
+                        color: Colors.purple[100],
+                        child: Icon(Icons.devices_rounded, color: Theme.of(context).primaryColor, size: 28),
                       ),
                     ),
                   ),
@@ -288,7 +288,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(profileTitle), // Left-aligned matching Mensajes, Publicar Producto, Explorar, etc.
+        title: Text(
+          profileTitle,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
         elevation: 0,
       ),
       body: SafeArea(
