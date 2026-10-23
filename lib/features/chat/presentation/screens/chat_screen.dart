@@ -209,51 +209,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
-  Future<void> _showTradeOfferDialog() async {
-    final currentUserId = AuthService.currentUserId;
-    if (currentUserId == null) return;
-
-    final Product? selectedProduct = await showDialog<Product>(
-      context: context,
-      builder: (context) => const SelectProductDialog(),
-    );
-
-    if (selectedProduct == null) return;
-
-    final generatedTime = DateTime.now();
-    final String generatedOfferId = generatedTime.millisecondsSinceEpoch
-        .toString();
-
-    final offerData = {
-      "id": generatedOfferId,
-      "product_title": selectedProduct.title,
-      "status": "pending",
-      "amount": 0.0,
-      "timestamp": generatedTime.toIso8601String(),
-    };
-
-    final systemMessagePayload = "[TRADE_OFFER]:${jsonEncode(offerData)}";
-
-    try {
-      await ref
-          .read(chatRepositoryProvider)
-          .sendTradeOffer(
-            roomId: widget.roomId,
-            senderId: currentUserId,
-            message: systemMessagePayload,
-            offerId: generatedOfferId,
-          );
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Error al proponer trueke: $e"),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    }
-  }
 
   Widget _buildStateBanner(List<dynamic> messages) {
     dynamic lastOfferPayload;

@@ -1,3 +1,4 @@
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/models/product.dart';
@@ -90,22 +91,7 @@ class _SendTradeOfferPageState extends ConsumerState<SendTradeOfferPage> {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        title: Text(
-          'Proponer Trueque',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-            letterSpacing: -0.4,
-            color: theme.colorScheme.onSurface,
-          ),
-        ),
-        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
-        
-        
-        scrolledUnderElevation: 0,
-      ),
+      appBar: const CustomAppBar(titleText: 'Proponer Trueque'),
       body: _isLoading
           ? Center(
               child: CircularProgressIndicator.adaptive(
