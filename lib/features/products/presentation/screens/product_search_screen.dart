@@ -1,3 +1,4 @@
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/core/theme/app_colors.dart';
@@ -66,20 +67,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        
-        
-        title: const Text(
-          'Explorar',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
-      ),
+      appBar: const CustomAppBar(titleText: 'Explorar'),
       body: RefreshIndicator(
         color: AppColors.primary,
         onRefresh: () async {
