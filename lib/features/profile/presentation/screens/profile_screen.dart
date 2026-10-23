@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/models/product.dart';
 import 'package:trueke/features/products/product_detail_page.dart';
+import 'package:trueke/providers/app_providers.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   final String? userId;
@@ -51,9 +52,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       return;
     }
 
+    ref.read(vendorReviewsProvider.notifier).addReview(_selectedRating, review);
     _reviewController.clear();
+    
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('¡Valoración de $_selectedRating estrellas enviada con éxito!')),
+      SnackBar(content: Text('¡Valoración de $_selectedRating estrellas guardada con éxito!')),
     );
   }
 
@@ -241,8 +244,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     const publishedCount = 2;
     const historyCount = 0;
-    const double userRating = 0.0;
-    const int totalReviews = 0;
+    
+    final reviews = ref.watch(vendorReviewsProvider);
+    final userRating = ref.read(vendorReviewsProvider.notifier).averageRating;
+    final totalReviews = ref.read(vendorReviewsProvider.notifier).totalReviews;
 
     return Scaffold(
       appBar: AppBar(
@@ -438,6 +443,32 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                       foregroundColor: Colors.white,
                                     ),
                                   ),
+                                  if (reviews.isNotEmpty) ...[
+                                    const SizedBox(height: 16),
+                                    const Divider(),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Reseñas recibidas (${reviews.length})',
+                                      style: const TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    ...reviews.map((r) => Padding(
+                                          padding: const EdgeInsets.only(bottom: 8.0),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: List.generate(
+                                                  r.rating,
+                                                  (index) => const Icon(Icons.star, size: 14, color: Colors.amber),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 2),
+                                              Text(r.comment, style: const TextStyle(fontSize: 13)),
+                                            ],
+                                          ),
+                                        )),
+                                  ],
                                 ],
                               ),
                       ),

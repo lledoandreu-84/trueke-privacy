@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/product.dart';
+import '../../providers/app_providers.dart';
 import '../profile/presentation/screens/profile_screen.dart';
 
-class ProductDetailPage extends StatelessWidget {
+class ProductDetailPage extends ConsumerWidget {
   final Product? product;
   final bool hideVendorCard;
 
@@ -13,14 +15,16 @@ class ProductDetailPage extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final title = product?.title ?? 'Artículo';
     final condition = product?.condition ?? 'Buen estado';
     final location = product?.location ?? 'Madrid, España';
     final description = product?.description ?? 'Sin descripción disponible';
     final imageUrl = product?.imageUrl;
     final sellerId = product?.id ?? 'lledoandreu84';
-    final productId = product?.id ?? '';
+    final productId = product?.id ?? 'prod_default';
+
+    final isFav = ref.watch(favoritesProvider).contains(productId);
 
     final Color placeholderColor = productId == 'prod_2' ? Colors.blue[200]! : Colors.green[200]!;
     final IconData placeholderIcon = productId == 'prod_2' ? Icons.devices : Icons.image;
@@ -197,8 +201,19 @@ class ProductDetailPage extends StatelessWidget {
           child: Row(
             children: [
               IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.favorite_border),
+                onPressed: () {
+                  ref.read(favoritesProvider.notifier).toggleFavorite(productId);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(isFav ? 'Eliminado de favoritos' : 'Añadido a favoritos'),
+                      duration: const Duration(seconds: 1),
+                    ),
+                  );
+                },
+                icon: Icon(
+                  isFav ? Icons.favorite : Icons.favorite_border,
+                  color: isFav ? Colors.red : null,
+                ),
               ),
               const SizedBox(width: 8),
               Expanded(
