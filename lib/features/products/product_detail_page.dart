@@ -1,437 +1,199 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:trueke/core/providers/favorites_provider.dart';
-import 'package:trueke/core/theme/app_colors.dart';
-import 'package:trueke/features/auth/auth_service.dart';
-import 'package:trueke/features/chat/presentation/screens/chat_screen.dart';
-import 'package:trueke/features/chat/providers/chat_providers.dart';
-import 'package:trueke/features/products/providers/product_repository_provider.dart';
-import 'package:trueke/features/products/widgets/seller_card.dart';
-import 'package:trueke/features/transactions/presentation/widgets/create_offer_dialog.dart';
-import 'package:trueke/models/product.dart';
+import '../../models/product.dart';
 
-class ProductDetailPage extends ConsumerStatefulWidget {
-  const ProductDetailPage({super.key, required this.product});
+class ProductDetailPage extends StatelessWidget {
+  final Product? product;
 
-  final Product product;
-
-  @override
-  ConsumerState<ProductDetailPage> createState() => _ProductDetailPageState();
-}
-
-class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
-  bool _isStartingChat = false;
-  late int _currentViews;
-
-  bool get _isOwner => widget.product.ownerId == AuthService.currentUserId;
-
-  @override
-  void initState() {
-    super.initState();
-    _currentViews = widget.product.viewsCount > 0 ? widget.product.viewsCount : 1;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _incrementProductViews();
-    });
-  }
-
-  Future<void> _incrementProductViews() async {
-    try {
-      final productRepo = ref.read(productRepositoryProvider);
-      await productRepo.incrementViews(widget.product.id);
-      if (mounted) {
-        setState(() {
-          _currentViews += 1;
-        });
-      }
-    } catch (_) {}
-  }
-
-  Future<void> _handleStartChat() async {
-    if (_isOwner) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No puedes chatear contigo mismo.'),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: AppColors.textPrimary,
-        ),
-      );
-      return;
-    }
-
-    final currentUserId = AuthService.currentUserId;
-    if (currentUserId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Inicia sesión para poder chatear.'),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: AppColors.textPrimary,
-        ),
-      );
-      return;
-    }
-
-    setState(() => _isStartingChat = true);
-
-    try {
-      final sellerId = widget.product.ownerId.trim();
-      if (sellerId.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No se puede iniciar el chat porque el anuncio no identifica al vendedor.'),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: AppColors.textPrimary,
-          ),
-        );
-        return;
-      }
-
-      final chatRepo = ref.read(chatRepositoryProvider);
-      final chatRoomEntity = await chatRepo.getOrCreateChatRoom(
-        productId: widget.product.id,
-        sellerId: sellerId,
-        buyerId: currentUserId,
-      );
-
-      await chatRepo.sendMessage(
-        roomId: chatRoomEntity.id,
-        senderId: currentUserId,
-        message: '¡Hola! Me interesa tu artículo "${widget.product.title}".',
-      );
-
-      if (!mounted) return;
-
-      Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (_) => ChatScreen(roomId: chatRoomEntity.id),
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error al iniciar chat: $e'),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: AppColors.textPrimary,
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() => _isStartingChat = false);
-      }
-    }
-  }
-
-  void _handleTradeOffer() {
-    if (_isOwner) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Este anuncio es tuyo.'),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: AppColors.textPrimary,
-        ),
-      );
-      return;
-    }
-
-    showDialog<bool>(
-      context: context,
-      builder: (context) => CreateOfferDialog(product: widget.product),
-    ).then((success) {
-      if (success == true && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('¡Oferta de trueke enviada con éxito!'),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: AppColors.textPrimary,
-          ),
-        );
-      }
-    });
-  }
+  const ProductDetailPage({
+    super.key,
+    this.product,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final userId = AuthService.currentUserId;
-    final favoritesAsync = ref.watch(favoritesProvider);
-    final isFav = favoritesAsync.maybeWhen(
-      data: (favs) => favs.any((p) => p.id == widget.product.id),
-      orElse: () => false,
-    );
-
-    final viewsText = '$_currentViews vistas';
+    final title = product?.title ?? 'venta';
+    final condition = product?.condition ?? 'Buen estado';
+    final location = product?.location ?? 'Madrid, España';
+    final description = product?.description ?? 'venta';
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // 📸 1. Galería Compacta Panorámica con Vistas Real
-            Stack(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.black54,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Row(
               children: [
-                Container(
-                  height: 180,
-                  width: double.infinity,
-                  color: AppColors.surfaceMint,
-                  child: widget.product.images.isNotEmpty
-                      ? Image.network(
-                          widget.product.images.first,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => const Center(
-                            child: Icon(Icons.image_outlined, size: 48, color: AppColors.primary),
-                          ),
-                        )
-                      : const Center(
-                          child: Icon(Icons.image_outlined, size: 48, color: AppColors.primary),
-                        ),
-                ),
-                // Botón Atrás
-                Positioned(
-                  top: 10,
-                  left: 10,
-                  child: CircleAvatar(
-                    backgroundColor: Colors.white.withValues(alpha: 0.9),
-                    radius: 18,
-                    child: IconButton(
-                      padding: EdgeInsets.zero,
-                      icon: const Icon(Icons.arrow_back_rounded, size: 20, color: AppColors.textPrimary),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ),
-                ),
-                // Badge de Contador de Visitas Real y Dinámico
-                Positioned(
-                  top: 10,
-                  right: 10,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.65),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.remove_red_eye_rounded, size: 14, color: Colors.white),
-                        const SizedBox(width: 4),
-                        Text(
-                          viewsText,
-                          style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
-                        ),
-                      ],
-                    ),
-                  ),
+                Icon(Icons.visibility, size: 14, color: Colors.white),
+                SizedBox(width: 4),
+                Text(
+                  '2 vistas',
+                  style: TextStyle(color: Colors.white, fontSize: 12),
                 ),
               ],
             ),
-
-            // 📝 2. Contenido Principal Ultra-Compacto
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
-                child: ListView(
-                  children: [
-                    // Título e Indicador de Modalidad
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            widget.product.title,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.textPrimary,
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 200,
+              width: double.infinity,
+              color: Colors.green[200],
+              child: const Icon(Icons.image, size: 80, color: Colors.white),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        title,
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppColors.surfaceMint,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            widget.product.tradeType == TradeType.trade ? 'TRUEKE' : 'VENTA',
-                            style: const TextStyle(
-                              color: AppColors.primary,
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-
-                    // Chips de Metadatos (Estado y Ubicación)
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(color: const Color(0xFFE2E8F0)),
-                          ),
-                          child: Text(
-                            widget.product.condition,
-                            style: const TextStyle(fontSize: 11, color: AppColors.textSecondary, fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        const Icon(Icons.location_on_outlined, size: 13, color: AppColors.textSecondary),
-                        const SizedBox(width: 2),
-                        Expanded(
-                          child: Text(
-                            widget.product.location,
-                            style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-
-                    // Tarjeta de Descripción
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFFE2E8F0)),
                       ),
-                      child: Column(
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.purple[50],
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          'TRUEKE',
+                          style: TextStyle(
+                            color: Colors.purple[700],
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Chip(
+                        label: Text(condition, style: const TextStyle(fontSize: 11)),
+                        padding: EdgeInsets.zero,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      const SizedBox(width: 8),
+                      Icon(Icons.location_on_outlined, size: 14, color: Colors.grey[600]),
+                      const SizedBox(width: 2),
+                      Text(
+                        location,
+                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Descripción',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    description,
+                    style: TextStyle(color: Colors.grey[700]),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Vendedor',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 8),
+                  Card(
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ListTile(
+                      leading: const CircleAvatar(
+                        child: Icon(Icons.person),
+                      ),
+                      title: const Text(
+                        'lledoandreu84',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Descripción',
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            widget.product.description,
-                            style: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary, height: 1.3),
-                          ),
-                          if (widget.product.wanted.isNotEmpty) ...[
-                            const SizedBox(height: 8),
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: AppColors.surfaceMint.withValues(alpha: 0.5),
-                                borderRadius: BorderRadius.circular(8),
+                          const Text('Miembro verificado', style: TextStyle(fontSize: 12)),
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              const Icon(Icons.star, size: 14, color: Colors.amber),
+                              const SizedBox(width: 2),
+                              Text(
+                                '0.0 (0)',
+                                style: TextStyle(fontSize: 12, color: Colors.grey[700]),
                               ),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.swap_horiz_rounded, size: 16, color: AppColors.primary),
-                                  const SizedBox(width: 6),
-                                  Expanded(
-                                    child: Text(
-                                      'Busca a cambio: ${widget.product.wanted}',
-                                      style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.primary),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ],
                       ),
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Tarjeta del Vendedor Dinámica y Clickeable
-                    SellerCard(product: widget.product),
-                  ],
-                ),
-              ),
-            ),
-
-            // 🚀 3. Barra de Acciones Fija
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: const BoxDecoration(
-                color: AppColors.surface,
-                border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
-              ),
-              child: Row(
-                children: [
-                  // Botón Favorito
-                  Container(
-                    height: 44,
-                    width: 44,
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceMint,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
-                    ),
-                    child: IconButton(
-                      padding: EdgeInsets.zero,
-                      icon: Icon(
-                        isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                        color: isFav ? AppColors.coral : AppColors.primary,
-                        size: 20,
-                      ),
-                      onPressed: () async {
-                        if (userId == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Inicia sesión para guardar favoritos.'),
-                              behavior: SnackBarBehavior.floating,
-                              backgroundColor: AppColors.textPrimary,
-                            ),
-                          );
-                          return;
-                        }
-                        await ref.read(favoritesProvider.notifier).toggleFavorite(widget.product);
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-
-                  // Botón Chatear
-                  Expanded(
-                    child: SizedBox(
-                      height: 44,
-                      child: TextButton(
-                        onPressed: _isStartingChat ? null : _handleStartChat,
-                        style: TextButton.styleFrom(
-                          backgroundColor: AppColors.surfaceMint,
-                          foregroundColor: AppColors.primary,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
-                        child: _isStartingChat
-                            ? const CircularProgressIndicator.adaptive(strokeWidth: 2)
-                            : const Text('Chatear', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5)),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-
-                  // Botón Chatear con el vendedor
-                  Expanded(
-                    child: SizedBox(
-                      height: 44,
-                      child: ElevatedButton(
-                        onPressed: _handleTradeOffer,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
-                        child: const Text('Chatear con el vendedor', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 13.5)),
-                      ),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {},
                     ),
                   ),
                 ],
               ),
             ),
           ],
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Row(
+            children: [
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.favorite_border),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/chat');
+                  },
+                  icon: const Icon(Icons.chat_bubble_outline),
+                  label: const Text(
+                    'Chatear con el vendedor',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6750A4),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
