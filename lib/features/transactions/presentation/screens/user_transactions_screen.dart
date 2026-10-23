@@ -1,3 +1,4 @@
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/features/transactions/providers/transactions_provider.dart';
@@ -17,38 +18,7 @@ class UserTransactionsScreen extends ConsumerWidget {
       length: 2,
       child: Scaffold(
         backgroundColor: theme.colorScheme.surface,
-        appBar: AppBar(
-          backgroundColor: theme.colorScheme.surface,
-          
-          scrolledUnderElevation: 0,
-          title: Text(
-            'Historial de Transacciones',
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              letterSpacing: -0.4,
-              color: theme.colorScheme.onSurface,
-            ),
-          ),
-          iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
-          bottom: TabBar(
-            indicatorColor: theme.colorScheme.primary,
-            indicatorWeight: 2.0,
-            labelColor: theme.colorScheme.primary,
-            unselectedLabelColor: theme.colorScheme.onSurfaceVariant.withValues(
-              alpha: 0.6,
-            ),
-            labelStyle: theme.textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-            unselectedLabelStyle: theme.textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.normal,
-            ),
-            tabs: const [
-              Tab(text: 'Enviados'),
-              Tab(text: 'Recibidos'),
-            ],
-          ),
-        ),
+      appBar: const CustomAppBar(titleText: 'Historial de Transacciones'),
         body: transactionsAsync.when(
           data: (transactions) {
             final sent = transactions
