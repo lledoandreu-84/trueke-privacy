@@ -413,7 +413,7 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
                   ),
                   const SizedBox(width: 8),
 
-                  // Botón Proponer Trueke
+                  // Botón Chatear con el vendedor
                   Expanded(
                     child: SizedBox(
                       height: 44,
@@ -424,7 +424,7 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
                           elevation: 0,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
-                        child: const Text('Proponer Trueke', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 13.5)),
+                        child: const Text('Chatear con el vendedor', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 13.5)),
                       ),
                     ),
                   ),
