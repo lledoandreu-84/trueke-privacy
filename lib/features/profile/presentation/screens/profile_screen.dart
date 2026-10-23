@@ -117,7 +117,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           createdAt: DateTime.now(),
                           images: const [imgUrl1],
                           owner: isOwn ? 'pruebatrueke' : 'lledoandreu84',
-                          ownerId: isOwn ? 'user_me' : 'user_vendor',
+                          ownerId: isOwn ? 'user_me' : 'lledoandreu84',
                           tradeType: TradeType.trade,
                           wanted: 'Cualquier cosa',
                         ),
@@ -163,7 +163,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           createdAt: DateTime.now(),
                           images: const [imgUrl2],
                           owner: isOwn ? 'pruebatrueke' : 'lledoandreu84',
-                          ownerId: isOwn ? 'user_me' : 'user_vendor',
+                          ownerId: isOwn ? 'user_me' : 'lledoandreu84',
                           tradeType: TradeType.trade,
                           wanted: 'Cualquier cosa',
                         ),
@@ -232,12 +232,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Si userId es nulo, vacio, 'me', 'pruebatrueke', o no es expresamente un id de vendedor de producto, es Mi Perfil
-    final bool isOwnProfile = widget.userId == null || 
-                              widget.userId == '' || 
-                              widget.userId == 'me' || 
-                              widget.userId == 'pruebatrueke' ||
-                              widget.userId == 'user_me';
+    // Si el userId NO es explícitamente el del vendedor ("lledoandreu84"), se considera el perfil propio "pruebatrueke"
+    final bool isOwnProfile = widget.userId != 'lledoandreu84' && widget.userId != 'user_vendor';
 
     final String profileTitle = isOwnProfile ? 'Mi Perfil' : 'Perfil del Vendedor';
     final String displayName = isOwnProfile ? 'pruebatrueke' : 'lledoandreu84';
