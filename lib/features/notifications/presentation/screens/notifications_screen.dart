@@ -1,3 +1,4 @@
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/services/notifications/providers/notifications_history_provider.dart';
@@ -13,44 +14,7 @@ class NotificationsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        
-        scrolledUnderElevation: 0,
-        title: Text(
-          'Notificaciones',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-            letterSpacing: -0.4,
-            color: theme.colorScheme.onSurface,
-          ),
-        ),
-        
-        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
-        actions: [
-          notificationsAsync.maybeWhen(
-            data: (list) => list.any((n) => !n.isRead)
-                ? IconButton(
-                    icon: Icon(
-                      Icons.done_all_rounded,
-                      color: theme.colorScheme.primary,
-                    ),
-                    tooltip: 'Marcar todo como leído',
-                    onPressed: () {
-                      ref
-                          .read(notificationsHistoryProvider.notifier)
-                          .markAllAsRead();
-                      ref
-                          .read(unreadNotificationsCountProvider.notifier)
-                          .reset();
-                    },
-                  )
-                : const SizedBox.shrink(),
-            orElse: () => const SizedBox.shrink(),
-          ),
-        ],
-      ),
+      appBar: const CustomAppBar(titleText: 'Notificaciones'),
       body: notificationsAsync.when(
         data: (notifications) {
           if (notifications.isEmpty) {
