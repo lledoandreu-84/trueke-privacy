@@ -90,6 +90,7 @@ void main() {
         overrides: [
           supabaseClientProvider.overrideWithValue(fakeClient),
           transactionRepositoryProvider.overrideWithValue(fakeRepository),
+          tradeOfferRepositoryProvider.overrideWithValue(TradeOfferRepository(fakeClient)),
         ],
       );
     });
