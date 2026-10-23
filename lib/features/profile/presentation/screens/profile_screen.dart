@@ -94,6 +94,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ProductDetailPage(
+                        hideVendorCard: true, // Rompe la cadena aquí
                         product: Product(
                           id: 'prod_1',
                           title: 'Artículo en venta 1',
@@ -133,6 +134,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ProductDetailPage(
+                        hideVendorCard: true, // Rompe la cadena aquí
                         product: Product(
                           id: 'prod_2',
                           title: 'Artículo en venta 2',
