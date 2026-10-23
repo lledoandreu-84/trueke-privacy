@@ -27,7 +27,7 @@ class TruekesHistoryScreen extends ConsumerWidget {
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
+        
         scrolledUnderElevation: 0,
         title: Text(
           'Historial de Truekes',
@@ -199,7 +199,7 @@ class _DisputeDialogState extends ConsumerState<_DisputeDialog> {
     final theme = Theme.of(context);
     return AlertDialog(
       backgroundColor: theme.colorScheme.surface,
-      elevation: 0,
+      
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: Text(
         'Abrir Disputa',

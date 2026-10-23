@@ -16,8 +16,8 @@ class NearbyProductsScreen extends ConsumerWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
-        elevation: 0,
-        centerTitle: true,
+        
+        
         title: const Text(
           'Cerca de ti (hasta 100 km)',
           style: TextStyle(

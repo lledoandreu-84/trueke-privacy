@@ -14,7 +14,7 @@ class SettingsScreen extends ConsumerWidget {
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
+        
         scrolledUnderElevation: 0,
         title: Text(
           'Ajustes Globales',

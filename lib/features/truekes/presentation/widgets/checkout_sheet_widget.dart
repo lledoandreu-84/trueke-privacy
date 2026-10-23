@@ -93,7 +93,7 @@ class CheckoutSheetWidget extends ConsumerWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
-              elevation: 0,
+              
             ),
             child: const Text(
               'Aceptar e Iniciar Intercambio',

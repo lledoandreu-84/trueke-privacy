@@ -21,7 +21,7 @@ class UserReviewsScreen extends StatelessWidget {
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
+        
         scrolledUnderElevation: 0,
         title: Text(
           'Opiniones de $userName',
@@ -71,7 +71,7 @@ class UserReviewsScreen extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
-              elevation: 0,
+              
             ),
             onPressed: () async {
               final result = await showDialog<bool>(

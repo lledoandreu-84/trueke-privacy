@@ -18,8 +18,8 @@ class ProfileScreen extends ConsumerWidget {
           ),
         ),
         backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
-        centerTitle: true,
+        
+        
       ),
       body: ListView(
         padding: const EdgeInsets.all(20),
@@ -67,7 +67,7 @@ class ProfileScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
           Card(
-            elevation: 0,
+            
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
               side: BorderSide(

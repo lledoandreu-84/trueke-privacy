@@ -70,7 +70,7 @@ class _MapEncounterScreenState extends ConsumerState<MapEncounterScreen> {
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
+        
         scrolledUnderElevation: 0,
         title: Text(
           'Punto de Encuentro',
@@ -99,7 +99,7 @@ class _MapEncounterScreenState extends ConsumerState<MapEncounterScreen> {
                     width: 1,
                   ),
                 ),
-                elevation: 0,
+                
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
@@ -163,7 +163,7 @@ class _MapEncounterScreenState extends ConsumerState<MapEncounterScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  elevation: 0,
+                  
                 ),
               ),
             ],

@@ -146,7 +146,7 @@ class ProductDetailPage extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     Card(
-                      elevation: 0,
+                      
                       shape: RoundedRectangleBorder(
                         side: BorderSide(color: Colors.grey.shade300),
                         borderRadius: BorderRadius.circular(12),

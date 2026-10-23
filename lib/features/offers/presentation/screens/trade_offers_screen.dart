@@ -16,7 +16,7 @@ class TradeOffersScreen extends ConsumerWidget {
       return Scaffold(
         appBar: AppBar(
           title: const Text('Intercambios Directos'),
-          centerTitle: false,
+          
         ),
         body: Center(
           child: Padding(
@@ -64,8 +64,8 @@ class TradeOffersScreen extends ConsumerWidget {
             letterSpacing: -0.5,
           ),
         ),
-        centerTitle: false,
-        elevation: 0,
+        
+        
       ),
       body: RefreshIndicator(
         onRefresh: () async {

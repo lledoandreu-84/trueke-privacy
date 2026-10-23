@@ -65,7 +65,7 @@ class ProductGallery extends ConsumerWidget {
       expandedHeight: 360,
       pinned: true,
       backgroundColor: AppColors.surface,
-      elevation: 0,
+      
       scrolledUnderElevation: 0,
       leading: const BackButton(color: AppColors.textPrimary),
       flexibleSpace: FlexibleSpaceBar(background: _buildImage()),

@@ -80,7 +80,7 @@ class _WriteReviewPageState extends ConsumerState<WriteReviewPage> {
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
+        
         scrolledUnderElevation: 0,
         title: Text(
           'Dejar Valoración',
@@ -182,7 +182,7 @@ class _WriteReviewPageState extends ConsumerState<WriteReviewPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      elevation: 0,
+                      
                     ),
                     onPressed: _submitReview,
                     child: const Text(

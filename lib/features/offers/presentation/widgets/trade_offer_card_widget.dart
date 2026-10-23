@@ -205,7 +205,7 @@ class TradeOfferCard extends ConsumerWidget {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
-                          elevation: 0,
+                          
                         ),
                         child: const Text(
                           'Aceptar Trueke',

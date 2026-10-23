@@ -320,13 +320,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final totalReviews = ref.read(vendorReviewsProvider.notifier).totalReviews;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      
       appBar: AppBar(
         title: Text(profileTitle),
-        centerTitle: true,
+        
         automaticallyImplyLeading: false, // Sin flecha de retroceso innecesaria en pestaña raíz
-        backgroundColor: Colors.white,
-        elevation: 0,
+        
+        
       ),
       body: SafeArea(
         child: Padding(

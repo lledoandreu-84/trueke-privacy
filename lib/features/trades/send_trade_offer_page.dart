@@ -102,8 +102,8 @@ class _SendTradeOfferPageState extends ConsumerState<SendTradeOfferPage> {
           ),
         ),
         iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
-        centerTitle: false,
-        elevation: 0,
+        
+        
         scrolledUnderElevation: 0,
       ),
       body: _isLoading
@@ -311,7 +311,7 @@ class _SendTradeOfferPageState extends ConsumerState<SendTradeOfferPage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    elevation: 0,
+                    
                   ),
                   icon: const Icon(Icons.send_rounded),
                   label: const Text(

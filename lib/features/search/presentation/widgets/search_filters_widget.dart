@@ -350,7 +350,7 @@ class SearchFiltersWidget extends ConsumerWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  elevation: 0,
+                  
                 ),
                 child: const Text(
                   'Aplicar filtros',

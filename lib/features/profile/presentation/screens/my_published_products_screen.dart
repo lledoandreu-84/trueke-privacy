@@ -27,7 +27,7 @@ class MyPublishedProductsScreen extends ConsumerWidget {
           ),
         ),
         backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
+        
         scrolledUnderElevation: 0,
         iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
       ),

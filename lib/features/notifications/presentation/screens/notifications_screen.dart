@@ -15,7 +15,7 @@ class NotificationsScreen extends ConsumerWidget {
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
+        
         scrolledUnderElevation: 0,
         title: Text(
           'Notificaciones',
@@ -26,7 +26,7 @@ class NotificationsScreen extends ConsumerWidget {
             color: theme.colorScheme.onSurface,
           ),
         ),
-        centerTitle: false,
+        
         iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
         actions: [
           notificationsAsync.maybeWhen(

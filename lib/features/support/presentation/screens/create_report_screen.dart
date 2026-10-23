@@ -91,7 +91,7 @@ class _CreateReportScreenState extends ConsumerState<CreateReportScreen> {
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
+        
         scrolledUnderElevation: 0,
         title: Text(
           'Enviar Reporte',
@@ -226,7 +226,7 @@ class _CreateReportScreenState extends ConsumerState<CreateReportScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      elevation: 0,
+                      
                     ),
                     child: isLoading
                         ? SizedBox(

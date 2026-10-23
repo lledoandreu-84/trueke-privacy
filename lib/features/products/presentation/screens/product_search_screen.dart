@@ -68,8 +68,8 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
-        elevation: 0,
-        centerTitle: true,
+        
+        
         title: const Text(
           'Explorar',
           style: TextStyle(

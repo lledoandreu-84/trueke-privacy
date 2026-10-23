@@ -372,7 +372,7 @@ class EscrowStatusWidget extends ConsumerWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              elevation: 0,
+              
             ),
             child: const Text(
               'Confirmar Envío y Notificar',
@@ -458,7 +458,7 @@ class EscrowStatusWidget extends ConsumerWidget {
             style: FilledButton.styleFrom(
               backgroundColor: theme.colorScheme.error,
               foregroundColor: theme.colorScheme.onError,
-              elevation: 0,
+              
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),

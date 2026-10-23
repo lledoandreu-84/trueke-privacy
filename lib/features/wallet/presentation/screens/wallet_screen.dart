@@ -29,7 +29,7 @@ class WalletScreen extends ConsumerWidget {
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
+        
         scrolledUnderElevation: 0,
         title: Text(
           'Mi Cartera',
@@ -189,7 +189,7 @@ class WalletScreen extends ConsumerWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
-                elevation: 0,
+                
               ),
               child: mutationState.isLoading
                   ? SizedBox(

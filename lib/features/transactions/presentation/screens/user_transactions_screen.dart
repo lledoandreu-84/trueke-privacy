@@ -19,7 +19,7 @@ class UserTransactionsScreen extends ConsumerWidget {
         backgroundColor: theme.colorScheme.surface,
         appBar: AppBar(
           backgroundColor: theme.colorScheme.surface,
-          elevation: 0,
+          
           scrolledUnderElevation: 0,
           title: Text(
             'Historial de Transacciones',
@@ -228,7 +228,7 @@ class _TransactionItemRowState extends ConsumerState<_TransactionItemRow> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              elevation: 0,
+              
             ),
             child: const Text(
               'Aceptar',

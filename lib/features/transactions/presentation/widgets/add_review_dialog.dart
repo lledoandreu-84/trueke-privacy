@@ -236,7 +236,7 @@ class _AddReviewDialogState extends ConsumerState<AddReviewDialog> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  elevation: 0,
+                  
                 ),
                 child: _isSubmitting
                     ? SizedBox(

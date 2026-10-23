@@ -194,7 +194,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      elevation: 0,
+                      
                     ),
                     child: _isLoading
                         ? SizedBox(

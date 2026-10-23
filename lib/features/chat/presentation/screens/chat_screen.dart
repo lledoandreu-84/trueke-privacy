@@ -130,7 +130,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                elevation: 0,
+                
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -357,7 +357,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     style: FilledButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
-                      elevation: 0,
+                      
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -512,7 +512,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                elevation: 0,
+                
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -568,7 +568,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                elevation: 0,
+                
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -616,7 +616,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
-        elevation: 0,
+        
         scrolledUnderElevation: 0,
         title: const Text(
           "Chat de Negociación",

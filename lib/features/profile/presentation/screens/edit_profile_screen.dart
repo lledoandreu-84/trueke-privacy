@@ -136,7 +136,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
+        
         scrolledUnderElevation: 0,
         title: Text(
           'Editar Perfil',
@@ -359,7 +359,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      elevation: 0,
+                      
                     ),
                     onPressed: isLoading ? null : _submit,
                     child: isLoading

@@ -95,7 +95,7 @@ class _VerifyOtpScreenState extends ConsumerState<VerifyOtpScreen> {
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
+        
         scrolledUnderElevation: 0,
         title: Text(
           'Verificar Cuenta',
@@ -191,7 +191,7 @@ class _VerifyOtpScreenState extends ConsumerState<VerifyOtpScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        elevation: 0,
+                        
                       ),
                       onPressed: _isVerifying ? null : _verifyCode,
                       child: _isVerifying

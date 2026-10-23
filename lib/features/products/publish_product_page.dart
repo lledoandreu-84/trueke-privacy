@@ -243,8 +243,8 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
-        elevation: 0,
-        centerTitle: true,
+        
+        
         title: Text(
           isEditing ? 'Editar Producto' : 'Publicar Producto',
           style: const TextStyle(
@@ -621,7 +621,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  elevation: 0,
+                  
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),

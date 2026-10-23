@@ -17,7 +17,7 @@ class TradeOffersPage extends ConsumerWidget {
         backgroundColor: theme.colorScheme.surface,
         appBar: AppBar(
           backgroundColor: theme.colorScheme.surface,
-          elevation: 0,
+          
           scrolledUnderElevation: 0,
           title: Text(
             'Propuestas de Trueke',
@@ -133,7 +133,7 @@ class _OffersList extends ConsumerWidget {
 
         return Card(
           color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
-          elevation: 0,
+          
           margin: const EdgeInsets.only(bottom: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -232,7 +232,7 @@ class _OffersList extends ConsumerWidget {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          elevation: 0,
+                          
                         ),
                         child: const Text('Aceptar'),
                       ),

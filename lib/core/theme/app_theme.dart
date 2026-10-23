@@ -10,8 +10,8 @@ class AppTheme {
         brightness: Brightness.light,
       ),
       appBarTheme: const AppBarTheme(
-        centerTitle: true,
-        elevation: 0,
+        
+        
       ),
     );
   }
@@ -24,8 +24,8 @@ class AppTheme {
         brightness: Brightness.dark,
       ),
       appBarTheme: const AppBarTheme(
-        centerTitle: true,
-        elevation: 0,
+        
+        
       ),
     );
   }

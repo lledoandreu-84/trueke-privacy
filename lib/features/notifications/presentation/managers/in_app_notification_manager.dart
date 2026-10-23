@@ -114,7 +114,7 @@ class InAppNotificationBanner {
         duration: const Duration(seconds: 3),
         margin: const EdgeInsets.all(16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        elevation: 0,
+        
       ),
     );
   }

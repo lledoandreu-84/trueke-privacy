@@ -19,7 +19,7 @@ class MyListingsPage extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: AppColors.surface,
         surfaceTintColor: Colors.transparent,
-        elevation: 0,
+        
         scrolledUnderElevation: 0,
         titleSpacing: 20,
         title: const Column(
@@ -365,7 +365,7 @@ class _ListingCard extends StatelessWidget {
     return Card(
       color: AppColors.surface,
       surfaceTintColor: Colors.transparent,
-      elevation: 0,
+      
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
