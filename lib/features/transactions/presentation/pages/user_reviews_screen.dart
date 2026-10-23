@@ -1,3 +1,4 @@
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import '../widgets/user_reviews_list_widget.dart';
@@ -19,28 +20,7 @@ class UserReviewsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        
-        scrolledUnderElevation: 0,
-        title: Text(
-          'Opiniones de $userName',
-          style: TextStyle(
-            color: theme.colorScheme.onSurface,
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-            letterSpacing: -0.4,
-          ),
-        ),
-        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(
-            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-            height: 1,
-          ),
-        ),
-      ),
+      appBar: CustomAppBar(titleText: 'Opiniones de \$userName'),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 16),
         children: [
