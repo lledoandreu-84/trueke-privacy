@@ -1,4 +1,5 @@
 import 'package:trueke/shared/widgets/custom_app_bar.dart';
+import 'package:trueke/features/products/providers/user_products_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/features/auth/auth_service.dart';
@@ -160,6 +161,7 @@ class MyPublishedProductsScreen extends ConsumerWidget {
                                 if (confirm == true) {
                                   await ref.read(productsProvider.notifier).deleteProduct(product);
                                   ref.invalidate(productsProvider);
+                        ref.invalidate(userProductsProvider);
                                 }
                               },
                             ),
