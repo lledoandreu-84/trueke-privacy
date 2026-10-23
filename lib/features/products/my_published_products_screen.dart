@@ -1,3 +1,4 @@
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/features/auth/auth_service.dart';
@@ -23,18 +24,7 @@ class MyPublishedProductsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        
-        scrolledUnderElevation: 0,
-        title: Text(
-          'Mis Productos',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            letterSpacing: -0.5,
-          ),
-        ),
-      ),
+      appBar: const CustomAppBar(titleText: 'Mis Productos'),
       body: productsAsync.when(
         data: (products) {
           // Filtramos las existencias relacionales asegurando coincidencia ACID con el ownerId
