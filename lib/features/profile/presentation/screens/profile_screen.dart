@@ -39,7 +39,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     _commentController.clear();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('¡Gracias por tus comentarios! Nos ayudan a mejorar.')),
+      const SnackBar(
+        content: Text('¡Sugerencia enviada a davidlledoandreu@gmail.com! Gracias por ayudarnos a mejorar.'),
+        duration: Duration(seconds: 3),
+      ),
     );
   }
 
@@ -285,244 +288,274 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(profileTitle), // Mismo estilo estandarizado que el resto de appbars
+        title: Text(
+          profileTitle,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        elevation: 0,
       ),
-      body: SingleChildScrollView(
+      body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Card(
-                elevation: 1.5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const CircleAvatar(
-                        radius: 34,
-                        child: Icon(Icons.person, size: 34),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        displayName,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        displaySubtitle,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.grey[600],
-                            ),
-                      ),
-                      const SizedBox(height: 8),
-                      _buildRatingBadge(
-                        rating: userRating,
-                        totalReviews: totalReviews,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                isOwnProfile ? 'Actividad y Ofertas' : 'Artículos del Vendedor',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              const SizedBox(height: 8),
-              Material(
-                color: Colors.transparent,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: Colors.grey.withValues(alpha: 0.2),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      if (isOwnProfile) ...[
-                        _buildMenuItem(
-                          icon: Icons.chat_bubble_outline_rounded,
-                          title: 'Mis Conversaciones',
-                          subtitle: 'Negociaciones activas por productos',
-                          badgeText: 'Chat',
-                          onTap: () {
-                            Navigator.pushNamed(context, '/notifications');
-                          },
+                      Card(
+                        elevation: 1.5,
+                        margin: EdgeInsets.zero,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        const Divider(height: 1),
-                      ],
-                      _buildMenuItem(
-                        icon: Icons.inventory_2_outlined,
-                        title: isOwnProfile ? 'Mis Productos Publicados' : 'Productos en Venta',
-                        subtitle: isOwnProfile ? 'Gestiona tus artículos expuestos' : 'Ver artículos expuestos',
-                        badgeText: '$publishedCount',
-                        onTap: () {
-                          _showVendorProducts(context, isOwn: isOwnProfile);
-                        },
-                      ),
-                      if (isOwnProfile) ...[
-                        const Divider(height: 1),
-                        _buildMenuItem(
-                          icon: Icons.history_rounded,
-                          title: 'Historial de Intercambios',
-                          subtitle: 'Truekes completados con éxito',
-                          badgeText: '$historyCount',
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Aún no has completado ningún Trueke.')),
-                            );
-                          },
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                isOwnProfile ? 'Sugerencias y Feedback' : 'Valorar al Vendedor',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              const SizedBox(height: 8),
-              Card(
-                elevation: 1,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
-                  child: isOwnProfile
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            TextField(
-                              controller: _commentController,
-                              maxLines: 1,
-                              decoration: const InputDecoration(
-                                hintText: '¿Cómo podemos mejorar tu experiencia en Trueke?',
-                                border: OutlineInputBorder(),
-                                isDense: true,
-                                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
+                          child: Column(
+                            children: [
+                              const CircleAvatar(
+                                radius: 32,
+                                child: Icon(Icons.person, size: 32),
                               ),
-                            ),
-                            const SizedBox(height: 10),
-                            ElevatedButton.icon(
-                              onPressed: _submitComment,
-                              icon: const Icon(Icons.send_rounded, size: 18),
-                              label: const Text('Enviar Sugerencia'),
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 10),
-                              ),
-                            ),
-                          ],
-                        )
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const Text(
-                              'Selecciona una puntuación:',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: List.generate(5, (index) {
-                                final starNumber = index + 1;
-                                return IconButton(
-                                  icon: Icon(
-                                    starNumber <= _selectedRating
-                                        ? Icons.star_rounded
-                                        : Icons.star_outline_rounded,
-                                    color: Colors.amber,
-                                    size: 32,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _selectedRating = starNumber;
-                                    });
-                                  },
-                                );
-                              }),
-                            ),
-                            const SizedBox(height: 8),
-                            TextField(
-                              controller: _reviewController,
-                              maxLines: 2,
-                              decoration: const InputDecoration(
-                                hintText: 'Escribe tu reseña sobre el trato y el intercambio...',
-                                border: OutlineInputBorder(),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            ElevatedButton.icon(
-                              onPressed: _submitReview,
-                              icon: const Icon(Icons.rate_review_rounded),
-                              label: const Text('Enviar Reseña y Valoración'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF6750A4),
-                                foregroundColor: Colors.white,
-                              ),
-                            ),
-                            if (reviews.isNotEmpty) ...[
-                              const SizedBox(height: 12),
-                              const Divider(),
-                              const SizedBox(height: 6),
+                              const SizedBox(height: 8),
                               Text(
-                                'Reseñas recibidas (${reviews.length})',
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                displayName,
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                displaySubtitle,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: Colors.grey[600],
+                                      fontSize: 12,
+                                    ),
                               ),
                               const SizedBox(height: 6),
-                              ...reviews.map((r) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 6.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: List.generate(
-                                            r.rating,
-                                            (index) => const Icon(Icons.star, size: 14, color: Colors.amber),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 2),
-                                        Text(r.comment, style: const TextStyle(fontSize: 13)),
-                                      ],
-                                    ),
-                                  )),
+                              _buildRatingBadge(
+                                rating: userRating,
+                                totalReviews: totalReviews,
+                              ),
                             ],
-                          ],
+                          ),
                         ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        isOwnProfile ? 'Actividad y Ofertas' : 'Artículos del Vendedor',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                      ),
+                      const SizedBox(height: 6),
+                      Material(
+                        color: Colors.transparent,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).cardColor,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Colors.grey.withValues(alpha: 0.2),
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              if (isOwnProfile) ...[
+                                _buildMenuItem(
+                                  icon: Icons.chat_bubble_outline_rounded,
+                                  title: 'Mis Conversaciones',
+                                  subtitle: 'Negociaciones activas por productos',
+                                  badgeText: 'Chat',
+                                  onTap: () {
+                                    Navigator.pushNamed(context, '/notifications');
+                                  },
+                                ),
+                                const Divider(height: 1),
+                              ],
+                              _buildMenuItem(
+                                icon: Icons.inventory_2_outlined,
+                                title: isOwnProfile ? 'Mis Productos Publicados' : 'Productos en Venta',
+                                subtitle: isOwnProfile ? 'Gestiona tus artículos expuestos' : 'Ver artículos expuestos',
+                                badgeText: '$publishedCount',
+                                onTap: () {
+                                  _showVendorProducts(context, isOwn: isOwnProfile);
+                                },
+                              ),
+                              if (isOwnProfile) ...[
+                                const Divider(height: 1),
+                                _buildMenuItem(
+                                  icon: Icons.history_rounded,
+                                  title: 'Historial de Intercambios',
+                                  subtitle: 'Truekes completados con éxito',
+                                  badgeText: '$historyCount',
+                                  onTap: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Aún no has completado ningún Trueke.')),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        isOwnProfile ? 'Sugerencias y Feedback' : 'Valorar al Vendedor',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                      ),
+                      const SizedBox(height: 6),
+                      Card(
+                        elevation: 1,
+                        margin: EdgeInsets.zero,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+                          child: isOwnProfile
+                              ? Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextField(
+                                        controller: _commentController,
+                                        maxLines: 1,
+                                        style: const TextStyle(fontSize: 13),
+                                        decoration: const InputDecoration(
+                                          hintText: '¿Cómo podemos mejorar Trueke?',
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                                          ),
+                                          isDense: true,
+                                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    IconButton.filled(
+                                      onPressed: _submitComment,
+                                      icon: const Icon(Icons.send_rounded, size: 18),
+                                      style: IconButton.styleFrom(
+                                        backgroundColor: const Color(0xFF6750A4),
+                                        foregroundColor: Colors.white,
+                                        padding: const EdgeInsets.all(10),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    const Text(
+                                      'Selecciona una puntuación:',
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: List.generate(5, (index) {
+                                        final starNumber = index + 1;
+                                        return IconButton(
+                                          icon: Icon(
+                                            starNumber <= _selectedRating
+                                                ? Icons.star_rounded
+                                                : Icons.star_outline_rounded,
+                                            color: Colors.amber,
+                                            size: 32,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              _selectedRating = starNumber;
+                                            });
+                                          },
+                                        );
+                                      }),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    TextField(
+                                      controller: _reviewController,
+                                      maxLines: 2,
+                                      decoration: const InputDecoration(
+                                        hintText: 'Escribe tu reseña sobre el trato...',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    ElevatedButton.icon(
+                                      onPressed: _submitReview,
+                                      icon: const Icon(Icons.rate_review_rounded),
+                                      label: const Text('Enviar Reseña y Valoración'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color(0xFF6750A4),
+                                        foregroundColor: Colors.white,
+                                      ),
+                                    ),
+                                    if (reviews.isNotEmpty) ...[
+                                      const SizedBox(height: 12),
+                                      const Divider(),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        'Reseñas recibidas (${reviews.length})',
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      ...reviews.map((r) => Padding(
+                                            padding: const EdgeInsets.only(bottom: 6.0),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: List.generate(
+                                                    r.rating,
+                                                    (index) => const Icon(Icons.star, size: 14, color: Colors.amber),
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 2),
+                                                Text(r.comment, style: const TextStyle(fontSize: 13)),
+                                              ],
+                                            ),
+                                          )),
+                                    ],
+                                  ],
+                                ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               if (isOwnProfile) ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 TextButton.icon(
                   onPressed: _confirmLogout,
-                  icon: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 20),
+                  icon: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 18),
                   label: const Text(
                     'Cerrar Sesión',
                     style: TextStyle(
                       color: Colors.redAccent,
                       fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                      fontSize: 13,
                     ),
                   ),
                   style: TextButton.styleFrom(
                     backgroundColor: Colors.red.withValues(alpha: 0.08),
-                    padding: const EdgeInsets.symmetric(vertical: 11),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                 ),
@@ -543,22 +576,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }) {
     return ListTile(
       dense: true,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 1),
       leading: CircleAvatar(
-        radius: 17,
+        radius: 16,
         backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-        child: Icon(icon, color: Theme.of(context).primaryColor, size: 19),
+        child: Icon(icon, color: Theme.of(context).primaryColor, size: 18),
       ),
       title: Text(
         title,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5),
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
       ),
-      subtitle: Text(subtitle, style: const TextStyle(fontSize: 11.5)),
+      subtitle: Text(subtitle, style: const TextStyle(fontSize: 11)),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
               color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
@@ -568,11 +601,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               style: TextStyle(
                 color: Theme.of(context).primaryColor,
                 fontWeight: FontWeight.bold,
-                fontSize: 11.5,
+                fontSize: 11,
               ),
             ),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: 4),
           const Icon(Icons.chevron_right_rounded, size: 20),
         ],
       ),
