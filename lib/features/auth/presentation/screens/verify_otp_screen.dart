@@ -1,3 +1,4 @@
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -93,19 +94,7 @@ class _VerifyOtpScreenState extends ConsumerState<VerifyOtpScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        
-        scrolledUnderElevation: 0,
-        title: Text(
-          'Verificar Cuenta',
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onSurface,
-          ),
-        ),
-        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
-      ),
+      appBar: const CustomAppBar(titleText: 'Verificar Cuenta'),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
