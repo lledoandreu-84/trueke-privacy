@@ -323,8 +323,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(profileTitle),
-        centerTitle: false, // Alineado a la izquierda exactamente igual que Publicar Producto
-        automaticallyImplyLeading: true, // Muestra la flecha de retroceso
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          onPressed: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              Navigator.of(context).pushReplacementNamed('/');
+            }
+          },
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
