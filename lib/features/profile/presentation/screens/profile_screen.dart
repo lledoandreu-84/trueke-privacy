@@ -89,14 +89,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const publishedCount = 0;
+    final bool isOwnProfile = widget.userId == null || widget.userId == 'me' || widget.userId == 'lledoandreu84';
+    final String profileTitle = isOwnProfile ? 'Mi Perfil' : 'Perfil del Vendedor';
+    final String displayName = isOwnProfile ? 'Usuario Trueke' : (widget.userId ?? 'lledoandreu84');
+    final String displaySubtitle = isOwnProfile ? 'Comunidad Trueke' : 'Miembro verificado';
+
+    const publishedCount = 2;
     const historyCount = 0;
     const double userRating = 0.0;
     const int totalReviews = 0;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mi Perfil'),
+        title: Text(profileTitle),
         elevation: 0,
       ),
       body: LayoutBuilder(
@@ -126,14 +131,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              'Usuario Trueke',
+                              displayName,
                               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Comunidad Trueke',
+                              displaySubtitle,
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: Colors.grey[600],
                                   ),
@@ -149,7 +154,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'Actividad y Ofertas',
+                      isOwnProfile ? 'Actividad y Ofertas' : 'Artículos del Vendedor',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -167,91 +172,85 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                         child: Column(
                           children: [
-                            _buildMenuItem(
-                              icon: Icons.chat_bubble_outline_rounded,
-                              title: 'Mis Conversaciones',
-                              subtitle: 'Negociaciones activas por productos',
-                              badgeText: 'Chat',
-                              onTap: () {
-                                Navigator.pushNamed(context, '/notifications');
-                              },
-                            ),
-                            const Divider(height: 1),
+                            if (isOwnProfile) ...[
+                              _buildMenuItem(
+                                icon: Icons.chat_bubble_outline_rounded,
+                                title: 'Mis Conversaciones',
+                                subtitle: 'Negociaciones activas por productos',
+                                badgeText: 'Chat',
+                                onTap: () {
+                                  Navigator.pushNamed(context, '/notifications');
+                                },
+                              ),
+                              const Divider(height: 1),
+                            ],
                             _buildMenuItem(
                               icon: Icons.inventory_2_outlined,
-                              title: 'Mis Productos Publicados',
+                              title: isOwnProfile ? 'Mis Productos Publicados' : 'Productos en Venta',
                               subtitle: 'Gestiona tus artículos expuestos',
                               badgeText: '$publishedCount',
                               onTap: () {
-                                if (publishedCount > 0) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Abriendo listado de productos publicados...')),
-                                  );
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('No tienes productos publicados actualmente.')),
-                                  );
-                                }
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Abriendo listado de productos...')),
+                                );
                               },
                             ),
-                            const Divider(height: 1),
-                            _buildMenuItem(
-                              icon: Icons.history_rounded,
-                              title: 'Historial de Intercambios',
-                              subtitle: 'Truekes completados con éxito',
-                              badgeText: '$historyCount',
-                              onTap: () {
-                                if (historyCount > 0) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Abriendo historial de Truekes...')),
-                                  );
-                                } else {
+                            if (isOwnProfile) ...[
+                              const Divider(height: 1),
+                              _buildMenuItem(
+                                icon: Icons.history_rounded,
+                                title: 'Historial de Intercambios',
+                                subtitle: 'Truekes completados con éxito',
+                                badgeText: '$historyCount',
+                                onTap: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(content: Text('Aún no has completado ningún Trueke.')),
                                   );
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Sugerencias y Feedback',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                    const SizedBox(height: 12),
-                    Card(
-                      elevation: 1,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            TextField(
-                              controller: _commentController,
-                              maxLines: 3,
-                              decoration: const InputDecoration(
-                                hintText: '¿Cómo podemos mejorar tu experiencia en Trueke?',
-                                border: OutlineInputBorder(),
+                                },
                               ),
-                            ),
-                            const SizedBox(height: 12),
-                            ElevatedButton.icon(
-                              onPressed: _submitComment,
-                              icon: const Icon(Icons.send_rounded),
-                              label: const Text('Enviar Sugerencia'),
-                            ),
+                            ],
                           ],
                         ),
                       ),
                     ),
+                    if (isOwnProfile) ...[
+                      const SizedBox(height: 24),
+                      Text(
+                        'Sugerencias y Feedback',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      const SizedBox(height: 12),
+                      Card(
+                        elevation: 1,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              TextField(
+                                controller: _commentController,
+                                maxLines: 3,
+                                decoration: const InputDecoration(
+                                  hintText: '¿Cómo podemos mejorar tu experiencia en Trueke?',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              ElevatedButton.icon(
+                                onPressed: _submitComment,
+                                icon: const Icon(Icons.send_rounded),
+                                label: const Text('Enviar Sugerencia'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
