@@ -11,10 +11,11 @@ class ProductDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = product?.title ?? 'venta';
+    final title = product?.title ?? 'Artículo';
     final condition = product?.condition ?? 'Buen estado';
     final location = product?.location ?? 'Madrid, España';
-    final description = product?.description ?? 'venta';
+    final description = product?.description ?? 'Sin descripción disponible';
+    final imageUrl = product?.imageUrl;
 
     return Scaffold(
       appBar: AppBar(
@@ -47,11 +48,22 @@ class ProductDetailPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: 200,
+            SizedBox(
+              height: 240,
               width: double.infinity,
-              color: Colors.green[200],
-              child: const Icon(Icons.image, size: 80, color: Colors.white),
+              child: imageUrl != null && imageUrl.isNotEmpty
+                  ? Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        color: Colors.grey[300],
+                        child: const Icon(Icons.image_not_supported, size: 64, color: Colors.grey),
+                      ),
+                    )
+                  : Container(
+                      color: Colors.green[200],
+                      child: const Icon(Icons.image, size: 80, color: Colors.white),
+                    ),
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -153,7 +165,9 @@ class ProductDetailPage extends StatelessWidget {
                         ],
                       ),
                       trailing: const Icon(Icons.chevron_right),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(context, '/chat');
+                      },
                     ),
                   ),
                 ],
