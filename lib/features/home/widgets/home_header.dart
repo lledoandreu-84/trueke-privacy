@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
 
-
-class HomeHeader extends StatelessWidget {
+class HomeHeader extends ConsumerWidget {
   const HomeHeader({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),
       decoration: const BoxDecoration(color: AppColors.surface),
@@ -64,14 +64,21 @@ class HomeHeader extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: AppColors.border, width: 1),
             ),
-            child: IconButton(
-              tooltip: 'Notificaciones',
-              icon: const Icon(
-                Icons.notifications_none_rounded,
-                color: AppColors.petrolBlue,
-                size: 23,
-              ),
-              onPressed: () {},
+            child: Stack(
+              children: [
+                IconButton(
+                  tooltip: 'Conversaciones y Notificaciones',
+                  icon: const Icon(
+                    Icons.notifications_none_rounded,
+                    color: AppColors.petrolBlue,
+                    size: 23,
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('/notifications');
+                  },
+                ),
+                // Aquí se puede añadir un badge dinámico cuando se integre el contador de chat
+              ],
             ),
           ),
         ],
