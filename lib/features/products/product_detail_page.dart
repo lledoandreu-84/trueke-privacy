@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/product.dart';
+import '../profile/presentation/screens/profile_screen.dart';
 
 class ProductDetailPage extends StatelessWidget {
   final Product? product;
@@ -16,6 +17,7 @@ class ProductDetailPage extends StatelessWidget {
     final location = product?.location ?? 'Madrid, España';
     final description = product?.description ?? 'Sin descripción disponible';
     final imageUrl = product?.imageUrl;
+    final sellerId = product?.id ?? 'lledoandreu84';
 
     return Scaffold(
       appBar: AppBar(
@@ -166,7 +168,12 @@ class ProductDetailPage extends StatelessWidget {
                       ),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () {
-                        Navigator.pushNamed(context, '/chat');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProfileScreen(userId: sellerId.toString()),
+                          ),
+                        );
                       },
                     ),
                   ),
