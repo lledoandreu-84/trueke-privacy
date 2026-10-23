@@ -1,3 +1,4 @@
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:trueke/models/review.dart';
 import 'package:trueke/features/reviews/providers/reviews_provider.dart';
 import 'package:trueke/models/transaction.dart';
@@ -614,35 +615,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        
-        scrolledUnderElevation: 0,
-        title: const Text(
-          "Chat de Negociación",
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w700,
-            fontSize: 16,
-            letterSpacing: -0.4,
-          ),
-        ),
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.handshake_outlined, color: AppColors.primary),
-            onPressed: _showTradeOfferDialog,
-            tooltip: "Proponer Trueke",
-          ),
-        ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(
-            color: const Color(0xFFE2E8F0),
-            height: 0.5,
-          ),
-        ),
-      ),
+      appBar: const CustomAppBar(titleText: 'Chat de Negociación'),
       body: messagesAsync.when(
         loading: () =>
             const Center(child: CircularProgressIndicator.adaptive()),
