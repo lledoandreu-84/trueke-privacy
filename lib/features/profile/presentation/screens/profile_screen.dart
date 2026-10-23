@@ -468,14 +468,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 child: Column(
                                   children: [
                                     _buildMenuItem(
-                                      icon: Icons.swap_horiz_rounded,
-                                      title: 'Mis Ofertas de Trueke',
-                                      subtitle: 'Gestionar intercambios propuestos',
-                                      badgeText: '$offersCount',
-                                      onTap: () {
-                                        if (offersCount > 0) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(content: Text('Abriendo listado de ofertas de Trueke...')),
+                                        icon: Icons.chat_bubble_outline_rounded,
+                                        title: 'Mis Conversaciones',
+                                        subtitle: 'Negociaciones activas por productos',
+                                        badgeText: 'Chat',
+                                        onTap: () {
+                                          Navigator.pushNamed(context, '/notifications');
+                                        },
+                                      ),
                                           );
                                         } else {
                                           ScaffoldMessenger.of(context).showSnackBar(
