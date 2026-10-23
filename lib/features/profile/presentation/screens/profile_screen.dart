@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:trueke/models/product.dart';
+import 'package:trueke/features/products/product_detail_page.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   final String? userId;
@@ -74,27 +76,67 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ),
               const SizedBox(height: 12),
               ListTile(
-                leading: Container(
-                  width: 50,
-                  height: 50,
-                  color: Colors.green[100],
-                  child: const Icon(Icons.image, color: Colors.green),
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    width: 56,
+                    height: 56,
+                    color: Colors.green[100],
+                    child: const Icon(Icons.image_rounded, color: Colors.green, size: 28),
+                  ),
                 ),
-                title: const Text('Artículo en venta 1'),
+                title: const Text('Artículo en venta 1', style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: const Text('Buen estado • Madrid'),
                 trailing: const Text('Trueke', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.purple)),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductDetailPage(
+                        product: Product(
+                          id: 'prod_1',
+                          title: 'Artículo en venta 1',
+                          description: 'Descripción detallada del artículo en venta 1',
+                          condition: 'Buen estado',
+                          location: 'Madrid, España',
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
               const Divider(),
               ListTile(
-                leading: Container(
-                  width: 50,
-                  height: 50,
-                  color: Colors.blue[100],
-                  child: const Icon(Icons.image, color: Colors.blue),
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    width: 56,
+                    height: 56,
+                    color: Colors.blue[100],
+                    child: const Icon(Icons.image_rounded, color: Colors.blue, size: 28),
+                  ),
                 ),
-                title: const Text('Artículo en venta 2'),
+                title: const Text('Artículo en venta 2', style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: const Text('Como nuevo • Madrid'),
                 trailing: const Text('Trueke', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.purple)),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductDetailPage(
+                        product: Product(
+                          id: 'prod_2',
+                          title: 'Artículo en venta 2',
+                          description: 'Descripción detallada del artículo en venta 2',
+                          condition: 'Como nuevo',
+                          location: 'Madrid, España',
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 16),
             ],
@@ -159,7 +201,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final bool isOwnProfile = widget.userId == null || widget.userId == 'me' || widget.userId == 'lledoandreu84';
     final String profileTitle = isOwnProfile ? 'Mi Perfil' : 'Perfil del Vendedor';
     
-    // Si el userId es un hash largo, mostramos un nombre limpio y comercial
     String displayName = 'Usuario Trueke';
     if (!isOwnProfile) {
       displayName = widget.userId!.length > 15 ? 'lledoandreu84' : widget.userId!;
