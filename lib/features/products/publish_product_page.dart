@@ -7,6 +7,7 @@ import 'package:trueke/core/theme/app_colors.dart';
 import 'package:trueke/features/auth/auth_service.dart';
 import 'package:trueke/features/products/providers/publish_product_provider.dart';
 import 'package:trueke/models/product.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PublishProductPage extends ConsumerStatefulWidget {
   final Product? product;
@@ -146,6 +147,9 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
     if (!_formKey.currentState!.validate()) return;
 
     final userId = AuthService.currentUserId;
+    final currentUser = Supabase.instance.client.auth.currentUser;
+    final userEmail = currentUser?.email ?? 'Usuario';
+    final currentUsername = userEmail.contains('@') ? userEmail.split('@')[0] : userEmail;
     if (userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -184,7 +188,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
         description: description,
         price: _isTrueque ? null : 0.0,
         category: _selectedCategory,
-        owner: 'Usuario Trueke',
+        owner: currentUsername,
         ownerId: userId,
         condition: _selectedCondition,
         tradeType: tradeType,
@@ -201,7 +205,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
         description: description,
         price: _isTrueque ? null : 0.0,
         category: _selectedCategory,
-        owner: 'Usuario Trueke',
+        owner: currentUsername,
         ownerId: userId,
         condition: _selectedCondition,
         tradeType: tradeType,

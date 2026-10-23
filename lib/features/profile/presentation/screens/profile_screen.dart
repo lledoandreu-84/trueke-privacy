@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:trueke/features/products/providers/user_products_provider.dart';
 import 'package:trueke/features/auth/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -213,7 +214,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     final String displaySubtitle = isOwnProfile ? 'Comunidad Trueke' : 'Miembro verificado';
 
-    const publishedCount = 0;
+    final userProductsAsync = ref.watch(userProductsProvider);
+     final publishedCount = userProductsAsync.asData?.value.length ?? 0;
     const historyCount = 0;
     
     final reviews = ref.watch(vendorReviewsProvider);

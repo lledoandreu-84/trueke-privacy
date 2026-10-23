@@ -27,7 +27,6 @@ class MyPublishedProductsScreen extends ConsumerWidget {
       appBar: const CustomAppBar(titleText: 'Mis Productos'),
       body: productsAsync.when(
         data: (products) {
-          // Filtramos las existencias relacionales asegurando coincidencia ACID con el ownerId
           final myProducts = products
               .where((p) => p.ownerId == currentUserId)
               .toList();
@@ -67,63 +66,96 @@ class MyPublishedProductsScreen extends ConsumerWidget {
                     width: 0.5,
                   ),
                 ),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      width: 52,
-                      height: 52,
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      child: productImg.isNotEmpty
-                          ? Image.network(
-                              productImg,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(
-                                    Icons.image_not_supported_rounded,
-                                    size: 20,
+                child: Material(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(16),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        width: 52,
+                        height: 52,
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        child: productImg.isNotEmpty
+                            ? Image.network(
+                                productImg,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(
+                                  Icons.image_not_supported_rounded,
+                                  size: 20,
+                                ),
+                              )
+                            : const Icon(Icons.image_rounded, size: 20),
+                      ),
+                    ),
+                    title: Text(
+                      product.title,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 4.0),
+                      child: Text(
+                        product.price != null
+                            ? '${product.price!.toStringAsFixed(0)}€'
+                            : 'Trueque Puro',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.edit_outlined, color: theme.colorScheme.primary, size: 20),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (context) => PublishProductPage(product: product),
+                              ),
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete_outline_rounded, color: theme.colorScheme.error, size: 20),
+                          onPressed: () async {
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text("Eliminar producto"),
+                                content: const Text("¿Estás seguro de que deseas eliminar este producto de tu escaparate?"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, false),
+                                    child: const Text("Cancelar"),
                                   ),
-                            )
-                          : const Icon(Icons.image_rounded, size: 20),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, true),
+                                    child: const Text("Eliminar", style: TextStyle(color: Colors.red)),
+                                  ),
+                                ],
+                              ),
+                            );
+                            if (confirm == true) {
+                              await ref.read(productsProvider.notifier).deleteProduct(product);
+                              ref.invalidate(productsProvider);
+                            }
+                          },
+                        ),
+                      ],
                     ),
                   ),
-                  title: Text(
-                    product.title,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  subtitle: Padding(
-                    padding: const EdgeInsets.only(top: 4.0),
-                    child: Text(
-                      product.price != null
-                          ? '${product.price!.toStringAsFixed(0)}€'
-                          : 'Trueque Puro',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  trailing: Icon(
-                    Icons.edit_note_rounded,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute<void>(
-                        builder: (context) =>
-                            PublishProductPage(product: product),
-                      ),
-                    );
-                  },
                 ),
               );
             },
