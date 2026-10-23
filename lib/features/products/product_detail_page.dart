@@ -1,3 +1,4 @@
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/product.dart';
@@ -29,11 +30,8 @@ class ProductDetailPage extends ConsumerWidget {
     final IconData placeholderIcon = productId == 'prod_2' ? Icons.devices : Icons.image;
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+      appBar: CustomAppBar(
+        titleText: title,
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 16),
