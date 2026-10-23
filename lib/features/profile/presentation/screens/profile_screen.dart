@@ -60,7 +60,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  void _showVendorProducts(BuildContext context) {
+  void _showVendorProducts(BuildContext context, {bool isOwn = true}) {
     const String imgUrl1 = 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=300';
     const String imgUrl2 = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300';
 
@@ -76,9 +76,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Productos en Venta',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                isOwn ? 'Mis Productos Publicados' : 'Productos en Venta',
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               ListTile(
@@ -106,7 +106,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ProductDetailPage(
-                        hideVendorCard: true,
+                        hideVendorCard: isOwn ? false : true,
                         product: Product(
                           id: 'prod_1',
                           title: 'Artículo en venta 1',
@@ -116,8 +116,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           category: 'General',
                           createdAt: DateTime.now(),
                           images: const [imgUrl1],
-                          owner: 'lledoandreu84',
-                          ownerId: 'user_1',
+                          owner: isOwn ? 'pruebatrueke' : 'lledoandreu84',
+                          ownerId: isOwn ? 'user_me' : 'user_1',
                           tradeType: TradeType.trade,
                           wanted: 'Cualquier cosa',
                         ),
@@ -152,7 +152,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ProductDetailPage(
-                        hideVendorCard: true,
+                        hideVendorCard: isOwn ? false : true,
                         product: Product(
                           id: 'prod_2',
                           title: 'Artículo en venta 2',
@@ -162,8 +162,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           category: 'General',
                           createdAt: DateTime.now(),
                           images: const [imgUrl2],
-                          owner: 'lledoandreu84',
-                          ownerId: 'user_1',
+                          owner: isOwn ? 'pruebatrueke' : 'lledoandreu84',
+                          ownerId: isOwn ? 'user_me' : 'user_1',
                           tradeType: TradeType.trade,
                           wanted: 'Cualquier cosa',
                         ),
@@ -232,12 +232,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isOwnProfile = widget.userId == null || widget.userId == 'me' || widget.userId == 'lledoandreu84';
+    final bool isOwnProfile = widget.userId == null || widget.userId == 'me' || widget.userId == 'pruebatrueke';
     final String profileTitle = isOwnProfile ? 'Mi Perfil' : 'Perfil del Vendedor';
     
-    String displayName = 'Usuario Trueke';
+    String displayName = 'pruebatrueke';
     if (!isOwnProfile) {
-      displayName = widget.userId!.length > 15 ? 'lledoandreu84' : widget.userId!;
+      displayName = widget.userId!;
     }
 
     final String displaySubtitle = isOwnProfile ? 'Comunidad Trueke' : 'Miembro verificado';
@@ -340,7 +340,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               subtitle: isOwnProfile ? 'Gestiona tus artículos expuestos' : 'Ver artículos de este vendedor',
                               badgeText: '$publishedCount',
                               onTap: () {
-                                _showVendorProducts(context);
+                                _showVendorProducts(context, isOwn: isOwnProfile);
                               },
                             ),
                             if (isOwnProfile) ...[
