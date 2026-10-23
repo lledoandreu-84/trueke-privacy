@@ -1,3 +1,4 @@
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -241,18 +242,8 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        
-        
-        title: Text(
-          isEditing ? 'Editar Producto' : 'Publicar Producto',
-          style: const TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+      appBar: CustomAppBar(
+        titleText: isEditing ? 'Editar Producto' : 'Publicar Producto',
       ),
       body: Form(
         key: _formKey,
