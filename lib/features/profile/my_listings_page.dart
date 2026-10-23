@@ -1,3 +1,4 @@
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,41 +17,7 @@ class MyListingsPage extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        surfaceTintColor: Colors.transparent,
-        
-        scrolledUnderElevation: 0,
-        titleSpacing: 20,
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Mis anuncios',
-              style: TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.6,
-              ),
-            ),
-            SizedBox(height: 2),
-            Text(
-              'Gestiona los artículos que has publicado',
-              style: TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(height: 1, color: AppColors.border),
-        ),
-      ),
+      appBar: const CustomAppBar(titleText: 'Mis anuncios'),
       body: productsAsync.when(
         loading: () => const Center(
           child: CircularProgressIndicator.adaptive(
