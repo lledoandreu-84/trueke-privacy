@@ -140,7 +140,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
                 title: const Text('Artículo en venta 1', style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: const Text('Buen estado • Madrid'),
-                trailing: const Text('Trueke', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.purple)),
+                trailing: Text('Trueke', style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor)),
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -178,7 +178,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       imgUrl2,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
-                        color: Colors.blue[200],
+                        color: Colors.green[200],
                         child: const Icon(Icons.devices_rounded, color: Colors.white, size: 28),
                       ),
                     ),
@@ -186,7 +186,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
                 title: const Text('Artículo en venta 2', style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: const Text('Como nuevo • Madrid'),
-                trailing: const Text('Trueke', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.purple)),
+                trailing: Text('Trueke', style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor)),
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -288,8 +288,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(profileTitle),
-        centerTitle: true,
+        title: Text(profileTitle), // Left-aligned matching Mensajes, Publicar Producto, Explorar, etc.
         elevation: 0,
       ),
       body: SafeArea(
@@ -315,9 +314,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 18.0, horizontal: 16.0),
                           child: Column(
                             children: [
-                              const CircleAvatar(
+                              CircleAvatar(
                                 radius: 36,
-                                child: Icon(Icons.person, size: 36),
+                                backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.15),
+                                child: Icon(Icons.person, size: 36, color: Theme.of(context).primaryColor),
                               ),
                               const SizedBox(height: 10),
                               Text(
@@ -440,7 +440,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                       onPressed: _submitComment,
                                       icon: const Icon(Icons.send_rounded, size: 18),
                                       style: IconButton.styleFrom(
-                                        backgroundColor: const Color(0xFF6750A4),
+                                        backgroundColor: Theme.of(context).primaryColor,
                                         foregroundColor: Colors.white,
                                         padding: const EdgeInsets.all(12),
                                       ),
@@ -490,7 +490,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                       icon: const Icon(Icons.rate_review_rounded),
                                       label: const Text('Enviar Reseña y Valoración'),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(0xFF6750A4),
+                                        backgroundColor: Theme.of(context).primaryColor,
                                         foregroundColor: Colors.white,
                                       ),
                                     ),
