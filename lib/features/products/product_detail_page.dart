@@ -20,8 +20,8 @@ class ProductDetailPage extends ConsumerWidget {
     final condition = product?.condition ?? 'Buen estado';
     final location = product?.location ?? 'Madrid, España';
     final description = product?.description ?? 'Sin descripción disponible';
-    final imageUrl = product?.imageUrl;
-    final sellerId = product?.id ?? 'lledoandreu84';
+    final imageUrl = product?.images.isNotEmpty == true ? product!.images.first : (product as dynamic).imageUrl;
+    final sellerId = product?.ownerId ?? 'lledoandreu84';
     final productId = product?.id ?? 'prod_default';
 
     final isFav = ref.watch(favoritesProvider).contains(productId);
