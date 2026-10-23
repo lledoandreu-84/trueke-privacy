@@ -324,6 +324,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       appBar: AppBar(
         title: Text(profileTitle),
         centerTitle: true,
+        automaticallyImplyLeading: true, // Asegura la flecha de retroceso en todas las pantallas
         backgroundColor: Colors.white,
         elevation: 0,
       ),
