@@ -14,30 +14,59 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Determinamos si hay un botón de retroceso (explícito o automático por la navegación)
-    final bool hasLeading = leading != null || Navigator.canPop(context);
+    final bool canPop = Navigator.canPop(context);
+    final Widget? computedLeading = leading ?? 
+        (canPop 
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back_rounded, color: Colors.black87),
+                onPressed: () => Navigator.of(context).pop(),
+              ) 
+            : null);
 
-    return AppBar(
-      backgroundColor: Colors.white,
-      elevation: 0,
-      centerTitle: true,
-      automaticallyImplyLeading: false,
-      leading: leading ??
-          (Navigator.canPop(context)
-              ? IconButton(
-                  icon: const Icon(Icons.arrow_back_rounded, color: Colors.black87),
-                  onPressed: () => Navigator.of(context).pop(),
-                )
-              : null),
-      // Añadimos un actions invisible o simétrico si no hay acciones, 
-      // para forzar que el título quede geométricamente centrado al 100%
-      actions: actions ?? (hasLeading ? [const SizedBox(width: 48)] : null),
-      title: Text(
-        titleText,
-        style: const TextStyle(
-          color: Colors.black87,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
+    return Container(
+      color: Colors.white,
+      child: SafeArea(
+        bottom: false,
+        child: SizedBox(
+          height: kToolbarHeight,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // 1. Título con centrado geométrico absoluto en el ancho total de la pantalla
+              Positioned.fill(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 64.0),
+                    child: Text(
+                      titleText,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.black87,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // 2. Botón izquierdo (Leading o flecha de retroceso)
+              if (computedLeading != null)
+                Positioned(
+                  left: 4,
+                  child: computedLeading,
+                ),
+              // 3. Acciones derechas
+              if (actions != null && actions!.isNotEmpty)
+                Positioned(
+                  right: 4,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: actions!,
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
