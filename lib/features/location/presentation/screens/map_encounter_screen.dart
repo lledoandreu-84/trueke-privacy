@@ -1,3 +1,4 @@
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/supabase/supabase_client.dart';
@@ -68,21 +69,7 @@ class _MapEncounterScreenState extends ConsumerState<MapEncounterScreen> {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        
-        scrolledUnderElevation: 0,
-        title: Text(
-          'Punto de Encuentro',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-            letterSpacing: -0.4,
-            color: theme.colorScheme.onSurface,
-          ),
-        ),
-        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
-      ),
+      appBar: const CustomAppBar(titleText: 'Punto de Encuentro'),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
