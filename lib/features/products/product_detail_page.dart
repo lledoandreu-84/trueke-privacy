@@ -1,3 +1,4 @@
+import 'package:trueke/features/auth/auth_service.dart';
 import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -216,6 +217,16 @@ class ProductDetailPage extends ConsumerWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {
+                    final currentUserId = AuthService.currentUserId;
+                    if (product?.ownerId == currentUserId || product?.owner == 'lledoandreu84') {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('No puedes iniciar un chat contigo mismo'),
+                          backgroundColor: Colors.redAccent,
+                        ),
+                      );
+                      return;
+                    }
                     Navigator.pushNamed(context, '/chat');
                   },
                   icon: const Icon(Icons.chat_bubble_outline),
