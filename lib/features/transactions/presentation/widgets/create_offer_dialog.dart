@@ -30,6 +30,17 @@ class _CreateOfferDialogState extends ConsumerState<CreateOfferDialog> {
       return;
     }
 
+    if (widget.product.ownerId == currentUser.id || widget.product.owner == 'lledoandreu84') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No puedes enviarte una oferta a ti mismo.'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
     final proposedPrice = double.tryParse(
       _priceController.text.trim().replaceAll(',', '.'),
     );
