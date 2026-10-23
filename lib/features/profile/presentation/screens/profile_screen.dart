@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trueke/models/product.dart';
 import 'package:trueke/features/products/product_detail_page.dart';
 import 'package:trueke/providers/app_providers.dart';
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -320,14 +321,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final totalReviews = ref.read(vendorReviewsProvider.notifier).totalReviews;
 
     return Scaffold(
-      
-      appBar: AppBar(
-        title: Text(profileTitle),
-        
-        automaticallyImplyLeading: false, // Sin flecha de retroceso innecesaria en pestaña raíz
-        
-        
-      ),
+      backgroundColor: Colors.white,
+      appBar: CustomAppBar(titleText: profileTitle),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
