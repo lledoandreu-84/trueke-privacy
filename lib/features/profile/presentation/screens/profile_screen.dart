@@ -132,7 +132,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       imgUrl1,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
-                        color: Colors.purple[100],
+                        color: Theme.of(context).primaryColor.withValues(alpha: 0.15),
                         child: Icon(Icons.image_rounded, color: Theme.of(context).primaryColor, size: 28),
                       ),
                     ),
@@ -178,7 +178,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       imgUrl2,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
-                        color: Colors.purple[100],
+                        color: Theme.of(context).primaryColor.withValues(alpha: 0.15),
                         child: Icon(Icons.devices_rounded, color: Theme.of(context).primaryColor, size: 28),
                       ),
                     ),
@@ -288,14 +288,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          profileTitle,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
+        title: Text(profileTitle), // Estándar nativo idéntico a Mensajes, Favoritos, etc.
         elevation: 0,
       ),
       body: SafeArea(
