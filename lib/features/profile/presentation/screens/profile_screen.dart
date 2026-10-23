@@ -15,10 +15,13 @@ class ProfileScreen extends ConsumerStatefulWidget {
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final _commentController = TextEditingController();
+  final _reviewController = TextEditingController();
+  int _selectedRating = 5;
 
   @override
   void dispose() {
     _commentController.dispose();
+    _reviewController.dispose();
     super.dispose();
   }
 
@@ -34,6 +37,70 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _commentController.clear();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('¡Gracias por tus comentarios! Nos ayudan a mejorar.')),
+    );
+  }
+
+  void _submitReview() {
+    final review = _reviewController.text.trim();
+    if (review.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor, escribe una reseña sobre el vendedor.')),
+      );
+      return;
+    }
+
+    _reviewController.clear();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('¡Valoración de $_selectedRating estrellas enviada con éxito!')),
+    );
+  }
+
+  void _showVendorProducts(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Productos en Venta',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+              ListTile(
+                leading: Container(
+                  width: 50,
+                  height: 50,
+                  color: Colors.green[100],
+                  child: const Icon(Icons.image, color: Colors.green),
+                ),
+                title: const Text('Artículo en venta 1'),
+                subtitle: const Text('Buen estado • Madrid'),
+                trailing: const Text('Trueke', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.purple)),
+              ),
+              const Divider(),
+              ListTile(
+                leading: Container(
+                  width: 50,
+                  height: 50,
+                  color: Colors.blue[100],
+                  child: const Icon(Icons.image, color: Colors.blue),
+                ),
+                title: const Text('Artículo en venta 2'),
+                subtitle: const Text('Como nuevo • Madrid'),
+                trailing: const Text('Trueke', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.purple)),
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -91,7 +158,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget build(BuildContext context) {
     final bool isOwnProfile = widget.userId == null || widget.userId == 'me' || widget.userId == 'lledoandreu84';
     final String profileTitle = isOwnProfile ? 'Mi Perfil' : 'Perfil del Vendedor';
-    final String displayName = isOwnProfile ? 'Usuario Trueke' : (widget.userId ?? 'lledoandreu84');
+    
+    // Si el userId es un hash largo, mostramos un nombre limpio y comercial
+    String displayName = 'Usuario Trueke';
+    if (!isOwnProfile) {
+      displayName = widget.userId!.length > 15 ? 'lledoandreu84' : widget.userId!;
+    }
+
     final String displaySubtitle = isOwnProfile ? 'Comunidad Trueke' : 'Miembro verificado';
 
     const publishedCount = 2;
@@ -187,12 +260,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             _buildMenuItem(
                               icon: Icons.inventory_2_outlined,
                               title: isOwnProfile ? 'Mis Productos Publicados' : 'Productos en Venta',
-                              subtitle: 'Gestiona tus artículos expuestos',
+                              subtitle: isOwnProfile ? 'Gestiona tus artículos expuestos' : 'Ver artículos de este vendedor',
                               badgeText: '$publishedCount',
                               onTap: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Abriendo listado de productos...')),
-                                );
+                                _showVendorProducts(context);
                               },
                             ),
                             if (isOwnProfile) ...[
@@ -213,44 +284,92 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                       ),
                     ),
-                    if (isOwnProfile) ...[
-                      const SizedBox(height: 24),
-                      Text(
-                        'Sugerencias y Feedback',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                      const SizedBox(height: 12),
-                      Card(
-                        elevation: 1,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              TextField(
-                                controller: _commentController,
-                                maxLines: 3,
-                                decoration: const InputDecoration(
-                                  hintText: '¿Cómo podemos mejorar tu experiencia en Trueke?',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              ElevatedButton.icon(
-                                onPressed: _submitComment,
-                                icon: const Icon(Icons.send_rounded),
-                                label: const Text('Enviar Sugerencia'),
-                              ),
-                            ],
+                    const SizedBox(height: 24),
+                    Text(
+                      isOwnProfile ? 'Sugerencias y Feedback' : 'Valorar al Vendedor',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
                           ),
-                        ),
+                    ),
+                    const SizedBox(height: 12),
+                    Card(
+                      elevation: 1,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                    ],
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: isOwnProfile
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  TextField(
+                                    controller: _commentController,
+                                    maxLines: 3,
+                                    decoration: const InputDecoration(
+                                      hintText: '¿Cómo podemos mejorar tu experiencia en Trueke?',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  ElevatedButton.icon(
+                                    onPressed: _submitComment,
+                                    icon: const Icon(Icons.send_rounded),
+                                    label: const Text('Enviar Sugerencia'),
+                                  ),
+                                ],
+                              )
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  const Text(
+                                    'Selecciona una puntuación:',
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: List.generate(5, (index) {
+                                      final starNumber = index + 1;
+                                      return IconButton(
+                                        icon: Icon(
+                                          starNumber <= _selectedRating
+                                              ? Icons.star_rounded
+                                              : Icons.star_outline_rounded,
+                                          color: Colors.amber,
+                                          size: 32,
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            _selectedRating = starNumber;
+                                          });
+                                        },
+                                      );
+                                    }),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  TextField(
+                                    controller: _reviewController,
+                                    maxLines: 3,
+                                    decoration: const InputDecoration(
+                                      hintText: 'Escribe tu reseña sobre el trato y el intercambio...',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  ElevatedButton.icon(
+                                    onPressed: _submitReview,
+                                    icon: const Icon(Icons.rate_review_rounded),
+                                    label: const Text('Enviar Reseña y Valoración'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF6750A4),
+                                      foregroundColor: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                      ),
+                    ),
                   ],
                 ),
               ),
