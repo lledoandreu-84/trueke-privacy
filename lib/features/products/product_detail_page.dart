@@ -200,7 +200,18 @@ class ProductDetailPage extends ConsumerWidget {
             children: [
               IconButton(
                 onPressed: () {
-                  ref.read(favoritesProvider.notifier).toggleFavorite(productId);
+                  final currentUserId = AuthService.currentUserId;
+                    if (product?.ownerId == currentUserId || product?.owner == 'lledoandreu84') {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('No puedes añadir tu propio producto a favoritos.'),
+                          backgroundColor: Colors.redAccent,
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                      return;
+                    }
+                    ref.read(favoritesProvider.notifier).toggleFavorite(productId);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(isFav ? 'Eliminado de favoritos' : 'Añadido a favoritos'),

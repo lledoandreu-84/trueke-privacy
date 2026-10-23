@@ -43,6 +43,10 @@ class SupabaseChatRepository implements ChatRepository {
         ? sellerId
         : "00000000-0000-4000-a000-000000000000";
 
+    if (cleanBuyerId == cleanSellerId) {
+      throw ArgumentError('No puedes crear una sala de chat contigo mismo.');
+    }
+
     final String cleanProductId = uuidRegex.hasMatch(productId)
         ? productId
         : "00000000-0000-4000-b000-000000000000";
