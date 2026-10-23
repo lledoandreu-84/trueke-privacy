@@ -155,7 +155,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     if (totalReviews == 0) {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-        decoration: BoxDecoration(
+        decoration: 
           color: Colors.grey.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
         ),
@@ -179,7 +179,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-      decoration: BoxDecoration(
+      decoration: 
         color: Colors.amber.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
       ),
@@ -294,7 +294,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       Material(
                         color: Colors.transparent,
                         child: Container(
-                          decoration: BoxDecoration(
+                          decoration: 
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
@@ -529,7 +529,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-            decoration: BoxDecoration(
+            decoration: 
               color: const Color(0xFF6750A4).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
