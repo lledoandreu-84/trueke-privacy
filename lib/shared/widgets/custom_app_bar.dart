@@ -20,15 +20,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: true,
       leading: leading,
       iconTheme: const IconThemeData(color: Colors.black87),
-      title: Text(
-        titleText,
-        style: const TextStyle(
-          color: Colors.black87,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
+      title: Center(
+        child: Text(
+          titleText,
+          style: const TextStyle(
+            color: Colors.black87,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
-      actions: actions,
+      actions: actions ?? [const SizedBox(width: 48)], // Equulibrio simétrico para centrado perfecto si no hay acciones
     );
   }
 
