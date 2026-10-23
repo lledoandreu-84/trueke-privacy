@@ -58,6 +58,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   void _showVendorProducts(BuildContext context) {
+    const String imgUrl1 = 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=300';
+    const String imgUrl2 = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300';
+
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -78,11 +81,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ListTile(
                 leading: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Container(
+                  child: SizedBox(
                     width: 56,
                     height: 56,
-                    color: Colors.green[200],
-                    child: const Icon(Icons.image_rounded, color: Colors.white, size: 28),
+                    child: Image.network(
+                      imgUrl1,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        color: Colors.green[200],
+                        child: const Icon(Icons.image_rounded, color: Colors.white, size: 28),
+                      ),
+                    ),
                   ),
                 ),
                 title: const Text('Artículo en venta 1', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -94,7 +103,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ProductDetailPage(
-                        hideVendorCard: true, // Rompe la cadena aquí
+                        hideVendorCard: true,
                         product: Product(
                           id: 'prod_1',
                           title: 'Artículo en venta 1',
@@ -103,7 +112,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           location: 'Madrid, España',
                           category: 'General',
                           createdAt: DateTime.now(),
-                          images: const [],
+                          images: const [imgUrl1],
                           owner: 'lledoandreu84',
                           ownerId: 'user_1',
                           tradeType: TradeType.trade,
@@ -118,11 +127,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ListTile(
                 leading: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Container(
+                  child: SizedBox(
                     width: 56,
                     height: 56,
-                    color: Colors.blue[200],
-                    child: const Icon(Icons.devices_rounded, color: Colors.white, size: 28),
+                    child: Image.network(
+                      imgUrl2,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        color: Colors.blue[200],
+                        child: const Icon(Icons.devices_rounded, color: Colors.white, size: 28),
+                      ),
+                    ),
                   ),
                 ),
                 title: const Text('Artículo en venta 2', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -134,7 +149,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ProductDetailPage(
-                        hideVendorCard: true, // Rompe la cadena aquí
+                        hideVendorCard: true,
                         product: Product(
                           id: 'prod_2',
                           title: 'Artículo en venta 2',
@@ -143,7 +158,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           location: 'Madrid, España',
                           category: 'General',
                           createdAt: DateTime.now(),
-                          images: const [],
+                          images: const [imgUrl2],
                           owner: 'lledoandreu84',
                           ownerId: 'user_1',
                           tradeType: TradeType.trade,
