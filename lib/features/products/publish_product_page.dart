@@ -201,7 +201,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
         productId: widget.product!.id,
         title: title,
         description: description,
-        price: _isTrueque ? null : 0.0,
+        price: _isTrueque ? null : (double.tryParse(_priceController.text.replaceAll(',', '.')) ?? 0.0),
         category: _selectedCategory,
         owner: currentUsername,
         ownerId: userId,
@@ -222,7 +222,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
       await notifier.submitProduct(
         title: title,
         description: description,
-        price: _isTrueque ? null : 0.0,
+        price: _isTrueque ? null : (double.tryParse(_priceController.text.replaceAll(',', '.')) ?? 0.0),
         category: _selectedCategory,
         owner: dynamicOwnerName,
         ownerId: dynamicOwnerId,

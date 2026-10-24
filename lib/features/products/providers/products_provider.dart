@@ -105,6 +105,8 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
       }
       await repo.deleteProduct(product.id);
       
+      if (!ref.mounted) return;
+
       // Actualización optimista local del estado
       if (state.hasValue) {
         final currentList = state.value ?? [];
@@ -113,7 +115,6 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
 
       if (ref.mounted) {
         ref.invalidateSelf();
-        
       }
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
