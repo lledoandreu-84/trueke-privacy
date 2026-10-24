@@ -24,6 +24,9 @@ class ProductDetailPage extends ConsumerWidget {
     final description = product?.description ?? 'Sin descripción disponible';
     final imageUrl = product?.images.isNotEmpty == true ? product!.images.first : (product as dynamic).imageUrl;
     final productId = product?.id ?? 'prod_default';
+    final price = product?.price;
+    final wanted = product?.wanted;
+    final tradeType = product?.tradeType ?? TradeType.trade;
 
     final isFav = ref.watch(favoritesProvider).contains(productId);
 
