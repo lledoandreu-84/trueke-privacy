@@ -69,6 +69,8 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
     try {
       await ref.read(productRepositoryProvider).createProduct(product);
       ref.invalidateSelf();
+        // Refrescar vistas globales
+        ref.invalidate(productsProvider);
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
       rethrow;
@@ -79,6 +81,8 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
     try {
       await ref.read(productRepositoryProvider).updateProduct(product);
       ref.invalidateSelf();
+        // Refrescar vistas globales
+        ref.invalidate(productsProvider);
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
       rethrow;
@@ -115,6 +119,8 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
 
       if (ref.mounted) {
         ref.invalidateSelf();
+        // Refrescar vistas globales
+        ref.invalidate(productsProvider);
       }
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
