@@ -146,8 +146,10 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final userId = AuthService.currentUserId;
-    String currentUsername = 'Usuario';
+    final supabaseUser = Supabase.instance.client.auth.currentUser;
+    final userId = supabaseUser?.id;
+    String currentUsername = supabaseUser?.email?.split('@')[0] ?? 'Usuario';
+
     if (userId != null) {
       try {
         final profileData = await Supabase.instance.client
@@ -155,7 +157,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
             .select('username')
             .eq('id', userId)
             .maybeSingle();
-        if (profileData != null && profileData['username'] != null) {
+        if (profileData != null && profileData['username'] != null && (profileData['username'] as String).isNotEmpty) {
           currentUsername = profileData['username'] as String;
         }
       } catch (_) {}
