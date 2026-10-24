@@ -29,7 +29,7 @@ class MyPublishedProductsScreen extends ConsumerWidget {
       body: productsAsync.when(
         data: (products) {
           final myProducts = products.where((p) {
-            return p.ownerId == currentUserId || p.owner == 'lledoandreu84';
+            return p.ownerId == currentUserId ;
           }).toList();
 
           if (myProducts.isEmpty) {

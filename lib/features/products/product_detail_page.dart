@@ -201,7 +201,7 @@ class ProductDetailPage extends ConsumerWidget {
               IconButton(
                 onPressed: () {
                   final currentUserId = AuthService.currentUserId;
-                    if (product?.ownerId == currentUserId || product?.owner == 'lledoandreu84') {
+                    if (product?.ownerId == currentUserId ) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('No puedes añadir tu propio producto a favoritos.'),
@@ -229,7 +229,7 @@ class ProductDetailPage extends ConsumerWidget {
                 child: ElevatedButton.icon(
                   onPressed: () {
                     final currentUserId = AuthService.currentUserId;
-                    if (product?.ownerId == currentUserId || product?.owner == 'lledoandreu84') {
+                    if (product?.ownerId == currentUserId ) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('No puedes iniciar un chat contigo mismo'),
