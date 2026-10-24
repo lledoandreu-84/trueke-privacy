@@ -119,8 +119,9 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
 
       if (ref.mounted) {
         ref.invalidateSelf();
-        // Refrescar vistas globales
+        // Refrescar vistas globales y filtros de forma absoluta
         ref.invalidate(productsProvider);
+        ref.invalidate(productFiltersProvider);
       }
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);

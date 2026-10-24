@@ -60,3 +60,10 @@ flutter:
     - .env
     - assets/images/
 
+
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: "assets/images/logo.png"
+  android: true
+  ios: true
+  fullscreen: true
