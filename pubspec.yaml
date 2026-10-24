@@ -33,6 +33,7 @@ dependencies:
   url_launcher: ^6.3.3
 
 dev_dependencies:
+  flutter_native_splash: ^2.4.3
   flutter_test:
     sdk: flutter
 
