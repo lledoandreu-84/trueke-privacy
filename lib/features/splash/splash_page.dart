@@ -8,11 +8,14 @@ class SplashPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-        child: Image.asset(
-          'assets/images/logo.png',
-          width: 140,
-          height: 140,
-          fit: BoxFit.contain,
+        child: Padding(
+          padding: const EdgeInsets.all(40.0),
+          child: Image.asset(
+            'assets/images/logo.png',
+            width: 170,
+            height: 170,
+            fit: BoxFit.contain,
+          ),
         ),
       ),
     );
