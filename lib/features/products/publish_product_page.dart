@@ -211,13 +211,17 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
         createdAt: widget.product!.createdAt,
       );
     } else {
+      final supabaseUser = Supabase.instance.client.auth.currentUser;
+      final dynamicOwnerId = supabaseUser?.id ?? userId;
+      final dynamicOwnerName = supabaseUser?.userMetadata?['username'] ?? supabaseUser?.email?.split('@')[0] ?? currentUsername;
+
       await notifier.submitProduct(
         title: title,
         description: description,
         price: _isTrueque ? null : 0.0,
         category: _selectedCategory,
-        owner: currentUsername,
-        ownerId: userId,
+        owner: dynamicOwnerName,
+        ownerId: dynamicOwnerId,
         condition: _selectedCondition,
         tradeType: tradeType,
         wanted: wanted,
