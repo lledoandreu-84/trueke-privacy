@@ -102,6 +102,10 @@ class PublishProductNotifier extends Notifier<PublishProductState> {
         }
       }
 
+      final supabaseUser = Supabase.instance.client.auth.currentUser;
+      final currentOwnerId = supabaseUser?.id ?? ownerId;
+      final currentOwnerName = supabaseUser?.userMetadata?['username'] ?? supabaseUser?.email?.split('@')[0] ?? owner;
+
       final newProduct = Product(
         id: '',
         title: title,
@@ -109,8 +113,8 @@ class PublishProductNotifier extends Notifier<PublishProductState> {
         price: price,
         images: uploadedUrls,
         category: category,
-        owner: owner,
-        ownerId: ownerId,
+        owner: currentOwnerName,
+        ownerId: currentOwnerId,
         condition: condition,
         tradeType: tradeType,
         wanted: wanted,
