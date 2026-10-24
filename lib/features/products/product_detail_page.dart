@@ -30,10 +30,7 @@ class ProductDetailPage extends ConsumerWidget {
     
     final bool hasPrice = price != null && price > 0;
     final String displayBadge = hasPrice ? '${price.toStringAsFixed(2)} €' : 'TRUEKE';
-    final price = product?.price;
-    final wanted = product?.wanted;
-    final tradeType = product?.tradeType ?? TradeType.trade;
-
+    
     final isFav = ref.watch(favoritesProvider).contains(productId);
 
     final Color placeholderColor = productId == 'prod_2' ? Colors.blue[200]! : Colors.green[200]!;
