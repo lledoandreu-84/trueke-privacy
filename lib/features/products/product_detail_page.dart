@@ -30,9 +30,6 @@ class ProductDetailPage extends ConsumerWidget {
     final bool hasPrice = price != null && price > 0;
     final String displayBadge = hasPrice ? '${price.toStringAsFixed(2)} €' : 'TRUEKE';
 
-    // Verificación explícita para evitar warnings de variables no usadas
-    final bool isBarter = tradeType == TradeType.trade;
-    final bool hasWanted = wanted != null && wanted.isNotEmpty;
     
     final isFav = ref.watch(favoritesProvider).contains(productId);
 
