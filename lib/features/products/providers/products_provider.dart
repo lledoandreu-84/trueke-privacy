@@ -104,7 +104,9 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
         } catch (_) {}
       }
       await repo.deleteProduct(product.id);
-      ref.invalidateSelf();
+      if (ref.mounted) {
+        ref.invalidateSelf();
+      }
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
       rethrow;
