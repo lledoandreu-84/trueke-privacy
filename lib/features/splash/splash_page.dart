@@ -7,14 +7,16 @@ class SplashPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(40.0),
-          child: Image.asset(
-            'assets/images/logo.png',
-            width: 170,
-            height: 170,
-            fit: BoxFit.contain,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: Image.asset(
+              'assets/images/logo.png',
+              width: 180,
+              height: 180,
+              fit: BoxFit.contain,
+            ),
           ),
         ),
       ),
