@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:trueke/core/theme/app_colors.dart';
-import 'package:trueke/features/auth/auth_service.dart';
 import 'package:trueke/features/products/providers/publish_product_provider.dart';
 import 'package:trueke/models/product.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
