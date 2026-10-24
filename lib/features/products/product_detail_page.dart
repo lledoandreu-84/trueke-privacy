@@ -155,7 +155,7 @@ class ProductDetailPage extends ConsumerWidget {
                           child: Icon(Icons.person),
                         ),
                         title: const Text(
-                          'lledoandreu84',
+                          product?.ownerId ?? '',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Column(
@@ -180,7 +180,7 @@ class ProductDetailPage extends ConsumerWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const ProfileScreen(userId: 'lledoandreu84'),
+                              builder: (context) => const ProfileScreen(userId: product?.ownerId ?? ''),
                             ),
                           );
                         },

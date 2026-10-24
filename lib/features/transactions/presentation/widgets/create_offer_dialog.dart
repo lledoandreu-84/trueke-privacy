@@ -30,7 +30,7 @@ class _CreateOfferDialogState extends ConsumerState<CreateOfferDialog> {
       return;
     }
 
-    if (widget.product.ownerId == currentUser.id || widget.product.owner == 'lledoandreu84') {
+    if (widget.product.ownerId == currentUser.id ) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('No puedes enviarte una oferta a ti mismo.'),
