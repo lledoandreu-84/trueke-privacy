@@ -99,7 +99,7 @@ class ProductDetailPage extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
-                          'TRUEKE',
+                            displayBadge,
                           style: TextStyle(
                             color: Colors.purple[700],
                             fontSize: 10,
