@@ -22,7 +22,7 @@ class MyPublishedProductsScreen extends ConsumerWidget {
       );
     }
 
-    final productsAsync = ref.watch(productsProvider);
+    final productsAsync = ref.watch(userProductsProvider);
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
