@@ -104,8 +104,16 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
         } catch (_) {}
       }
       await repo.deleteProduct(product.id);
+      
+      // Actualización optimista local del estado
+      if (state.hasValue) {
+        final currentList = state.value ?? [];
+        state = AsyncValue.data(currentList.where((p) => p.id != product.id).toList());
+      }
+
       if (ref.mounted) {
         ref.invalidateSelf();
+        ref.invalidate(paginatedProductsProvider);
       }
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
