@@ -22,6 +22,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
   late final TextEditingController _titleController;
   late final TextEditingController _descriptionController;
   late final TextEditingController _seekingController;
+  late final TextEditingController _priceController;
   
   late String _selectedCategory;
   late String _selectedCondition;
@@ -35,6 +36,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
     _titleController = TextEditingController(text: widget.product?.title ?? '');
     _descriptionController = TextEditingController(text: widget.product?.description ?? '');
     _seekingController = TextEditingController(text: widget.product?.wanted ?? '');
+    _priceController = TextEditingController(text: widget.product?.price != null ? widget.product!.price.toString() : '');
     _selectedCategory = (widget.product?.category != null && widget.product!.category.isNotEmpty) 
         ? widget.product!.category 
         : 'Electrónica';
@@ -54,6 +56,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
     _titleController.dispose();
     _descriptionController.dispose();
     _seekingController.dispose();
+    _priceController.dispose();
     super.dispose();
   }
 
@@ -600,25 +603,62 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                     ],
                   ),
                   if (_isTrueque) ...[
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _seekingController,
-                      style: const TextStyle(fontSize: 13.5),
-                      decoration: InputDecoration(
-                        labelText: '¿Qué buscas a cambio?',
-                        labelStyle: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary),
-                        hintText: 'Ej. Herramientas, videojuegos...',
-                        isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                        filled: true,
-                        fillColor: AppColors.background,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _seekingController,
+                        style: const TextStyle(fontSize: 13.5),
+                        decoration: InputDecoration(
+                          labelText: 'Buscador de trueque (¿Qué buscas a cambio?)',
+                          labelStyle: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary),
+                          hintText: 'Ej. Bicicleta, consola...',
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          filled: true,
+                          fillColor: AppColors.background,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ] else ...[
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _priceController,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        style: const TextStyle(fontSize: 13.5),
+                        decoration: InputDecoration(
+                          labelText: 'Precio de venta',
+                          labelStyle: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary),
+                          hintText: '0.00',
+                          suffixText: '€',
+                          prefixIcon: const Icon(Icons.euro_symbol, size: 18),
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          filled: true,
+                          fillColor: AppColors.background,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        validator: (val) {
+                          if (!_isTrueque) {
+                            if (val == null || val.trim().isEmpty) {
+                              return 'Por favor, introduce un precio';
+                            }
+                            final price = double.tryParse(val.replaceAll(',', '.')) ?? -1;
+                            if (price < 0) {
+                              return 'Introduce un precio válido';
+                            }
+                            if (price > 5000) {
+                              return 'El precio máximo permitido es de 5000€';
+                            }
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
                 ],
               ),
             ),
