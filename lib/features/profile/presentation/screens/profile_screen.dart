@@ -175,6 +175,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   void _showVendorProducts(BuildContext context, {required bool isOwn}) {
+    final userProductsAsync = ref.read(userProductsProvider);
+    final count = userProductsAsync.asData?.value.length ?? 0;
+    if (isOwn && count == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Aún no has publicado ningún artículo en tu escaparate.')),
+      );
+      return;
+    }
     Navigator.push(
       context,
       MaterialPageRoute(
