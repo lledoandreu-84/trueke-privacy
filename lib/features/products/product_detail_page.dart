@@ -154,9 +154,9 @@ class ProductDetailPage extends ConsumerWidget {
                         leading: const CircleAvatar(
                           child: Icon(Icons.person),
                         ),
-                        title: const Text(
-                          product?.ownerId ?? '',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                        title: Text(
+                          product?.owner ?? 'Usuario',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
