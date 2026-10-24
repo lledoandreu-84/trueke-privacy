@@ -25,8 +25,6 @@ class ProductDetailPage extends ConsumerWidget {
     final imageUrl = product?.images.isNotEmpty == true ? product!.images.first : (product as dynamic).imageUrl;
     final productId = product?.id ?? 'prod_default';
     final price = product?.price;
-    final wanted = product?.wanted;
-    final tradeType = product?.tradeType ?? TradeType.trade;
     final bool hasPrice = price != null && price > 0;
     final String displayBadge = hasPrice ? '${price.toStringAsFixed(2)} €' : 'TRUEKE';
 
