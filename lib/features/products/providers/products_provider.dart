@@ -113,7 +113,7 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
 
       if (ref.mounted) {
         ref.invalidateSelf();
-        ref.invalidate(paginatedProductsProvider);
+        
       }
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
