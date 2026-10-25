@@ -96,7 +96,8 @@ class _AuthPageState extends ConsumerState<AuthPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('assets/images/logo.png', width: 80, height: 80, fit: BoxFit.contain),
+                // Logo ampliado para mayor impacto visual
+                Image.asset('assets/images/logo.png', width: 120, height: 120, fit: BoxFit.contain),
                 const SizedBox(height: 20),
                 Text(
                   'Trueke',
@@ -158,17 +159,17 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                   decoration: InputDecoration(
                     labelText: 'Contraseña',
                     prefixIcon: Icon(Icons.lock_outline_rounded, color: theme.colorScheme.onSurfaceVariant),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -194,7 +195,6 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      
                     ),
                     child: _isLoading
                         ? SizedBox(
