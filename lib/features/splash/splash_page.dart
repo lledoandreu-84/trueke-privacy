@@ -9,8 +9,8 @@ class SplashPage extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Center(
         child: SizedBox(
-          width: 180,
-          height: 180,
+          width: 140,
+          height: 140,
           child: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.contain,
