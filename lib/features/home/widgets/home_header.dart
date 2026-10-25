@@ -14,12 +14,12 @@ class HomeHeader extends ConsumerWidget {
       child: Row(
         children: [
           SizedBox(
-            width: 48,
-            height: 48,
+            width: 56,
+            height: 56,
             child: Image.asset(
               'assets/images/logo.png',
-              width: 48,
-              height: 48,
+              width: 56,
+              height: 56,
               fit: BoxFit.contain,
             ),
           ),
@@ -74,7 +74,6 @@ class HomeHeader extends ConsumerWidget {
                     Navigator.of(context).pushNamed('/notifications');
                   },
                 ),
-                // Aquí se puede añadir un badge dinámico cuando se integre el contador de chat
               ],
             ),
           ),
