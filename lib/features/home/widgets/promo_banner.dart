@@ -34,29 +34,29 @@ class PromoBanner extends StatelessWidget {
           children: [
             // Burbuja superior con el logo difuminado ocupando casi todo el círculo
             Positioned(
-              top: -25,
-              right: -25,
-              child: Container(
-                width: 275,
-                height: 275,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color(0xFF6366F1).withValues(alpha: 0.25),
-                ),
-                child: ClipOval(
-                  child: Opacity(
-                    opacity: 0.30,
-                    child: Image.asset(
-                      'assets/images/logo.png',
-                      width: 275,
-                      height: 275,
-                      fit: BoxFit.cover,
+                top: -45,
+                right: -45,
+                child: Container(
+                  width: 270,
+                  height: 270,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color(0xFF6366F1).withValues(alpha: 0.25),
+                  ),
+                  child: ClipOval(
+                    child: Opacity(
+                      opacity: 0.30,
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        width: 270,
+                        height: 270,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            // Burbuja inferior restaurada y limpia
+              // Burbuja inferior restaurada y limpia
             Positioned(
               right: -30,
               bottom: -30,
