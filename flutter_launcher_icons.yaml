@@ -1,7 +1,6 @@
 flutter_launcher_icons:
-  image_path: "assets/images/logo.png"
-  android: true
+  android: "ic_launcher"
   ios: false
-  # Definimos un fondo blanco sólido para que llene el contenedor adaptativo igual que Chrome
-  adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/images/logo.png"
+  image_path: "assets/images/android_launcher_icon.png"
+  adaptive_icon_background: "#059669"
+  adaptive_icon_foreground: "assets/images/android_launcher_foreground.png"
