@@ -10,8 +10,8 @@ class SplashPage extends StatelessWidget {
       body: Center(
         child: Image(
           image: AssetImage('assets/images/logo.png'),
-          width: 200,
-          height: 200,
+          width: 180,
+          height: 180,
           fit: BoxFit.contain,
         ),
       ),
