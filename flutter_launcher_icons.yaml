@@ -2,6 +2,6 @@ flutter_launcher_icons:
   image_path: "assets/images/logo.png"
   android: true
   ios: false
-  # Forzar modo legacy puro para evitar que Android dibuje contenedores automáticos
+  # Desactivamos el fondo adaptativo para evitar que Android dibuje la caja blanca o squircle
   adaptive_icon_background: null
   adaptive_icon_foreground: null
