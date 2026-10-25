@@ -6,15 +6,19 @@ class SplashPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+    final double logoSize = screenSize.width * 0.70;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SizedBox.expand(
         child: Center(
-          child: Image.asset(
-            'assets/images/logo.png',
-            width: screenSize.width * 0.65,
-            height: screenSize.width * 0.65,
-            fit: BoxFit.contain,
+          child: SizedBox(
+            width: logoSize,
+            height: logoSize,
+            child: Image.asset(
+              'assets/images/logo.png',
+              fit: BoxFit.contain,
+            ),
           ),
         ),
       ),
