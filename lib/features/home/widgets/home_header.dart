@@ -13,17 +13,19 @@ class HomeHeader extends ConsumerWidget {
       decoration: const BoxDecoration(color: AppColors.surface),
       child: Row(
         children: [
+          // Usamos Transform.scale para expandir el logo visualmente rellenando el espacio superior
           SizedBox(
-            width: 56,
-            height: 56,
-            child: Image.asset(
-              'assets/images/logo.png',
-              width: 56,
-              height: 56,
-              fit: BoxFit.contain,
+            width: 52,
+            height: 52,
+            child: Transform.scale(
+              scale: 1.35,
+              child: Image.asset(
+                'assets/images/logo.png',
+                fit: BoxFit.contain,
+              ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 14),
           const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
