@@ -37,8 +37,8 @@ class PromoBanner extends StatelessWidget {
               top: -30,
               right: -30,
               child: Container(
-                width: 170,
-                height: 170,
+                width: 280,
+                height: 280,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: const Color(0xFF6366F1).withValues(alpha: 0.22),
@@ -48,8 +48,8 @@ class PromoBanner extends StatelessWidget {
                     opacity: 0.18,
                     child: Image.asset(
                       'assets/images/logo.png',
-                      width: 170,
-                      height: 170,
+                      width: 280,
+                      height: 280,
                       fit: BoxFit.cover,
                     ),
                   ),
