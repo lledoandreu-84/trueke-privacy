@@ -14,9 +14,14 @@ class HomeHeader extends ConsumerWidget {
       child: Row(
         children: [
           SizedBox(
-            width: 40,
-            height: 40,
-            child: Image.asset('assets/images/logo.png', width: 40, height: 40, fit: BoxFit.contain),
+            width: 50,
+            height: 50,
+            child: Image.asset(
+              'assets/images/logo.png',
+              width: 50,
+              height: 50,
+              fit: BoxFit.contain,
+            ),
           ),
           const SizedBox(width: 12),
           const Expanded(
