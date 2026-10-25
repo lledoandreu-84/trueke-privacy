@@ -13,18 +13,10 @@ class HomeHeader extends ConsumerWidget {
       decoration: const BoxDecoration(color: AppColors.surface),
       child: Row(
         children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: AppColors.surfaceMint,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: AppColors.mint.withValues(alpha: 0.3),
-                width: 1,
-              ),
-            ),
-            child: Image.asset('assets/images/logo.png', width: 38, height: 38, fit: BoxFit.contain),
+          SizedBox(
+            width: 40,
+            height: 40,
+            child: Image.asset('assets/images/logo.png', width: 40, height: 40, fit: BoxFit.contain),
           ),
           const SizedBox(width: 12),
           const Expanded(
