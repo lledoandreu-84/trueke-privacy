@@ -1,4 +1,3 @@
-import 'package:trueke/features/splash/splash_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:trueke/features/auth/auth_page.dart';
 import 'dart:async';
@@ -24,19 +23,11 @@ class MyApp extends ConsumerStatefulWidget {
 }
 
 class _MyAppState extends ConsumerState<MyApp> {
-  bool _showSplash = true;
   List<StreamSubscription> _notificationSubs = [];
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        setState(() {
-          _showSplash = false;
-        });
-      }
-    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       try {
         final service = ref.read(appNotificationServiceProvider);
@@ -67,7 +58,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-      home: _showSplash ? const SplashPage() : StreamBuilder<AuthState>(
+      home: StreamBuilder<AuthState>(
         stream: Supabase.instance.client.auth.onAuthStateChange,
         builder: (context, snapshot) {
           final session = Supabase.instance.client.auth.currentSession;
