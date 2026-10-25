@@ -5,18 +5,16 @@ class SplashPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
+      body: SizedBox.expand(
         child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32.0),
-            child: Image.asset(
-              'assets/images/logo.png',
-              width: 180,
-              height: 180,
-              fit: BoxFit.contain,
-            ),
+          child: Image.asset(
+            'assets/images/logo.png',
+            width: screenSize.width * 0.65,
+            height: screenSize.width * 0.65,
+            fit: BoxFit.contain,
           ),
         ),
       ),
