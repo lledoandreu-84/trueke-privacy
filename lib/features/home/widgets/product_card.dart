@@ -13,6 +13,9 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasPrice = product.price != null && product.price! > 0;
+    final formattedPrice = hasPrice 
+        ? '${product.price!.toStringAsFixed(2).replaceFirst('.', ',')} €'
+        : null;
 
     String getTradeLabel() {
       switch (product.tradeType) {
@@ -115,12 +118,10 @@ class ProductCard extends StatelessWidget {
                           ),
                         ),
                         child: Text(
-                          hasPrice
-                              ? "${product.price!.toStringAsFixed(0)} €"
-                              : getTradeLabel(),
+                          formattedPrice ?? getTradeLabel(),
                           style: TextStyle(
                             color: AppColors.primary,
-                            fontSize: hasPrice ? 13 : 10,
+                            fontSize: hasPrice ? 12 : 10,
                             fontWeight: FontWeight.w800,
                           ),
                         ),
