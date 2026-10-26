@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../models/product.dart';
+import 'paginated_products_provider.dart';
 
 final productsProvider = AsyncNotifierProvider<ProductsNotifier, List<Product>>(() {
   return ProductsNotifier();
@@ -37,6 +38,7 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
       });
 
       ref.invalidateSelf();
+      ref.invalidate(paginatedProductsProvider);
     } catch (e, st) {
       if (!ref.mounted) return;
       state = AsyncValue.error(e, st);
