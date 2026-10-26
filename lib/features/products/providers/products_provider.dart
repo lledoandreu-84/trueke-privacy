@@ -21,7 +21,8 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
     return (response as List).map((json) => Product.fromJson(json)).toList();
   }
 
-  Future<void> deleteProduct(String productId) async {
+  Future<void> deleteProduct(dynamic productOrId) async {
+    final productId = productOrId is Product ? productOrId.id : productOrId.toString();
     try {
       await Supabase.instance.client
           .from('products')
@@ -42,8 +43,6 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
     }
   }
 }
-
-final paginatedProductsProvider = productsProvider;
 
 final myProductsProvider = Provider<AsyncValue<List<Product>>>((ref) {
   final productsAsync = ref.watch(productsProvider);
