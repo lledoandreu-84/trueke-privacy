@@ -59,10 +59,10 @@ class ProductInfo extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: hasPrice ? AppColors.primary.withOpacity(0.08) : AppColors.surfaceMint,
+            color: hasPrice ? AppColors.primary.withValues(alpha: 0.08) : AppColors.surfaceMint,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: hasPrice ? AppColors.primary.withOpacity(0.3) : AppColors.primary.withOpacity(0.2),
+              color: hasPrice ? AppColors.primary.withValues(alpha: 0.3) : AppColors.primary.withValues(alpha: 0.2),
               width: 1.2,
             ),
           ),
