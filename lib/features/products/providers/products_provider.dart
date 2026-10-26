@@ -44,8 +44,6 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
   }
 }
 
-final paginatedProductsProvider = productsProvider;
-
 final myProductsProvider = Provider<AsyncValue<List<Product>>>((ref) {
   final productsAsync = ref.watch(productsProvider);
   final currentUserId = Supabase.instance.client.auth.currentUser?.id;
