@@ -1,6 +1,6 @@
-import "package:flutter/material.dart";
-import "../../../core/theme/app_colors.dart";
-import "../../../models/product.dart";
+import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../models/product.dart';
 
 class ProductInfo extends StatelessWidget {
   final Product product;
@@ -20,6 +20,8 @@ class ProductInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasPrice = product.price != null && product.price! > 0;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -52,17 +54,39 @@ class ProductInfo extends StatelessWidget {
             letterSpacing: -0.6,
           ),
         ),
-        const SizedBox(height: 6),
-        // Precio o Trueque en negro plano puro y limpio
-        Text(
-          product.price != null && product.price! > 0
-              ? "${product.price!.toStringAsFixed(0)} €"
-              : "Trueque Directo",
-          style: const TextStyle(
-            fontSize: 26,
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w700,
-            letterSpacing: -0.7,
+        const SizedBox(height: 12),
+        // Precio o Trueque destacado en un contenedor llamativo y enorme
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: hasPrice ? AppColors.primary.withOpacity(0.08) : AppColors.surfaceMint,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: hasPrice ? AppColors.primary.withOpacity(0.3) : AppColors.primary.withOpacity(0.2),
+              width: 1.2,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                hasPrice ? Icons.sell_rounded : Icons.swap_horiz_rounded,
+                color: AppColors.primary,
+                size: 24,
+              ),
+              const SizedBox(width: 10),
+              Text(
+                hasPrice
+                    ? "${product.price!.toStringAsFixed(0)} €"
+                    : "Trueque Directo",
+                style: const TextStyle(
+                  fontSize: 28,
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.8,
+                ),
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 20),
