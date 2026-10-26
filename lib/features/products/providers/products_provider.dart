@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../domain/models/product.dart';
+import '../models/product.dart';
 
 final productsProvider = AsyncNotifierProvider<ProductsNotifier, List<Product>>(() {
   return ProductsNotifier();
