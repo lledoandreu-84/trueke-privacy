@@ -26,7 +26,7 @@ class ProductDetailPage extends ConsumerWidget {
     final productId = product?.id ?? 'prod_default';
     final price = product?.price;
     final bool hasPrice = price != null && price > 0;
-    final String displayBadge = hasPrice ? '${price.toStringAsFixed(2)} €' : 'TRUEKE';
+    final String displayBadge = hasPrice ? '${price.toStringAsFixed(2).replaceFirst('.', ',')} €' : 'TRUEQUE';
 
     
     final isFav = ref.watch(favoritesProvider).contains(productId);
