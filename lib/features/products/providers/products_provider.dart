@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../models/product.dart';
+import '../../../models/product.dart';
 
 final productsProvider = AsyncNotifierProvider<ProductsNotifier, List<Product>>(() {
   return ProductsNotifier();
@@ -21,12 +21,15 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
     return (response as List).map((json) => Product.fromJson(json)).toList();
   }
 
-  Future<void> deleteProduct(String productId) async {
+  Future<void> deleteProduct(dynamic productOrId) async {
+    final productId = productOrId is Product ? productOrId.id : productOrId.toString();
     try {
       await Supabase.instance.client
           .from('products')
           .delete()
           .eq('id', productId);
+
+      if (!ref.mounted) return;
 
       state.whenData((products) {
         final updatedProducts = products.where((p) => p.id != productId).toList();
@@ -35,10 +38,13 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
 
       ref.invalidateSelf();
     } catch (e, st) {
+      if (!ref.mounted) return;
       state = AsyncValue.error(e, st);
     }
   }
 }
+
+final paginatedProductsProvider = productsProvider;
 
 final myProductsProvider = Provider<AsyncValue<List<Product>>>((ref) {
   final productsAsync = ref.watch(productsProvider);
@@ -46,6 +52,6 @@ final myProductsProvider = Provider<AsyncValue<List<Product>>>((ref) {
 
   return productsAsync.whenData((products) {
     if (currentUserId == null) return [];
-    return products.where((p) => p.userId == currentUserId).toList();
+    return products.where((p) => p.ownerId == currentUserId).toList();
   });
 });
