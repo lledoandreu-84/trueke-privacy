@@ -12,6 +12,19 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasPrice = product.price != null && product.price! > 0;
+
+    String getTradeLabel() {
+      switch (product.tradeType) {
+        case TradeType.trade:
+          return "Intercambio";
+        case TradeType.sale:
+          return "Venta";
+        case TradeType.tradeAndMoney:
+          return "Trueque + €";
+      }
+    }
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -91,18 +104,24 @@ class ProductCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,
-                          vertical: 3,
+                          vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.surfaceMint,
+                          color: hasPrice ? AppColors.primary.withValues(alpha: 0.1) : AppColors.surfaceMint,
                           borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: hasPrice ? AppColors.primary.withValues(alpha: 0.3) : Colors.transparent,
+                            width: 1,
+                          ),
                         ),
-                        child: const Text(
-                          'Intercambio',
+                        child: Text(
+                          hasPrice
+                              ? "${product.price!.toStringAsFixed(0)} €"
+                              : getTradeLabel(),
                           style: TextStyle(
                             color: AppColors.primary,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
+                            fontSize: hasPrice ? 13 : 10,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ),
