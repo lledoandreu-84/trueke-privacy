@@ -55,7 +55,7 @@ class SupabaseChatRepository implements ChatRepository {
         .from('conversations')
         .select()
         .or('buyer_id.eq.$userId,seller_id.eq.$userId')
-        .order('updated_at', ascending: false);
+        .order('created_at', ascending: false);
 
     return (response as List)
         .map((json) => ChatRoom.fromJson(json as Map<String, dynamic>))
@@ -70,7 +70,7 @@ class SupabaseChatRepository implements ChatRepository {
     return _client
         .from('conversations')
         .stream(primaryKey: ['id'])
-        .order('updated_at', ascending: false)
+        .order('created_at', ascending: false)
         .map((data) => data
             .map((json) => ChatRoom.fromJson(json))
             .where((c) => c.buyerId == userId || c.sellerId == userId)
@@ -79,6 +79,9 @@ class SupabaseChatRepository implements ChatRepository {
 
   @override
   Stream<List<ChatMessage>> watchMessages(String conversationId) {
+    if (conversationId.trim().isEmpty) {
+      return Stream.value([]);
+    }
     if (mockStreamMessagesInterceptor != null) {
       return mockStreamMessagesInterceptor(conversationId);
     }
@@ -157,6 +160,8 @@ class SupabaseChatRepository implements ChatRepository {
     bool isSystem = false,
   }) async {
     final targetId = conversationId ?? roomId ?? '';
+    if (targetId.trim().isEmpty) return;
+
     final finalContent = content ?? message ?? '';
     final currentSenderId = senderId ?? _client.auth.currentUser?.id ?? '';
 
