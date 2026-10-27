@@ -160,12 +160,10 @@ class SupabaseChatRepository implements ChatRepository {
     bool isSystem = false,
   }) async {
     final targetId = conversationId ?? roomId ?? '';
-    if (targetId.trim().isEmpty) return;
-
     final finalContent = content ?? message ?? '';
     final currentSenderId = senderId ?? _client.auth.currentUser?.id ?? '';
 
-    if (finalContent.trim().isEmpty) return;
+    if (targetId.trim().isEmpty || finalContent.trim().isEmpty) return;
 
     if (mockInsertInterceptor != null) {
       await mockInsertInterceptor(targetId, finalContent, currentSenderId);
