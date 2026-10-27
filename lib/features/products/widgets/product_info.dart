@@ -55,15 +55,15 @@ class ProductInfo extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        // Precio o Trueque destacado en un contenedor llamativo y enorme
+        // Precio o Trueque destacado SUMAMENTE GIGANTE Y LLAMATIVO
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           decoration: BoxDecoration(
-            color: hasPrice ? AppColors.primary.withValues(alpha: 0.08) : AppColors.surfaceMint,
-            borderRadius: BorderRadius.circular(12),
+            color: hasPrice ? AppColors.primary.withValues(alpha: 0.15) : AppColors.surfaceMint,
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: hasPrice ? AppColors.primary.withValues(alpha: 0.3) : AppColors.primary.withValues(alpha: 0.2),
-              width: 1.2,
+              color: AppColors.primary,
+              width: 2.0,
             ),
           ),
           child: Row(
@@ -72,16 +72,16 @@ class ProductInfo extends StatelessWidget {
               Icon(
                 hasPrice ? Icons.sell_rounded : Icons.swap_horiz_rounded,
                 color: AppColors.primary,
-                size: 24,
+                size: 34,
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 12),
               Text(
                 hasPrice ? '${product.price!.toStringAsFixed(2).replaceFirst('.', ',')} €' : 'Trueque Directo',
                 style: const TextStyle(
-                  fontSize: 36,
+                  fontSize: 42,
                   color: AppColors.primary,
                   fontWeight: FontWeight.w900,
-                  letterSpacing: -0.8,
+                  letterSpacing: -1.2,
                 ),
               ),
             ],
