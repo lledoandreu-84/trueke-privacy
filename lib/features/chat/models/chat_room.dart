@@ -1,43 +1,36 @@
-import "package:flutter/foundation.dart";
-
-@immutable
-class ChatRoom {  final int unreadCount;
-
+class ChatRoom {
   final String id;
   final String productId;
-  final String sellerId;
   final String buyerId;
+  final String sellerId;
   final DateTime createdAt;
+  final DateTime updatedAt;
 
   const ChatRoom({
-    this.unreadCount = 0,
     required this.id,
     required this.productId,
-    required this.sellerId,
     required this.buyerId,
+    required this.sellerId,
     required this.createdAt,
+    required this.updatedAt,
   });
 
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "product_id": productId,
-    "seller_id": sellerId,
-    "buyer_id": buyerId,
-    "created_at": createdAt.toIso8601String(),
-  };
-
   factory ChatRoom.fromJson(Map<String, dynamic> json) {
-    final rawCreatedAt = json["created_at"];
-    final createdAt = rawCreatedAt is String
-        ? DateTime.tryParse(rawCreatedAt) ?? DateTime.now()
-        : DateTime.now();
-
     return ChatRoom(
-      id: json["id"]?.toString() ?? "",
-      productId: json["product_id"]?.toString() ?? "",
-      sellerId: json["seller_id"]?.toString() ?? "",
-      buyerId: json["buyer_id"]?.toString() ?? "",
-      createdAt: createdAt,
+      id: json['id'] as String,
+      productId: json['product_id'] as String,
+      buyerId: json['buyer_id'] as String,
+      sellerId: json['seller_id'] as String,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'product_id': productId,
+        'buyer_id': buyerId,
+        'seller_id': sellerId,
+      };
 }
+
+typedef Conversation = ChatRoom;

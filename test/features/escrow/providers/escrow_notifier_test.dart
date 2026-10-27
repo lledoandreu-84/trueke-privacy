@@ -52,10 +52,10 @@ class FakeChatRepository extends Fake implements ChatRepository {
   }
 
   @override
-  Future<void> sendMessage({
-    required String roomId,
-    required String senderId,
-    required String message,
+  Future<void> sendMessage({String? content, String? conversationId,
+    String? roomId,
+    String? senderId,
+    String? message,
     bool isSystem = false,
   }) async {
     messageSent = true;

@@ -1,57 +1,43 @@
-import "package:flutter/foundation.dart";
-
-@immutable
 class ChatMessage {
   final String id;
-  final String roomId;
+  final String conversationId;
   final String senderId;
-  final String message;
+  final String content;
   final DateTime createdAt;
-  final String? offerId;
-  final bool isSystem;
   final bool isRead;
   final bool isDelivered;
 
   const ChatMessage({
     required this.id,
-    required this.roomId,
+    required this.conversationId,
     required this.senderId,
-    required this.message,
+    required this.content,
     required this.createdAt,
-    this.offerId,
-    this.isSystem = false,
-    this.isRead = false,
+    this.isRead = true,
     this.isDelivered = true,
   });
 
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "room_id": roomId,
-    "sender_id": senderId,
-    "message": message,
-    "created_at": createdAt.toIso8601String(),
-    "offer_id": offerId,
-    "is_system": isSystem,
-    "is_read": isRead,
-    "is_delivered": isDelivered,
-  };
+  String get message => content;
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
-    final rawCreatedAt = json["created_at"];
-    final createdAt = rawCreatedAt is String
-        ? DateTime.tryParse(rawCreatedAt) ?? DateTime.now()
-        : DateTime.now();
-
     return ChatMessage(
-      id: json["id"]?.toString() ?? "",
-      roomId: json["room_id"]?.toString() ?? "",
-      senderId: json["sender_id"]?.toString() ?? "",
-      message: json["message"]?.toString() ?? "",
-      createdAt: createdAt,
-      offerId: json["offer_id"]?.toString(),
-      isSystem: json["is_system"] is bool ? json["is_system"] : false,
-      isRead: json["is_read"] is bool ? json["is_read"] : false,
-      isDelivered: json["is_delivered"] is bool ? json["is_delivered"] : true,
+      id: json['id'] as String,
+      conversationId: json['conversation_id'] as String,
+      senderId: json['sender_id'] as String,
+      content: (json['content'] ?? json['message']) as String,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      isRead: json['is_read'] as bool? ?? true,
+      isDelivered: json['is_delivered'] as bool? ?? true,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'conversation_id': conversationId,
+        'sender_id': senderId,
+        'content': content,
+        'is_read': isRead,
+        'is_delivered': isDelivered,
+      };
 }
+
+typedef Message = ChatMessage;

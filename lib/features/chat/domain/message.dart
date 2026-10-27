@@ -13,12 +13,14 @@ class Message {
     required this.createdAt,
   });
 
+  String get message => content;
+
   factory Message.fromJson(Map<String, dynamic> json) {
     return Message(
       id: json['id'] as String,
       conversationId: json['conversation_id'] as String,
       senderId: json['sender_id'] as String,
-      content: json['content'] as String,
+      content: (json['content'] ?? json['message']) as String,
       createdAt: DateTime.parse(json['created_at'] as String),
     );
   }
@@ -29,3 +31,5 @@ class Message {
         'content': content,
       };
 }
+
+typedef ChatMessage = Message;

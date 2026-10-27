@@ -32,3 +32,5 @@ class Conversation {
         'seller_id': sellerId,
       };
 }
+
+typedef ChatRoom = Conversation;
