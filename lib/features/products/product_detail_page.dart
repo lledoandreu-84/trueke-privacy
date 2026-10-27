@@ -1,3 +1,4 @@
+import '../../core/theme/app_colors.dart';
 import 'package:trueke/features/auth/auth_service.dart';
 import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -94,17 +95,19 @@ class ProductDetailPage extends ConsumerWidget {
                             ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                         decoration: BoxDecoration(
-                          color: Colors.purple[50],
-                          borderRadius: BorderRadius.circular(4),
+                          color: AppColors.primary.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: AppColors.primary, width: 2.0),
                         ),
                         child: Text(
-                            displayBadge,
-                          style: TextStyle(
-                            color: Colors.purple[700],
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
+                          displayBadge,
+                          style: const TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -0.5,
                           ),
                         ),
                       ),
