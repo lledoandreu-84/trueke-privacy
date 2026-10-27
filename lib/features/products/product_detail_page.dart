@@ -37,7 +37,7 @@ class ProductDetailPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: CustomAppBar(
-        titleText: title,
+        titleText: 'Detalle del artículo',
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 16),
