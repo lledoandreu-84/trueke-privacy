@@ -37,8 +37,8 @@ class ProductInfo extends StatelessWidget {
             tradeLabel.toUpperCase(),
             style: const TextStyle(
               color: AppColors.primary,
-              fontWeight: FontWeight.w600,
-              fontSize: 10,
+              fontWeight: FontWeight.w900,
+              fontSize: 36,
               letterSpacing: 0.5,
             ),
           ),
