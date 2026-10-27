@@ -78,7 +78,7 @@ class ProductInfo extends StatelessWidget {
               Text(
                 hasPrice ? '${product.price!.toStringAsFixed(2).replaceFirst('.', ',')} €' : 'Trueque Directo',
                 style: const TextStyle(
-                  fontSize: 34,
+                  fontSize: 36,
                   color: AppColors.primary,
                   fontWeight: FontWeight.w900,
                   letterSpacing: -0.8,
