@@ -1,3 +1,5 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../chat/presentation/screens/chat_screen.dart';
 import '../../core/theme/app_colors.dart';
 import 'package:trueke/features/auth/auth_service.dart';
 import 'package:trueke/shared/widgets/custom_app_bar.dart';
@@ -206,7 +208,7 @@ class ProductDetailPage extends ConsumerWidget {
           child: Row(
             children: [
               IconButton(
-                onPressed: () {
+                onPressed: () async {
                   final currentUserId = AuthService.currentUserId;
                     if (product?.ownerId == currentUserId ) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -234,7 +236,7 @@ class ProductDetailPage extends ConsumerWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () {
+                  onPressed: () async {
                     final currentUserId = AuthService.currentUserId;
                     if (product?.ownerId == currentUserId ) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -245,7 +247,55 @@ class ProductDetailPage extends ConsumerWidget {
                       );
                       return;
                     }
-                    Navigator.pushNamed(context, '/chat');
+                    try {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (_) => const Center(child: CircularProgressIndicator()),
+                      );
+
+                      final client = Supabase.instance.client;
+                      final userId = client.auth.currentUser?.id ?? currentUserId;
+
+                      final existing = await client
+                          .from('conversations')
+                          .select()
+                          .eq('product_id', product!.id)
+                          .eq('buyer_id', userId ?? '')
+                          .maybeSingle();
+
+                      String roomId;
+                      if (existing != null) {
+                        roomId = existing['id'].toString();
+                      } else {
+                        final inserted = await client
+                            .from('conversations')
+                            .insert({
+                              'product_id': product!.id,
+                              'buyer_id': userId,
+                              'seller_id': product!.ownerId,
+                            })
+                            .select()
+                            .single();
+                        roomId = inserted['id'].toString();
+                      }
+
+                      if (!context.mounted) return;
+                      Navigator.of(context).pop(); // Quitar loading
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ChatScreen(roomId: roomId),
+                        ),
+                      );
+                    } catch (e) {
+                      if (!context.mounted) return;
+                      Navigator.of(context).pop(); // Quitar loading
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error al abrir el chat: $e'), backgroundColor: Colors.redAccent),
+                      );
+                    }
                   },
                   icon: const Icon(Icons.chat_bubble_outline),
                   label: const Text(
