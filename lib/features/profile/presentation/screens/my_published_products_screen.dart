@@ -114,7 +114,7 @@ class MyPublishedProductsScreen extends ConsumerWidget {
                               const SizedBox(height: 4),
                               Text(
                                 product.price != null
-                                    ? '${product.price!.toStringAsFixed(0)}€'
+                                    ? '${product.price!.toStringAsFixed(2).replaceFirst('.', ',')} €'
                                     : 'Trueque Puro',
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   color: theme.colorScheme.primary,

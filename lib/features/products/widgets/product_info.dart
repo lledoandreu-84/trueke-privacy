@@ -80,9 +80,9 @@ class ProductInfo extends StatelessWidget {
                     ? "${product.price!.toStringAsFixed(0)} €"
                     : "Trueque Directo",
                 style: const TextStyle(
-                  fontSize: 28,
+                  fontSize: 34,
                   color: AppColors.primary,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w900,
                   letterSpacing: -0.8,
                 ),
               ),
