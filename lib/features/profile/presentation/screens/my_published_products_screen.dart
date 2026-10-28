@@ -24,14 +24,20 @@ class MyPublishedProductsScreen extends ConsumerWidget {
       );
     }
 
+    final isViewingOther = userId != null;
+    final targetUserId = userId ?? currentUserId;
+
     final productsAsync = ref.watch(userProductsProvider);
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
-      appBar: const CustomAppBar(titleText: 'Mis Productos Publicados'),
+      appBar: CustomAppBar(titleText: isViewingOther ? 'Productos en Venta' : 'Mis Productos Publicados'),
       body: productsAsync.when(
         data: (products) {
           final myProducts = products.where((p) {
+            if (isViewingOther) {
+              return p.ownerId == targetUserId;
+            }
             return p.ownerId == currentUserId || p.owner == 'lledoandreu84';
           }).toList();
 
