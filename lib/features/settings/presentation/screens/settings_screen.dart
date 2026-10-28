@@ -135,7 +135,9 @@ class SettingsScreen extends ConsumerWidget {
                     color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
                   ),
                 ),
-                child: SwitchListTile(
+                child: Material(
+                  color: Colors.transparent,
+                  child: SwitchListTile(
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 4,
@@ -178,6 +180,7 @@ class SettingsScreen extends ConsumerWidget {
                   },
                 ),
               ),
+                ),
             ],
           );
         },
