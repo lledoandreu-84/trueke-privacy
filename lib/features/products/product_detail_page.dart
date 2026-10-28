@@ -189,7 +189,7 @@ class ProductDetailPage extends ConsumerWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ProfileScreen(userId: product?.ownerId ?? ''),
+                              builder: (context) => ProfileScreen(userId: product?.ownerId ?? '', initialDisplayName: product?.owner ?? 'Vendedor Trueke'),
                             ),
                           );
                         },

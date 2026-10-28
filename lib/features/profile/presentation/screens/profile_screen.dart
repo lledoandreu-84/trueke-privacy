@@ -14,10 +14,8 @@ import 'package:trueke/features/products/providers/products_provider.dart';
 class ProfileScreen extends ConsumerStatefulWidget {
   final String? userId;
 
-  const ProfileScreen({
-    super.key,
-    this.userId,
-  });
+    final String? initialDisplayName;
+const ProfileScreen({super.key, this.userId, this.initialDisplayName});
 
   @override
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
