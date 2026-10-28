@@ -1,3 +1,4 @@
+import 'package:trueke/features/profile/providers/profile_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'my_published_products_screen.dart';
 import 'package:trueke/features/products/providers/user_products_provider.dart';
@@ -260,7 +261,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
      final bool isOwnProfile = widget.userId == null || widget.userId == currentUser?.id;
 
      final String profileTitle = isOwnProfile ? 'Mi Perfil' : 'Perfil del Vendedor';
-     final String displayName = isOwnProfile ? currentUsername : (widget.userId ?? 'Usuario');
+     final profileAsync = isOwnProfile ? null : ref.watch(userProfileProvider(widget.userId!));
+     final String displayName = isOwnProfile 
+         ? currentUsername 
+         : (profileAsync?.asData?.value.displayName ?? 'Vendedor Trueke');
 
     final String displaySubtitle = isOwnProfile ? 'Comunidad Trueke' : 'Miembro verificado';
 
