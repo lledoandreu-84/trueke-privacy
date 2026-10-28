@@ -570,7 +570,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     required String badgeText,
     required VoidCallback onTap,
   }) {
-    return ListTile(
+    return Material(
+      color: Colors.transparent,
+      child: ListTile(
       dense: true,
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 3),
       leading: CircleAvatar(
@@ -606,6 +608,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ],
       ),
       onTap: onTap,
-    );
+    ),
+  );
   }
 }
