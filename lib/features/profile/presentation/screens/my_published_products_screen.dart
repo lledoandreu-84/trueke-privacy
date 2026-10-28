@@ -36,7 +36,7 @@ class MyPublishedProductsScreen extends ConsumerWidget {
         data: (products) {
           final myProducts = products.where((p) {
             if (isViewingOther) {
-              return p.ownerId == targetUserId || p.owner == 'lledoandreu84';
+              return p.ownerId == targetUserId;
             }
             return p.ownerId == currentUserId || p.owner == 'lledoandreu84';
           }).toList();
