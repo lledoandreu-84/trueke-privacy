@@ -38,7 +38,7 @@ class MyPublishedProductsScreen extends ConsumerWidget {
             if (isViewingOther) {
               return p.ownerId == targetUserId;
             }
-            return p.ownerId == currentUserId || p.owner == 'lledoandreu84';
+            return p.ownerId == currentUserId;
           }).toList();
 
           if (myProducts.isEmpty) {
