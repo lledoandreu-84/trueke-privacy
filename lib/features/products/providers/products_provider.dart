@@ -16,7 +16,7 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
   Future<List<Product>> _fetchProducts() async {
     final response = await Supabase.instance.client
         .from('products')
-        .select('*, profiles:owner_id(*)')
+        .select('*')
         .order('created_at', ascending: false);
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
