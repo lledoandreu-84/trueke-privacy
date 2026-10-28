@@ -17,12 +17,12 @@ class ChatRoom {
 
   factory ChatRoom.fromJson(Map<String, dynamic> json) {
     return ChatRoom(
-      id: json['id'] as String,
-      productId: json['product_id'] as String,
-      buyerId: json['buyer_id'] as String,
-      sellerId: json['seller_id'] as String,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String),
+      id: json['id'] as String? ?? '',
+      productId: json['product_id'] as String? ?? '',
+      buyerId: json['buyer_id'] as String? ?? '',
+      sellerId: json['seller_id'] as String? ?? '',
+      createdAt: DateTime.parse(json['created_at'] as String? ?? ''),
+      updatedAt: DateTime.parse(json['updated_at'] as String? ?? ''),
     );
   }
 

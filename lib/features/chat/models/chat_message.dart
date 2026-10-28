@@ -21,11 +21,11 @@ class ChatMessage {
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
     return ChatMessage(
-      id: json['id'] as String,
-      conversationId: json['conversation_id'] as String,
-      senderId: json['sender_id'] as String,
-      content: (json['content'] ?? json['message']) as String,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      id: json['id'] as String? ?? '',
+      conversationId: json['conversation_id'] as String? ?? '',
+      senderId: json['sender_id'] as String? ?? '',
+      content: (json['content'] ?? json['message']) as String? ?? '',
+      createdAt: DateTime.parse(json['created_at'] as String? ?? ''),
       isRead: json['is_read'] as bool? ?? true,
       isDelivered: json['is_delivered'] as bool? ?? true,
     );
