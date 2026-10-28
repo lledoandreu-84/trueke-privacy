@@ -8,7 +8,9 @@ import 'package:trueke/features/products/publish_product_page.dart';
 import 'package:trueke/features/products/product_detail_page.dart';
 
 class MyPublishedProductsScreen extends ConsumerWidget {
-  const MyPublishedProductsScreen({super.key});
+  final String? userId;
+
+  const MyPublishedProductsScreen({super.key, this.userId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

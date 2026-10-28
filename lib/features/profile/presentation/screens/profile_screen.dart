@@ -175,20 +175,30 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   void _showVendorProducts(BuildContext context, {required bool isOwn}) {
-    final userProductsAsync = ref.read(userProductsProvider);
-    final count = userProductsAsync.asData?.value.length ?? 0;
-    if (isOwn && count == 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Aún no has publicado ningún artículo en tu escaparate.')),
+    if (isOwn) {
+      final userProductsAsync = ref.read(userProductsProvider);
+      final count = userProductsAsync.asData?.value.length ?? 0;
+      if (count == 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Aún no has publicado ningún artículo en tu escaparate.')),
+        );
+        return;
+      }
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const MyPublishedProductsScreen(),
+        ),
       );
-      return;
+    } else {
+      // Navegar a los productos públicos del vendedor específico usando su userId
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MyPublishedProductsScreen(userId: widget.userId),
+        ),
+      );
     }
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const MyPublishedProductsScreen(),
-      ),
-    );
   }
 
   Widget _buildRatingBadge({required double rating, required int totalReviews}) {
