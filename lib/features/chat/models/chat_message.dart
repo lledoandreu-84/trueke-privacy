@@ -25,7 +25,7 @@ class ChatMessage {
       conversationId: json['conversation_id'] as String? ?? '',
       senderId: json['sender_id'] as String? ?? '',
       content: (json['content'] ?? json['message']) as String? ?? '',
-      createdAt: DateTime.parse(json['created_at'] as String? ?? ''),
+      createdAt: DateTime.tryParse(json['created_at'] as String? ?? DateTime.now().toIso8601String()) ?? DateTime.now(),
       isRead: json['is_read'] as bool? ?? true,
       isDelivered: json['is_delivered'] as bool? ?? true,
     );

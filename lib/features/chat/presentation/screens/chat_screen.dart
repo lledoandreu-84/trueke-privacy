@@ -229,7 +229,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final currentUserId = AuthService.currentUserId ?? '';
     if (status == "pending" && timestampStr != null) {
       try {
-        final DateTime offerTime = DateTime.parse(timestampStr);
+        final DateTime offerTime = DateTime.tryParse(timestampStr) ?? DateTime.now();
         if (DateTime.now().difference(offerTime).inHours >= 48) {
           status = "expired";
         }

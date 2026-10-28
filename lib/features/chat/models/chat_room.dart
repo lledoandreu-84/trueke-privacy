@@ -21,8 +21,8 @@ class ChatRoom {
       productId: json['product_id'] as String? ?? '',
       buyerId: json['buyer_id'] as String? ?? '',
       sellerId: json['seller_id'] as String? ?? '',
-      createdAt: DateTime.parse(json['created_at'] as String? ?? ''),
-      updatedAt: DateTime.parse(json['updated_at'] as String? ?? ''),
+      createdAt: DateTime.tryParse(json['created_at'] as String? ?? DateTime.now().toIso8601String()) ?? DateTime.now(),
+      updatedAt: DateTime.tryParse(json['updated_at'] as String? ?? DateTime.now().toIso8601String()) ?? DateTime.now(),
     );
   }
 
