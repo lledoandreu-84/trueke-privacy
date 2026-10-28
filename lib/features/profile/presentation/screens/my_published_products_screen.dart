@@ -27,7 +27,7 @@ class MyPublishedProductsScreen extends ConsumerWidget {
     final isViewingOther = userId != null;
     final targetUserId = userId ?? currentUserId;
 
-    final productsAsync = ref.watch(userProductsProvider);
+    final productsAsync = ref.watch(productsProvider);
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
@@ -36,7 +36,7 @@ class MyPublishedProductsScreen extends ConsumerWidget {
         data: (products) {
           final myProducts = products.where((p) {
             if (isViewingOther) {
-              return p.ownerId == targetUserId;
+              return p.ownerId == targetUserId || p.owner == 'lledoandreu84';
             }
             return p.ownerId == currentUserId || p.owner == 'lledoandreu84';
           }).toList();
@@ -132,10 +132,11 @@ class MyPublishedProductsScreen extends ConsumerWidget {
                             ],
                           ),
                         ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
+                        if (!isViewingOther)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
                               icon: Icon(Icons.edit_outlined, color: theme.colorScheme.primary, size: 20),
                               onPressed: () {
                                 Navigator.push(
