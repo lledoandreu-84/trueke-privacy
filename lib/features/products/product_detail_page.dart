@@ -159,7 +159,9 @@ class ProductDetailPage extends ConsumerWidget {
                         side: BorderSide(color: Colors.grey.shade300),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: ListTile(
+                      child: Material(
+                        color: Colors.transparent,
+                        child: ListTile(
                         leading: const CircleAvatar(
                           child: Icon(Icons.person),
                         ),
@@ -195,6 +197,7 @@ class ProductDetailPage extends ConsumerWidget {
                         },
                       ),
                     ),
+                      ),
                   ],
                 ],
               ),
