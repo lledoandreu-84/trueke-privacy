@@ -175,7 +175,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   void _showVendorProducts(BuildContext context, {required bool isOwn}) {
     if (isOwn) {
-      final userProductsAsync = ref.read(userProductsProvider);
+      final userProductsAsync = ref.read(productsProvider);
       final count = userProductsAsync.asData?.value.length ?? 0;
       if (count == 0) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -273,7 +273,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     final String displaySubtitle = isOwnProfile ? 'Comunidad Trueke' : 'Miembro verificado';
 
-    final userProductsAsync = ref.watch(userProductsProvider);
+    final userProductsAsync = ref.watch(productsProvider);
      final publishedCount = userProductsAsync.asData?.value.length ?? 0;
     const historyCount = 0;
     
