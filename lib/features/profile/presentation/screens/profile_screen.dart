@@ -260,13 +260,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
      final String profileTitle = isOwnProfile ? 'Mi Perfil' : 'Perfil del Vendedor';
      final profileAsync = isOwnProfile ? null : ref.watch(userProfileProvider(widget.userId!));
+     
+     final String resolvedAsyncName = profileAsync?.asData?.value.displayName ?? '';
+     
      final String displayName = isOwnProfile 
          ? currentUsername 
-         : (profileAsync?.when(
-             data: (profile) => profile.displayName,
-             loading: () => 'Cargando...',
-             error: (e, st) => 'Vendedor Trueke',
-           ) ?? 'Vendedor Trueke');
+         : (widget.initialDisplayName?.isNotEmpty == true 
+             ? widget.initialDisplayName! 
+             : (resolvedAsyncName.isNotEmpty 
+                 ? resolvedAsyncName 
+                 : (widget.userId ?? 'Vendedor Trueke')));
 
     final String displaySubtitle = isOwnProfile ? 'Comunidad Trueke' : 'Miembro verificado';
 
