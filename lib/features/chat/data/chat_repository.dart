@@ -63,11 +63,30 @@ class SupabaseChatRepository implements ChatRepository {
   }
 
   @override
-  Stream<List<ChatRoom>> streamUserChatRooms() {
+  Stream<List<ChatRoom>> streamUserChatRooms() async* {
     final userId = _client.auth.currentUser?.id;
-    if (userId == null) return Stream.value([]);
+    if (userId == null) {
+      yield [];
+      return;
+    }
 
-    return _client
+    // Emitimos primero un fetch inicial para renderizar al instante sin quedarnos colgados en loading
+    try {
+      final initialData = await _client
+          .from('conversations')
+          .select()
+          .or('buyer_id.eq.$userId,seller_id.eq.$userId')
+          .order('created_at', ascending: false);
+      
+      yield (initialData as List)
+          .map((json) => ChatRoom.fromJson(json as Map<String, dynamic>))
+          .toList();
+    } catch (_) {
+      yield [];
+    }
+
+    // Luego nos suscribimos al stream en tiempo real
+    yield* _client
         .from('conversations')
         .stream(primaryKey: ['id'])
         .order('created_at', ascending: false)
