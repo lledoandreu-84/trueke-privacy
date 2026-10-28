@@ -16,6 +16,10 @@ final chatMessagesProvider = StreamProvider.family<List<ChatMessage>, String>((r
 final chatMessagesStreamProvider = chatMessagesProvider;
 
 final userConversationsProvider = StreamProvider<List<ChatRoom>>((ref) {
+  // Escuchamos cambios de autenticación para recrear el stream cuando la sesión esté lista
+  Supabase.instance.client.auth.onAuthStateChange.listen((_) {
+    ref.invalidateSelf();
+  });
   final repository = ref.watch(chatRepositoryProvider);
   return repository.streamUserChatRooms();
 });
