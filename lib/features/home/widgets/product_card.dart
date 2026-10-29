@@ -20,7 +20,7 @@ class ProductCard extends StatelessWidget {
     String getTradeLabel() {
       switch (product.tradeType) {
         case TradeType.trade:
-          return "Intercambio";
+          return "Trueke";
         case TradeType.sale:
           return "Venta";
         case TradeType.tradeAndMoney:

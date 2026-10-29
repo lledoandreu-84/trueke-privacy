@@ -21,7 +21,7 @@ class _ProductSearchScreenState extends ConsumerState<ProductSearchScreen> {
   final List<String> _categories = ['Todos', 'Electrónica', 'Moda', 'Hogar', 'Gaming', 'Deporte', 'Otros'];
   final List<double?> _radii = [25.0, 50.0, 100.0, 200.0, null];
   final List<String> _conditions = ['Todos', 'Nuevo', 'Poco uso', 'Buen estado', 'Muy usado'];
-  final List<String> _tradeTypes = ['Todos', 'Trueke puro', 'Venta directa', 'Trueke + €'];
+  final List<String> _tradeTypes = ['Todos', 'Trueke', 'Venta directa', 'Trueke + €'];
 
   final List<double> _priceSteps = [
     0, 5, 10, 15, 20, 25,
