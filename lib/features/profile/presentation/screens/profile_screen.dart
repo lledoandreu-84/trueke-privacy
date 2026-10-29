@@ -1,3 +1,4 @@
+import 'package:trueke/features/chat/presentation/screens/chat_list_screen.dart';
 import 'package:trueke/features/chat/providers/chat_providers.dart';
 import 'package:trueke/features/profile/providers/profile_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -374,10 +375,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   subtitle: 'Negociaciones activas por productos',
                       badgeText: conversationsCount > 0 ? '$conversationsCount' : 'Chat',
                                   onTap: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Aún no tienes ninguna conversación activa.')),
-                                    );
-                                  },
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const ChatListScreen(),
+                        ),
+                      );
+                    },
                                 ),
                                 const Divider(height: 1, color: Color(0xFFEEEEEE)),
                               ],
