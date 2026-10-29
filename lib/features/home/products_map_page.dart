@@ -77,7 +77,7 @@ class _ProductsMapPageState extends ConsumerState<ProductsMapPage> {
                 title: product.title,
                 snippet: product.price != null
                     ? '${product.price}€'
-                    : 'Trueque Puro',
+                    : 'Trueke',
               ),
               onTap: () {
                 showModalBottomSheet(

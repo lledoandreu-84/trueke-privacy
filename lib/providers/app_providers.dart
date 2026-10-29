@@ -1,24 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// --- 1. FAVORITOS ---
-final favoritesProvider = NotifierProvider<FavoritesNotifier, Set<String>>(FavoritesNotifier.new);
-
-class FavoritesNotifier extends Notifier<Set<String>> {
-  @override
-  Set<String> build() => {};
-
-  void toggleFavorite(String productId) {
-    if (state.contains(productId)) {
-      state = {...state}..remove(productId);
-    } else {
-      state = {...state}..add(productId);
-    }
-  }
-
-  bool isFavorite(String productId) => state.contains(productId);
-}
-
-// --- 2. CHAT ---
+// --- 1. CHAT ---
 class ChatMessage {
   final String text;
   final bool isMe;
@@ -40,7 +22,7 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
   }
 }
 
-// --- 3. RESEÑAS Y VALORACIONES ---
+// --- 2. RESEÑAS Y VALORACIONES ---
 class Review {
   final int rating;
   final String comment;

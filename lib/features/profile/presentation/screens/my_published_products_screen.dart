@@ -123,7 +123,7 @@ class MyPublishedProductsScreen extends ConsumerWidget {
                               Text(
                                 product.price != null
                                     ? '${product.price!.toStringAsFixed(2).replaceFirst('.', ',')} €'
-                                    : 'Trueque Puro',
+                                    : 'Trueke',
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   color: theme.colorScheme.primary,
                                   fontWeight: FontWeight.w600,
