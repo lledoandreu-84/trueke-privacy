@@ -45,6 +45,9 @@ class FakeDisputeRepository implements DisputeRepository {
 // Mock manual de ChatRepository
 class FakeChatRepository implements ChatRepository {
   @override
+  Future<void> deleteConversation(String conversationId) async {}
+
+  @override
   Future<void> sendMessage({String? content, String? conversationId,
     String? roomId,
     String? senderId,

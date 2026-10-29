@@ -5,6 +5,9 @@ import 'package:trueke/features/chat/models/chat_room.dart';
 
 class FakeChatRepository implements ChatRepository {
   @override
+  Future<void> deleteConversation(String conversationId) async {}
+
+  @override
   Future<List<ChatRoom>> getUserConversations() async => [];
 
   @override

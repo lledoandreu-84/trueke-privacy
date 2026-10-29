@@ -3,6 +3,7 @@ import '../models/chat_room.dart';
 import '../models/chat_message.dart';
 
 abstract class ChatRepository {
+  Future<void> deleteConversation(String conversationId);
   Future<List<ChatRoom>> getUserConversations();
   Stream<List<ChatMessage>> watchMessages(String conversationId);
   Stream<List<ChatRoom>> streamUserChatRooms();
@@ -25,6 +26,7 @@ abstract class ChatRepository {
     String? message,
     bool isSystem = false,
   });
+    
   Future<String> uploadMessageImage({
     String? roomId,
     String? fileName,
@@ -34,6 +36,11 @@ abstract class ChatRepository {
 }
 
 class SupabaseChatRepository implements ChatRepository {
+  @override
+  Future<void> deleteConversation(String conversationId) async {
+    if (conversationId.trim().isEmpty) return;
+    await _client.from('conversations').delete().eq('id', conversationId);
+  }
   final SupabaseClient? _supabase;
   final dynamic mockInsertInterceptor;
   final dynamic mockStreamMessagesInterceptor;
@@ -197,6 +204,7 @@ class SupabaseChatRepository implements ChatRepository {
   }
 
   @override
+    
   Future<String> uploadMessageImage({
     String? roomId,
     String? fileName,
