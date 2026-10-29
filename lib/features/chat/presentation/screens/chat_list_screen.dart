@@ -105,6 +105,47 @@ class ChatListScreen extends ConsumerWidget {
               return Material(
                 color: Colors.transparent,
                 child: ListTile(
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                      onPressed: () async {
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Eliminar conversación'),
+                              content: const Text('¿Estás seguro de que deseas eliminar este chat? Esta acción no se puede deshacer.'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(false),
+                                  child: const Text('Cancelar'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(true),
+                                  child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                        if (confirm == true) {
+                          try {
+                            await ref.read(chatRepositoryProvider).deleteConversation(room.id);
+                            ref.invalidate(userConversationsProvider);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Conversación eliminada correctamente')),
+                              );
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Error al eliminar: $e')),
+                              );
+                            }
+                          }
+                        }
+                      },
+                    ),
                   onTap: () {
                     Navigator.push(
                       context,
