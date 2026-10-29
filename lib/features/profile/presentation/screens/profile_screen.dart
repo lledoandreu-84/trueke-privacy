@@ -1,3 +1,4 @@
+import 'package:trueke/features/chat/providers/chat_providers.dart';
 import 'package:trueke/features/profile/providers/profile_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'my_published_products_screen.dart';
@@ -276,6 +277,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final productsAsync = ref.watch(productsProvider);
      // Si widget.userId viene informado, filtramos por él (perfil ajeno), si es null, filtramos por el usuario actual (perfil propio)
      final effectiveProfileId = widget.userId ?? currentUser?.id;
+     final conversationsAsync = ref.watch(userConversationsProvider);
+     final conversationsCount = conversationsAsync.asData?.value.length ?? 0;
      final publishedCount = productsAsync.asData?.value.where((p) => p.ownerId == effectiveProfileId).length ?? 0;
     const historyCount = 0;
     
@@ -369,7 +372,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   icon: Icons.chat_bubble_outline_rounded,
                                   title: 'Mis Conversaciones',
                                   subtitle: 'Negociaciones activas por productos',
-                                  badgeText: 'Chat',
+                      badgeText: conversationsCount > 0 ? '$conversationsCount' : 'Chat',
                                   onTap: () {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(content: Text('Aún no tienes ninguna conversación activa.')),
