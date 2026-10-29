@@ -130,7 +130,7 @@ class ChatListScreen extends ConsumerWidget {
                         if (confirm == true) {
                           try {
                             await ref.read(chatRepositoryProvider).deleteConversation(room.id);
-                            ref.invalidate(userConversationsProvider);
+                            ref.invalidate(userChatRoomsStreamProvider);
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text('Conversación eliminada correctamente')),
