@@ -1,3 +1,4 @@
+import '../../products/product_detail_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/favorites_provider.dart';
 import 'package:flutter/material.dart';
@@ -30,8 +31,17 @@ class ProductCard extends StatelessWidget {
       }
     }
 
-    return Container(
-      decoration: BoxDecoration(
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductDetailPage(product: product),
+          ),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
@@ -148,7 +158,7 @@ class ProductCard extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ),);
   }
 
   Widget _buildPlaceholder() {
