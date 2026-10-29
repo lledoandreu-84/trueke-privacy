@@ -1,3 +1,4 @@
+import 'package:trueke/features/products/providers/products_provider.dart';
 import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -117,10 +118,26 @@ class ChatListScreen extends ConsumerWidget {
                     backgroundColor: AppColors.surfaceMint,
                     child: Icon(Icons.person_rounded, color: AppColors.primary),
                   ),
-                  title: const Text(
-                    'Negociación de Artículo',
-                    style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.textPrimary),
-                  ),
+                  title: Consumer(
+            builder: (context, ref, child) {
+              final productsAsync = ref.watch(productsProvider);
+              String productTitle = 'Negociación de Artículo';
+              
+              productsAsync.whenData((products) {
+                try {
+                  final product = products.firstWhere((p) => p.id == room.productId);
+                  productTitle = product.title;
+                } catch (_) {}
+              });
+
+              return Text(
+                productTitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+              );
+            },
+          ),
                   subtitle: const Text(
                     'Chat activo de Trueke',
                     maxLines: 1,
