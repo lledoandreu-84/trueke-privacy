@@ -1,3 +1,5 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/providers/favorites_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:trueke/core/theme/app_colors.dart';
 import 'package:trueke/models/product.dart';
@@ -76,11 +78,23 @@ class ProductCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: const Icon(
-                        Icons.favorite_border_rounded,
-                        size: 16,
-                        color: AppColors.textPrimary,
-                      ),
+                        child: Consumer(
+                          builder: (context, ref, child) {
+                            final favoritesState = ref.watch(favoritesProvider);
+                            final isFav = favoritesState.maybeWhen(
+                              data: (favs) => favs.any((p) => p.id == product.id),
+                              orElse: () => false,
+                            );
+                            return GestureDetector(
+                              onTap: () => ref.read(favoritesProvider.notifier).toggleFavorite(product),
+                              child: Icon(
+                                isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                                size: 16,
+                                color: isFav ? AppColors.coral : AppColors.textPrimary,
+                              ),
+                            );
+                          },
+                        ),
                     ),
                   ),
                 ],
