@@ -273,8 +273,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     final String displaySubtitle = isOwnProfile ? 'Comunidad Trueke' : 'Miembro verificado';
 
-    final userProductsAsync = ref.watch(productsProvider);
-     final publishedCount = userProductsAsync.asData?.value.length ?? 0;
+    final productsAsync = ref.watch(productsProvider);
+     // Si widget.userId viene informado, filtramos por él (perfil ajeno), si es null, filtramos por el usuario actual (perfil propio)
+     final effectiveProfileId = widget.userId ?? currentUser?.id;
+     final publishedCount = productsAsync.asData?.value.where((p) => p.ownerId == effectiveProfileId).length ?? 0;
     const historyCount = 0;
     
     final reviews = ref.watch(vendorReviewsProvider);
