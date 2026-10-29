@@ -1,4 +1,3 @@
-import 'package:trueke/features/products/providers/products_provider.dart';
 import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -120,15 +119,13 @@ class ChatListScreen extends ConsumerWidget {
                   ),
                   title: Consumer(
             builder: (context, ref, child) {
-              final productsAsync = ref.watch(productsProvider);
-              String productTitle = 'Negociación de Artículo';
+              final productAsync = ref.watch(chatProductProvider(room.productId));
               
-              productsAsync.whenData((products) {
-                try {
-                  final product = products.firstWhere((p) => p.id == room.productId);
-                  productTitle = product.title;
-                } catch (_) {}
-              });
+              final productTitle = productAsync.when(
+                data: (product) => product?.title ?? 'Negociación de Artículo',
+                loading: () => 'Cargando...',
+                error: (_, _) => 'Negociación de Artículo',
+              );
 
               return Text(
                 productTitle,

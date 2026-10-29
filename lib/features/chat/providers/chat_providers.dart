@@ -1,3 +1,4 @@
+import 'package:trueke/models/product.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../data/chat_repository.dart';
@@ -28,6 +29,18 @@ final singleChatRoomProvider = StreamProvider.family<ChatRoom?, String>((ref, ro
   yield null;
 });
 
-final chatProductProvider = FutureProvider.family<dynamic, String>((ref, productId) async {
-  return null;
+final chatProductProvider = FutureProvider.family<Product?, String>((ref, productId) async {
+  if (productId.isEmpty) return null;
+  try {
+    final response = await Supabase.instance.client
+        .from('products')
+        .select('*')
+        .eq('id', productId)
+        .maybeSingle();
+    
+    if (response == null) return null;
+    return Product.fromJson(response);
+  } catch (_) {
+    return null;
+  }
 });
