@@ -1,4 +1,4 @@
-import 'package:trueke/features/chat/providers/chat_providers.dart';
+// import 'package:trueke/features/chat/providers/chat_providers.dart';
 import 'package:trueke/features/profile/providers/profile_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'my_published_products_screen.dart';
@@ -278,8 +278,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final productsAsync = ref.watch(productsProvider);
      // Si widget.userId viene informado, filtramos por él (perfil ajeno), si es null, filtramos por el usuario actual (perfil propio)
      final effectiveProfileId = widget.userId ?? currentUser?.id;
-     final conversationsAsync = ref.watch(userConversationsProvider);
-     final conversationsCount = conversationsAsync.asData?.value.length ?? 0;
+     // final conversationsAsync = ref.watch(userConversationsProvider);
+     // final conversationsCount = conversationsAsync.asData?.value.length ?? 0;
      final publishedCount = productsAsync.asData?.value.where((p) => p.ownerId == effectiveProfileId).length ?? 0;
     const historyCount = 0;
     
@@ -373,7 +373,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   icon: Icons.settings_outlined,
                                   title: 'Configuración',
                                   subtitle: 'Ajustes de cuenta y preferencias',
-                      badgeText: conversationsCount > 0 ? '$conversationsCount' : 'Chat',
+                      
                                   onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -575,7 +575,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     required IconData icon,
     required String title,
     required String subtitle,
-    required String badgeText,
+    String? badgeText,
     required VoidCallback onTap,
   }) {
     return Material(
@@ -603,7 +603,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
-              badgeText,
+              badgeText ?? '',
               style: const TextStyle(
                 color: Color(0xFF6750A4),
                 fontWeight: FontWeight.bold,
