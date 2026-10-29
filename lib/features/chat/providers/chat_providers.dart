@@ -32,12 +32,23 @@ final singleChatRoomProvider = StreamProvider.family<ChatRoom?, String>((ref, ro
 final chatProductProvider = FutureProvider.family<Product?, String>((ref, productId) async {
   if (productId.isEmpty) return null;
   try {
-    final response = await Supabase.instance.client
+    // 1. Intentar buscar por ID exacto
+    var response = await Supabase.instance.client
         .from('products')
         .select('*')
         .eq('id', productId)
         .maybeSingle();
     
+    // 2. Si no se encuentra por ID, podría ser un título antiguo o nombre de usuario guardado como ID en chats viejos
+    // ignore: prefer_conditional_assignment
+    if (response == null) {
+      response = await Supabase.instance.client
+          .from('products')
+          .select('*')
+          .eq('title', productId)
+          .maybeSingle();
+    }
+
     if (response == null) return null;
     return Product.fromJson(response);
   } catch (_) {
