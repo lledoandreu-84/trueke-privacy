@@ -1,3 +1,4 @@
+import '../../core/providers/favorites_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../chat/presentation/screens/chat_screen.dart';
 import '../../core/theme/app_colors.dart';
@@ -6,7 +7,7 @@ import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/product.dart';
-import '../../providers/app_providers.dart';
+
 import '../profile/presentation/screens/profile_screen.dart';
 
 class ProductDetailPage extends ConsumerWidget {
@@ -32,7 +33,11 @@ class ProductDetailPage extends ConsumerWidget {
     final String displayBadge = hasPrice ? '${price.toStringAsFixed(2).replaceFirst('.', ',')} €' : 'TRUEQUE';
 
     
-    final isFav = ref.watch(favoritesProvider).contains(productId);
+    final favoritesAsync = ref.watch(favoritesProvider);
+    final isFav = favoritesAsync.maybeWhen(
+      data: (favs) => favs.any((p) => p.id == productId),
+      orElse: () => false,
+    );
 
     final Color placeholderColor = productId == 'prod_2' ? Colors.blue[200]! : Colors.green[200]!;
     final IconData placeholderIcon = productId == 'prod_2' ? Icons.devices : Icons.image;
@@ -223,7 +228,7 @@ class ProductDetailPage extends ConsumerWidget {
                       );
                       return;
                     }
-                    ref.read(favoritesProvider.notifier).toggleFavorite(productId);
+                    if (product != null) ref.read(favoritesProvider.notifier).toggleFavorite(product!);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(isFav ? 'Eliminado de favoritos' : 'Añadido a favoritos'),
