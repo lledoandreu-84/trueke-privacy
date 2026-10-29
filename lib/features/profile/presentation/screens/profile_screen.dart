@@ -370,9 +370,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             children: [
                               if (isOwnProfile) ...[
                                 _buildMenuItem(
-                                  icon: Icons.chat_bubble_outline_rounded,
-                                  title: 'Mis Conversaciones',
-                                  subtitle: 'Negociaciones activas por productos',
+                                  icon: Icons.settings_outlined,
+                                  title: 'Configuración',
+                                  subtitle: 'Ajustes de cuenta y preferencias',
                       badgeText: conversationsCount > 0 ? '$conversationsCount' : 'Chat',
                                   onTap: () {
                       Navigator.of(context).push(
