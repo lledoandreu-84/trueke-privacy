@@ -39,3 +39,13 @@ WITH CHECK (
     AND (chat_rooms.buyer_id = auth.uid()::text OR chat_rooms.seller_id = auth.uid()::text)
   )
 );
+
+-- =========================================================================
+-- BLINDAJE DE BORRADO PARA CONVERSACIONES (conversations)
+-- =========================================================================
+ALTER TABLE conversations ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Permitir borrado de conversaciones a participantes"
+ON conversations FOR DELETE
+TO authenticated
+USING (auth.uid() = buyer_id OR auth.uid() = seller_id);
