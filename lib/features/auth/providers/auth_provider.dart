@@ -19,12 +19,10 @@ final authStateProvider = StreamProvider<AuthState>((ref) {
 // Proveedor síncrono del usuario actual derivado de la única fuente de verdad
 final currentUserProvider = Provider<User?>((ref) {
   final authStateAsync = ref.watch(authStateProvider);
-  return authStateAsync.maybeWhen(
+  return authStateAsync.when(
     data: (state) => state.session?.user,
-    orElse: () {
-      final client = ref.read(supabaseClientProvider);
-      return client.auth.currentUser;
-    },
+    loading: () => null,
+    error: (e, st) => null,
   );
 });
 
