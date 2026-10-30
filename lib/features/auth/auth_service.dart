@@ -5,12 +5,12 @@ final authServiceProvider = Provider<AuthService>((ref) {
   return AuthService(Supabase.instance.client);
 });
 
-final currentUserProvider = Provider<User?>((ref) {
-  return Supabase.instance.client.auth.currentUser;
+final currentUserProvider = StreamProvider<User?>((ref) {
+  return Supabase.instance.client.auth.onAuthStateChange.map((event) => event.session?.user);
 });
 
-final authUserIdProvider = Provider<String?>((ref) {
-  return Supabase.instance.client.auth.currentUser?.id;
+final authUserIdProvider = StreamProvider<String?>((ref) {
+  return Supabase.instance.client.auth.onAuthStateChange.map((event) => event.session?.user?.id);
 });
 
 class AuthService {
@@ -24,7 +24,7 @@ class AuthService {
 
   Stream<AuthState> get authStateChanges => _supabase.auth.onAuthStateChange;
 
-  Future<AuthResponse> signUp({
+  Future<bool> signUp({
     required String email,
     required String password,
     DateTime? termsAcceptedAt,
@@ -41,7 +41,7 @@ class AuthService {
         throw const AuthException('Este correo electrónico ya está registrado. Por favor, inicia sesión.');
       }
 
-      return response;
+      return response.user != null;
     } on AuthException catch (e) {
       if (e.message.toLowerCase().contains('already registered') ||
           e.message.toLowerCase().contains('user already exists')) {
