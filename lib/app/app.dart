@@ -1,4 +1,3 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:trueke/features/auth/auth_page.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -88,18 +87,10 @@ class AuthRootWrapper extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authStateAsync = ref.watch(authStateProvider);
-
-    return authStateAsync.when(
-      data: (state) {
-        final session = state.session ?? Supabase.instance.client.auth.currentSession;
-        if (session != null) {
-          return const MainShell();
-        }
-        return const AuthPage();
-      },
-      loading: () => const MainShell(),
-      error: (_, _) => const AuthPage(),
-    );
+    final user = ref.watch(currentUserProvider);
+    if (user != null) {
+      return const MainShell();
+    }
+    return const AuthPage();
   }
 }
