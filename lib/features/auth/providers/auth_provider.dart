@@ -46,7 +46,9 @@ class AuthController extends AsyncNotifier<void> {
   Future<void> signOut() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      await Supabase.instance.client.auth.signOut();
+      await Supabase.instance.client.auth.signOut(scope: SignOutScope.global);
+      ref.invalidate(currentUserProvider);
+      ref.invalidate(authStateProvider);
     });
   }
 }
