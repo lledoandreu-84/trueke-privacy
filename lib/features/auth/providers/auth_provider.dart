@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/supabase/supabase_client.dart';
@@ -32,3 +33,22 @@ final authUserIdProvider = Provider<String?>((ref) {
   final user = ref.watch(currentUserProvider);
   return user?.id;
 });
+
+
+
+
+class AuthController extends AsyncNotifier<void> {
+  @override
+  FutureOr<void> build() {
+    return null;
+  }
+
+  Future<void> signOut() async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await Supabase.instance.client.auth.signOut();
+    });
+  }
+}
+
+final authControllerProvider = AsyncNotifierProvider<AuthController, void>(AuthController.new);

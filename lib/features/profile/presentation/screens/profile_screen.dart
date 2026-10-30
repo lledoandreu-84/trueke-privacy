@@ -1,3 +1,4 @@
+import '../../../auth/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -137,7 +138,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 onPressed: () async {
                   try {
                     FocusManager.instance.primaryFocus?.unfocus();
-                    await Supabase.instance.client.auth.signOut();
+                    await ref.read(authControllerProvider.notifier).signOut();
                     
                     
                     if (context.mounted) {
