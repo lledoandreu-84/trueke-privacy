@@ -12,6 +12,7 @@ class FavoritesNotifier extends AsyncNotifier<List<Product>> {
 
   @override
   Future<List<Product>> build() async {
+    final currentUserId = Supabase.instance.client.auth.currentUser?.id;
     final preferences = ref.watch(sharedPreferencesProvider);
     final jsonList = preferences.getStringList(_favoritesKey) ?? [];
 
@@ -30,9 +31,29 @@ class FavoritesNotifier extends AsyncNotifier<List<Product>> {
           decoded['trade_type'] = decoded['tradeType'];
         }
 
-        list.add(Product.fromJson(decoded));
+        final product = Product.fromJson(decoded);
+
+        // Identificar el ID del propietario en el JSON guardado
+        final productOwnerId = decoded['user_id'] as String? ??
+                               decoded['owner_id'] as String? ??
+                               decoded['userId'] as String? ??
+                               decoded['ownerId'] as String?;
+
+        // Excluir estrictamente si el producto pertenece al usuario actual
+        if (currentUserId != null && productOwnerId != null && productOwnerId.trim() == currentUserId.trim()) {
+          continue;
+        }
+
+        list.add(product);
       } catch (_) {}
     }
+
+    // Si se filtraron productos propios obsoletos, actualizar la caché local
+    if (list.length != jsonList.length) {
+      final cleanedJsonList = list.map((p) => jsonEncode(p.toJson())).toList();
+      await preferences.setStringList(_favoritesKey, cleanedJsonList);
+    }
+
     return list;
   }
 
@@ -45,6 +66,18 @@ class FavoritesNotifier extends AsyncNotifier<List<Product>> {
   }
 
   Future<void> toggleFavorite(Product product) async {
+    final currentUserId = Supabase.instance.client.auth.currentUser?.id;
+    final productMap = product.toJson();
+    final productOwnerId = productMap['user_id'] as String? ??
+                           productMap['owner_id'] as String? ??
+                           productMap['userId'] as String? ??
+                           productMap['ownerId'] as String?;
+
+    // Prevenir que un usuario añada su propio producto a favoritos
+    if (currentUserId != null && productOwnerId != null && productOwnerId.trim() == currentUserId.trim()) {
+      return;
+    }
+
     final currentFavorites = state.value ?? [];
     final currentId = product.id.toString().trim().toLowerCase();
 
