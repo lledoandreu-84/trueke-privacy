@@ -3,23 +3,19 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/supabase/supabase_client.dart';
 import '../auth_service.dart';
 
-// Proveedor del servicio inyectado heredado
+// Proveedor del servicio inyectado
 final authServiceProvider = Provider<AuthService>((ref) {
   final client = ref.watch(supabaseClientProvider);
   return AuthService(client);
 });
 
-// Flujo en tiempo real unificado de cambios de sesión
-final authStateProvider = StreamProvider<AuthState>((ref) async* {
+// Única fuente de verdad en tiempo real para el estado de autenticación
+final authStateProvider = StreamProvider<AuthState>((ref) {
   final client = ref.watch(supabaseClientProvider);
-  final initialSession = client.auth.currentSession;
-  if (initialSession != null) {
-    yield AuthState(AuthChangeEvent.initialSession, initialSession);
-  }
-  yield* client.auth.onAuthStateChange;
+  return client.auth.onAuthStateChange;
 });
 
-// Proveedor síncrono del usuario actual conectado al estado reactivo del stream
+// Proveedor síncrono del usuario actual derivado de la única fuente de verdad
 final currentUserProvider = Provider<User?>((ref) {
   final authStateAsync = ref.watch(authStateProvider);
   return authStateAsync.maybeWhen(
@@ -31,11 +27,8 @@ final currentUserProvider = Provider<User?>((ref) {
   );
 });
 
-// Proveedor reactivo asíncrono de ID exigido por la arquitectura del MVP
-final authUserIdProvider = StreamProvider<String?>((ref) async* {
-  final client = ref.watch(supabaseClientProvider);
-  yield client.auth.currentUser?.id;
-  await for (final authState in client.auth.onAuthStateChange) {
-    yield authState.session?.user.id;
-  }
+// Proveedor reactivo de ID derivado limpiamente de authStateProvider (sin bucles asíncronos paralelos)
+final authUserIdProvider = Provider<String?>((ref) {
+  final user = ref.watch(currentUserProvider);
+  return user?.id;
 });
