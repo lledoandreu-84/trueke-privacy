@@ -10,7 +10,7 @@ final currentUserProvider = Provider<User?>((ref) {
 });
 
 final authUserIdProvider = StreamProvider<String?>((ref) {
-  return Supabase.instance.client.auth.onAuthStateChange.map((event) => event.session?.user?.id);
+  return Supabase.instance.client.auth.onAuthStateChange.map((event) => event.session?.user.id);
 });
 
 class AuthService {
