@@ -4,6 +4,7 @@ import '../../../core/providers/favorites_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:trueke/core/theme/app_colors.dart';
 import 'package:trueke/models/product.dart';
+import 'package:trueke/features/auth/auth_service.dart';
 
 class ProductCard extends StatelessWidget {
   const ProductCard({
@@ -96,7 +97,20 @@ class ProductCard extends StatelessWidget {
                               orElse: () => false,
                             );
                             return GestureDetector(
-                              onTap: () => ref.read(favoritesProvider.notifier).toggleFavorite(product),
+                              onTap: () {
+                                final currentUserId = AuthService.currentUserId;
+                                if (currentUserId != null && product.ownerId == currentUserId) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text("No puedes añadir tu propio producto a favoritos"),
+                                      behavior: SnackBarBehavior.floating,
+                                      duration: Duration(seconds: 2),
+                                    ),
+                                  );
+                                  return;
+                                }
+                                ref.read(favoritesProvider.notifier).toggleFavorite(product);
+                              },
                               child: Icon(
                                 isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
                                 size: 16,
