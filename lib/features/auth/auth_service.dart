@@ -5,12 +5,12 @@ final authServiceProvider = Provider<AuthService>((ref) {
   return AuthService(Supabase.instance.client);
 });
 
-final currentUserProvider = Provider<User?>((ref) {
-  return Supabase.instance.client.auth.currentUser;
+final currentUserProvider = StreamProvider<User?>((ref) {
+  return Supabase.instance.client.auth.onAuthStateChange.map((event) => event.session?.user);
 });
 
-final authUserIdProvider = Provider<String?>((ref) {
-  return Supabase.instance.client.auth.currentUser?.id;
+final authUserIdProvider = StreamProvider<String?>((ref) {
+  return Supabase.instance.client.auth.onAuthStateChange.map((event) => event.session?.user?.id);
 });
 
 class AuthService {
