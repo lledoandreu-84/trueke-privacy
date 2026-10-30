@@ -8,7 +8,6 @@ final chatUnreadCountProvider = Provider.autoDispose<int>((ref) {
 
   if (currentUserId == null) return 0;
 
-  // Escuchamos el stream de salas de chat de forma segura
   final chatRoomsAsync = ref.watch(userChatRoomsStreamProvider(currentUserId));
 
   return chatRoomsAsync.maybeWhen(
