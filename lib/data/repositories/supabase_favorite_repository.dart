@@ -31,12 +31,12 @@ class SupabaseFavoriteRepository implements FavoriteRepository {
       try {
         final productResponse = await _client
             .from('products')
-            .select('user_id, title')
+            .select('user_id, owner_id, title')
             .eq('id', productId)
             .maybeSingle();
 
         if (productResponse != null) {
-          final ownerId = productResponse['user_id'] as String?;
+          final ownerId = productResponse['user_id'] as String? ?? productResponse['owner_id'] as String?;
           final productTitle = productResponse['title'] as String? ?? 'tu producto';
 
           if (ownerId != null && ownerId != userId) {
@@ -70,10 +70,12 @@ class SupabaseFavoriteRepository implements FavoriteRepository {
       final productMap = item['products'];
       if (productMap is Map<String, dynamic>) {
         final productOwnerId = productMap['user_id'] as String? ?? 
-                               productMap['owner_id'] as String?;
+                               productMap['owner_id'] as String? ??
+                               productMap['userId'] as String? ??
+                               productMap['ownerId'] as String?;
 
-        // Descartar de forma estricta los productos propios del usuario actual
-        if (productOwnerId != userId) {
+        // Descartar estrictamente si el producto pertenece al usuario actual o el owner coincide
+        if (productOwnerId != null && productOwnerId.trim() != userId.trim()) {
           favoriteProducts.add(Product.fromJson(productMap));
         }
       }
