@@ -77,7 +77,6 @@ class SupabaseChatRepository implements ChatRepository {
       return;
     }
 
-    // Emitimos primero un fetch inicial para renderizar al instante sin quedarnos colgados en loading
     try {
       final initialData = await _client
           .from('conversations')
@@ -92,7 +91,6 @@ class SupabaseChatRepository implements ChatRepository {
       yield [];
     }
 
-    // Luego nos suscribimos al stream en tiempo real
     yield* _client
         .from('conversations')
         .stream(primaryKey: ['id'])
@@ -196,15 +194,42 @@ class SupabaseChatRepository implements ChatRepository {
       return;
     }
 
+    // 1. Insertar el mensaje en el chat
     await _client.from('messages').insert({
       'conversation_id': targetId,
       'sender_id': currentSenderId,
       'content': finalContent.trim(),
     });
+
+    // 2. Crear la notificación in-app para el destinatario de forma automática
+    try {
+      final convo = await _client
+          .from('conversations')
+          .select()
+          .eq('id', targetId)
+          .maybeSingle();
+
+      if (convo != null) {
+        final buyerId = convo['buyer_id'] as String?;
+        final sellerId = convo['seller_id'] as String?;
+        
+        final recipientId = (currentSenderId == buyerId) ? sellerId : buyerId;
+
+        if (recipientId != null && recipientId != currentSenderId) {
+          await _client.from('notifications').insert({
+            'user_id': recipientId,
+            'title': 'Nuevo mensaje de chat',
+            'message': finalContent.trim(),
+            'type': 'chat',
+          });
+        }
+      }
+    } catch (_) {
+      // Fallback silencioso para no bloquear el flujo de chat
+    }
   }
 
   @override
-    
   Future<String> uploadMessageImage({
     String? roomId,
     String? fileName,

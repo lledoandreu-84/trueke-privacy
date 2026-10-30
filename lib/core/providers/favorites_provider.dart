@@ -1,10 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:convert';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../features/products/domain/product_model.dart';
-import '../../main.dart'; // Importación para resolver el acceso a sharedPreferencesProvider
+import '../../main.dart';
 
 class FavoritesNotifier extends AsyncNotifier<List<Product>> {
-  static const _favoritesKey = 'user_favorite_products_v4';
+  String get _favoritesKey {
+    final userId = Supabase.instance.client.auth.currentUser?.id ?? 'guest';
+    return 'user_favorite_products_${userId}_v4';
+  }
 
   @override
   Future<List<Product>> build() async {
@@ -17,7 +21,6 @@ class FavoritesNotifier extends AsyncNotifier<List<Product>> {
         final Map<String, dynamic> decoded =
             jsonDecode(item) as Map<String, dynamic>;
 
-        // Mecanismo defensivo de normalización elástica de esquemas locales
         if (!decoded.containsKey('image_urls') &&
             decoded.containsKey('images')) {
           decoded['image_urls'] = decoded['images'];
@@ -28,9 +31,7 @@ class FavoritesNotifier extends AsyncNotifier<List<Product>> {
         }
 
         list.add(Product.fromJson(decoded));
-      } catch (_) {
-        // Fallback resiliente secundario si el elemento está severamente corrupto
-      }
+      } catch (_) {}
     }
     return list;
   }
@@ -69,8 +70,6 @@ class FavoritesNotifier extends AsyncNotifier<List<Product>> {
     state = AsyncData(updatedFavorites);
   }
 
-  /// Sincroniza y reconcilia los metadatos desactualizados del almacenamiento local
-  /// con los elementos frescos cargados desde el feed de red remoto de forma atómica
   void updateAvailableProducts(List<Product> freshProducts) {
     if (state.isLoading || state.hasError) return;
     final currentFavorites = state.value ?? [];
@@ -78,7 +77,6 @@ class FavoritesNotifier extends AsyncNotifier<List<Product>> {
 
     bool hasChanges = false;
     final updatedFavorites = currentFavorites.map((favItem) {
-      // Buscar si el favorito guardado coincide con algún producto fresco del feed
       final freshMatch = freshProducts.firstWhere(
         (p) =>
             p.id.toString().trim().toLowerCase() ==
@@ -86,7 +84,6 @@ class FavoritesNotifier extends AsyncNotifier<List<Product>> {
         orElse: () => favItem,
       );
 
-      // Si hay discrepancias en metadatos, marcamos el cambio para persistir en disco
       if (freshMatch != favItem) {
         hasChanges = true;
         return freshMatch;
