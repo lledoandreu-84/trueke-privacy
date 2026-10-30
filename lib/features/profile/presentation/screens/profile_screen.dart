@@ -138,6 +138,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   try {
                     FocusManager.instance.primaryFocus?.unfocus();
                     await Supabase.instance.client.auth.signOut();
+                    
+                    
                     if (context.mounted) {
                       Navigator.of(context).pop();
                     }
