@@ -21,7 +21,7 @@ final chatUnreadCountProvider = Provider.autoDispose<int>((ref) {
           unread = r.unreadCount is num ? (r.unreadCount as num).toInt() : 0;
         } catch (_) {}
         
-        totalUnread += unread > 0 ? unread : (r != null ? 1 : 0);
+        totalUnread += unread > 0 ? unread : 0;
       }
       return totalUnread;
     },
