@@ -27,6 +27,31 @@ class SupabaseFavoriteRepository implements FavoriteRepository {
         'user_id': userId,
         'product_id': productId,
       });
+
+      // Crear notificación in-app para el propietario del producto ("Le interesas")
+      try {
+        final productResponse = await _client
+            .from('products')
+            .select('user_id, title')
+            .eq('id', productId)
+            .maybeSingle();
+
+        if (productResponse != null) {
+          final ownerId = productResponse['user_id'] as String?;
+          final productTitle = productResponse['title'] as String? ?? 'tu producto';
+
+          if (ownerId != null && ownerId != userId) {
+            await _client.from('notifications').insert({
+              'user_id': ownerId,
+              'title': '¡Nuevo interesado!',
+              'message': 'A alguien le interesa tu producto "$productTitle".',
+              'type': 'favorite',
+            });
+          }
+        }
+      } catch (_) {
+        // Fallback silencioso para no interrumpir la acción de favorito
+      }
     } else {
       await _client
           .from('favorites')
