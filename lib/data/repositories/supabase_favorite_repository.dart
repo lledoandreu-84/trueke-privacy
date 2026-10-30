@@ -62,7 +62,7 @@ class SupabaseFavoriteRepository implements FavoriteRepository {
   Future<List<Product>> getFavoriteProducts(String userId) async {
     final PostgrestList response = await _client
         .from('favorites')
-        .select('products(*)')
+        .select('product_id, products(*)')
         .eq('user_id', userId);
 
     final List<Product> favoriteProducts = [];
@@ -70,11 +70,10 @@ class SupabaseFavoriteRepository implements FavoriteRepository {
       final productMap = item['products'];
       if (productMap is Map<String, dynamic>) {
         final productOwnerId = productMap['user_id'] as String? ?? 
-                               productMap['owner_id'] as String? ?? 
-                               productMap['ownerId'] as String?;
+                               productMap['owner_id'] as String?;
 
-        // Excluir estrictamente si el producto pertenece al usuario actual
-        if (productOwnerId != null && productOwnerId != userId) {
+        // Descartar de forma estricta los productos propios del usuario actual
+        if (productOwnerId != userId) {
           favoriteProducts.add(Product.fromJson(productMap));
         }
       }

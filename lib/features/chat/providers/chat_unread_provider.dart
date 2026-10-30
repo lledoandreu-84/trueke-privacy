@@ -7,12 +7,9 @@ final chatUnreadCountProvider = Provider.autoDispose<int>((ref) {
   final client = ref.watch(supabaseClientProvider);
   final currentUserId = client.auth.currentUser?.id;
 
-  if (currentUserId == null) {
-    return 0;
-  }
+  if (currentUserId == null) return 0;
 
   final realtimeService = ref.watch(realtimeServiceProvider);
-
   realtimeService.subscribeToUserMessages(
     userId: currentUserId,
     onNewMessage: (payload) {
@@ -32,8 +29,8 @@ final chatUnreadCountProvider = Provider.autoDispose<int>((ref) {
           unread = r.unreadCount is num ? (r.unreadCount as num).toInt() : 0;
         } catch (_) {}
         
-        // Si la sala existe y no viene un contador explícito 0, contamos al menos 1 si hay actividad reciente
-        totalUnread += unread > 0 ? unread : (r != null ? 1 : 0);
+        // Sumar únicamente si hay mensajes no leídos reales (sin recuento ficticio por sala)
+        totalUnread += unread > 0 ? unread : 0;
       }
       return totalUnread;
     },
