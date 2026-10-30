@@ -5,12 +5,22 @@ final authServiceProvider = Provider<AuthService>((ref) {
   return AuthService(Supabase.instance.client);
 });
 
+final currentUserProvider = StreamProvider<User?>((ref) {
+  return Supabase.instance.client.auth.onAuthStateChange.map((event) => event.session?.user);
+});
+
+final authUserIdProvider = Provider<String?>((ref) {
+  return Supabase.instance.client.auth.currentUser?.id;
+});
+
 class AuthService {
   final SupabaseClient _supabase;
 
   AuthService(this._supabase);
 
   User? get currentUser => _supabase.auth.currentUser;
+
+  static String? get currentUserId => Supabase.instance.client.auth.currentUser?.id;
 
   Stream<AuthState> get authStateChanges => _supabase.auth.onAuthStateChange;
 
@@ -24,7 +34,6 @@ class AuthService {
         password: password,
       );
 
-      // Si el usuario ya existe, Supabase a veces retorna un usuario con identities vacías según la config
       if (response.user != null &&
           (response.user!.identities == null || response.user!.identities!.isEmpty)) {
         throw const AuthException('Este correo electrónico ya está registrado. Por favor, inicia sesión.');
