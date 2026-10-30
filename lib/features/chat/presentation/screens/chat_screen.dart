@@ -28,6 +28,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   bool _isReleasingFunds = false;
 
   @override
+  void initState() {
+    super.initState();
+    // Invalidamos el contador de no leídos al abrir la sala para limpiar el badge al instante
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final currentUserId = AuthService.currentUserId;
+      if (currentUserId != null) {
+        ref.invalidate(userChatRoomsStreamProvider(currentUserId));
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _messageController.dispose();
     _scrollController.dispose();
@@ -129,7 +141,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -159,6 +170,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             senderId: currentUserId,
             message: text,
           );
+      final currentUserIdRef = AuthService.currentUserId;
+      if (currentUserIdRef != null) {
+        ref.invalidate(userChatRoomsStreamProvider(currentUserIdRef));
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -198,6 +213,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         senderId: currentUserId,
         message: "[IMAGE]:$imageUrl",
       );
+      final currentUserIdRef = AuthService.currentUserId;
+      if (currentUserIdRef != null) {
+        ref.invalidate(userChatRoomsStreamProvider(currentUserIdRef));
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
@@ -206,7 +225,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       }
     }
   }
-
 
   Widget _buildStateBanner(List<dynamic> messages) {
     dynamic lastOfferPayload;
@@ -311,7 +329,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     style: FilledButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
-                      
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -466,7 +483,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -522,7 +538,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
