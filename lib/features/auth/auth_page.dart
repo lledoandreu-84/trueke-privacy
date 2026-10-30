@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../legal/presentation/screens/legal_text_viewer_screen.dart';
 import 'auth_service.dart';
 
 class AuthPage extends ConsumerStatefulWidget {
@@ -10,7 +11,6 @@ class AuthPage extends ConsumerStatefulWidget {
 }
 
 class _AuthPageState extends ConsumerState<AuthPage> {
-  // ignore: prefer_final_fields
   bool _obscurePassword = true;
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
@@ -18,17 +18,42 @@ class _AuthPageState extends ConsumerState<AuthPage> {
   bool _isLoading = false;
   bool _isSignUp = false;
 
+  bool _termsAccepted = false;
+  bool _privacyAccepted = false;
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+
+    if (_isSignUp) {
+      if (!_termsAccepted || !_privacyAccepted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              'Debes aceptar los Términos y Condiciones y la Política de Privacidad para registrarte.',
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+        return;
+      }
+    }
+
     setState(() => _isLoading = true);
 
     try {
       if (_isSignUp) {
+        final now = DateTime.now();
         final success = await ref
             .read(authServiceProvider)
             .signUp(
               email: _emailController.text.trim(),
               password: _passwordController.text.trim(),
+              termsAcceptedAt: now,
+              privacyAcceptedAt: now,
             );
         if (success && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -75,6 +100,18 @@ class _AuthPageState extends ConsumerState<AuthPage> {
     }
   }
 
+  void _openLegalViewer(String title, String assetPath) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LegalTextViewerScreen(
+          title: title,
+          assetPath: assetPath,
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -96,7 +133,6 @@ class _AuthPageState extends ConsumerState<AuthPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Logo ampliado para mayor impacto visual
                 Image.asset('assets/images/logo.png', width: 120, height: 120, fit: BoxFit.contain),
                 const SizedBox(height: 20),
                 Text(
@@ -185,6 +221,45 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                       ? 'La contraseña debe tener al menos 6 caracteres.'
                       : null,
                 ),
+                if (_isSignUp) ...[
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _termsAccepted,
+                        onChanged: (val) => setState(() => _termsAccepted = val ?? false),
+                      ),
+                      Expanded(
+                        child: GestureTextLink(
+                          prefix: 'Acepto los ',
+                          linkText: 'Términos y Condiciones',
+                          onTap: () => _openLegalViewer(
+                            'Términos y Condiciones',
+                            'assets/legal/terms_and_conditions.md',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _privacyAccepted,
+                        onChanged: (val) => setState(() => _privacyAccepted = val ?? false),
+                      ),
+                      Expanded(
+                        child: GestureTextLink(
+                          prefix: 'Acepto la ',
+                          linkText: 'Política de Privacidad',
+                          onTap: () => _openLegalViewer(
+                            'Política de Privacidad',
+                            'assets/legal/privacy_policy.md',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 36),
                 SizedBox(
                   width: double.infinity,
@@ -232,6 +307,43 @@ class _AuthPageState extends ConsumerState<AuthPage> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class GestureTextLink extends StatelessWidget {
+  final String prefix;
+  final String linkText;
+  final VoidCallback onTap;
+
+  const GestureTextLink({
+    super.key,
+    required this.prefix,
+    required this.linkText,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return GestureDetector(
+      onTap: onTap,
+      child: Text.rich(
+        TextSpan(
+          text: prefix,
+          style: theme.textTheme.bodySmall,
+          children: [
+            TextSpan(
+              text: linkText,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.bold,
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          ],
         ),
       ),
     );

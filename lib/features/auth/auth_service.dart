@@ -15,7 +15,10 @@ class AuthService {
   static String get currentUserLabel =>
       currentUser?.email?.split('@').first ?? 'Usuario';
 
-  Future<void> _ensureProfile() async {
+  Future<void> _ensureProfile({
+    DateTime? termsAcceptedAt,
+    DateTime? privacyAcceptedAt,
+  }) async {
     final user = _client.auth.currentUser;
     if (user == null) return;
 
@@ -24,6 +27,7 @@ class AuthService {
       await repository.getProfile(user.id);
     } catch (_) {
       final username = user.email?.split('@').first ?? 'user';
+      final now = DateTime.now().toIso8601String();
       await _client.from('profiles').insert({
         'id': user.id,
         'username': username,
@@ -33,8 +37,12 @@ class AuthService {
         'bio': '',
         'average_rating': 0.0,
         'total_ratings': 0,
-        'created_at': DateTime.now().toIso8601String(),
-        'updated_at': DateTime.now().toIso8601String(),
+        'created_at': now,
+        'updated_at': now,
+        if (termsAcceptedAt != null)
+          'terms_accepted_at': termsAcceptedAt.toIso8601String(),
+        if (privacyAcceptedAt != null)
+          'privacy_accepted_at': privacyAcceptedAt.toIso8601String(),
       });
     }
   }
@@ -44,13 +52,21 @@ class AuthService {
     await _ensureProfile();
   }
 
-  Future<bool> signUp({required String email, required String password}) async {
+  Future<bool> signUp({
+    required String email,
+    required String password,
+    DateTime? termsAcceptedAt,
+    DateTime? privacyAcceptedAt,
+  }) async {
     final response = await _client.auth.signUp(
       email: email,
       password: password,
     );
     if (response.session != null) {
-      await _ensureProfile();
+      await _ensureProfile(
+        termsAcceptedAt: termsAcceptedAt,
+        privacyAcceptedAt: privacyAcceptedAt,
+      );
     }
     return response.session != null;
   }
