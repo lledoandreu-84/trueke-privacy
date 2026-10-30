@@ -37,7 +37,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             children: [
               Icon(Icons.warning_rounded, color: Colors.redAccent),
               SizedBox(width: 8),
-              Text('Eliminar Cuenta y Datos'),
+              Expanded(
+                child: Text(
+                  'Eliminar Cuenta y Datos',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
             ],
           ),
           content: const Text(
@@ -80,14 +85,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               .delete()
               .eq('user_id', userId);
 
-          // 3. Eliminar el perfil del usuario (dispara restricciones o borrado de datos personales)
+          // 3. Eliminar el perfil del usuario
           await Supabase.instance.client
               .from('profiles')
               .delete()
               .eq('id', userId);
         }
 
-        // 4. Cerrar sesión localmente en la app
+        // 4. Cerrar sesión localmente
         await ref.read(authServiceProvider).signOut();
 
         if (mounted) {

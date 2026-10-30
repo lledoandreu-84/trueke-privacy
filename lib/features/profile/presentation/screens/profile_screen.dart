@@ -1,4 +1,3 @@
-// import 'package:trueke/features/chat/providers/chat_providers.dart';
 import 'package:trueke/features/profile/providers/profile_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'my_published_products_screen.dart';
@@ -7,7 +6,6 @@ import 'package:trueke/features/auth/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:trueke/features/settings/presentation/screens/settings_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:trueke/providers/app_providers.dart';
 import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -15,9 +13,9 @@ import 'package:trueke/features/products/providers/products_provider.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   final String? userId;
+  final String? initialDisplayName;
 
-    final String? initialDisplayName;
-const ProfileScreen({super.key, this.userId, this.initialDisplayName});
+  const ProfileScreen({super.key, this.userId, this.initialDisplayName});
 
   @override
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
@@ -53,7 +51,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       if (await canLaunchUrl(emailUri)) {
         launched = await launchUrl(emailUri, mode: LaunchMode.externalApplication);
       }
-      
+
       if (!launched) {
         launched = await launchUrl(emailUri, mode: LaunchMode.platformDefault);
       }
@@ -88,17 +86,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   void _submitReview() {
     final currentUser = Supabase.instance.client.auth.currentUser;
     final currentUserId = currentUser?.id;
-    
-    // Bloquear auto-valoración
-    if ((widget.userId != null && widget.userId == currentUserId) || 
-         
-        (widget.userId == null && currentUserId == null)) {
-      // Si no hay userId específico (perfil propio por defecto) o coincide con el usuario logueado o bypass
-      // Nota: Si el perfil actual es el del propio usuario logueado:
-    }
 
-    // Comprobación robusta y definitiva anti-auto-valoración
-    if (widget.userId == null || widget.userId == currentUserId ) {
+    if (widget.userId == null || widget.userId == currentUserId) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('No puedes valorarte a ti mismo.'),
@@ -119,7 +108,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     ref.read(vendorReviewsProvider.notifier).addReview(_selectedRating, review);
     _reviewController.clear();
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('¡Valoración de $_selectedRating estrellas guardada con éxito!')),
     );
@@ -145,20 +134,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               child: const Text('Cancelar'),
             ),
             ElevatedButton(
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  try {
-                    await ref.read(authServiceProvider).signOut();
-                    if (context.mounted) {
-                      Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error al cerrar sesión: $e')),
-                      );
-                    }
+              onPressed: () async {
+                Navigator.of(context).pop();
+                try {
+                  await ref.read(authServiceProvider).signOut();
+                  if (context.mounted) {
+                    Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
                   }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error al cerrar sesión: $e')),
+                    );
+                  }
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,
@@ -189,7 +178,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
       );
     } else {
-      // Navegar a los productos públicos del vendedor específico usando su userId
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -251,35 +239,32 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-     final currentUser = Supabase.instance.client.auth.currentUser;
-     final userEmail = currentUser?.email ?? 'Usuario';
-     final currentUsername = userEmail.contains('@') ? userEmail.split('@')[0] : userEmail;
+    final currentUser = Supabase.instance.client.auth.currentUser;
+    final userEmail = currentUser?.email ?? 'Usuario';
+    final currentUsername = userEmail.contains('@') ? userEmail.split('@')[0] : userEmail;
 
-     final bool isOwnProfile = widget.userId == null || widget.userId == currentUser?.id;
+    final bool isOwnProfile = widget.userId == null || widget.userId == currentUser?.id;
 
-     final String profileTitle = isOwnProfile ? 'Mi Perfil' : 'Perfil del Vendedor';
-     final profileAsync = isOwnProfile ? null : ref.watch(userProfileProvider(widget.userId!));
-     
-     final String resolvedAsyncName = profileAsync?.asData?.value.displayName ?? '';
-     
-     final String displayName = isOwnProfile 
-         ? currentUsername 
-         : (widget.initialDisplayName?.isNotEmpty == true 
-             ? widget.initialDisplayName! 
-             : (resolvedAsyncName.isNotEmpty 
-                 ? resolvedAsyncName 
-                 : (widget.userId ?? 'Vendedor Trueke')));
+    final String profileTitle = isOwnProfile ? 'Mi Perfil' : 'Perfil del Vendedor';
+    final profileAsync = isOwnProfile ? null : ref.watch(userProfileProvider(widget.userId!));
+
+    final String resolvedAsyncName = profileAsync?.asData?.value.displayName ?? '';
+
+    final String displayName = isOwnProfile
+        ? currentUsername
+        : (widget.initialDisplayName?.isNotEmpty == true
+            ? widget.initialDisplayName!
+            : (resolvedAsyncName.isNotEmpty
+                ? resolvedAsyncName
+                : (widget.userId ?? 'Vendedor Trueke')));
 
     final String displaySubtitle = isOwnProfile ? 'Comunidad Trueke' : 'Miembro verificado';
 
     final productsAsync = ref.watch(productsProvider);
-     // Si widget.userId viene informado, filtramos por él (perfil ajeno), si es null, filtramos por el usuario actual (perfil propio)
-     final effectiveProfileId = widget.userId ?? currentUser?.id;
-     // final conversationsAsync = ref.watch(userConversationsProvider);
-     // final conversationsCount = conversationsAsync.asData?.value.length ?? 0;
-     final publishedCount = productsAsync.asData?.value.where((p) => p.ownerId == effectiveProfileId).length ?? 0;
+    final effectiveProfileId = widget.userId ?? currentUser?.id;
+    final publishedCount = productsAsync.asData?.value.where((p) => p.ownerId == effectiveProfileId).length ?? 0;
     const historyCount = 0;
-    
+
     final reviews = ref.watch(vendorReviewsProvider);
     final userRating = ref.read(vendorReviewsProvider.notifier).averageRating;
     final totalReviews = ref.read(vendorReviewsProvider.notifier).totalReviews;
@@ -370,14 +355,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   icon: Icons.settings_outlined,
                                   title: 'Configuración',
                                   subtitle: 'Ajustes de cuenta y preferencias',
-                      
+                                  badgeText: null,
                                   onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const SettingsScreen(),
-                        ),
-                      );
-                    },
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => const SettingsScreen(),
+                                      ),
+                                    );
+                                  },
                                 ),
                                 const Divider(height: 1, color: Color(0xFFEEEEEE)),
                               ],
@@ -575,45 +560,49 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     String? badgeText,
     required VoidCallback onTap,
   }) {
+    final bool hasBadge = badgeText != null && badgeText.isNotEmpty;
+
     return Material(
       color: Colors.transparent,
       child: ListTile(
-      dense: true,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 3),
-      leading: CircleAvatar(
-        radius: 17,
-        backgroundColor: const Color(0xFF6750A4).withValues(alpha: 0.15),
-        child: Icon(icon, color: const Color(0xFF6750A4), size: 19),
-      ),
-      title: Text(
-        title,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5, color: Colors.black87),
-      ),
-      subtitle: Text(subtitle, style: TextStyle(fontSize: 11.5, color: Colors.grey[600])),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-            decoration: BoxDecoration(
-              color: const Color(0xFF6750A4).withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              badgeText ?? '',
-              style: const TextStyle(
-                color: Color(0xFF6750A4),
-                fontWeight: FontWeight.bold,
-                fontSize: 11.5,
+        dense: true,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 3),
+        leading: CircleAvatar(
+          radius: 17,
+          backgroundColor: const Color(0xFF6750A4).withValues(alpha: 0.15),
+          child: Icon(icon, color: const Color(0xFF6750A4), size: 19),
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5, color: Colors.black87),
+        ),
+        subtitle: Text(subtitle, style: TextStyle(fontSize: 11.5, color: Colors.grey[600])),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (hasBadge) ...[
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6750A4).withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  badgeText,
+                  style: const TextStyle(
+                    color: Color(0xFF6750A4),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11.5,
+                  ),
+                ),
               ),
-            ),
-          ),
-          const SizedBox(width: 4),
-          const Icon(Icons.chevron_right_rounded, size: 20, color: Colors.grey),
-        ],
+              const SizedBox(width: 4),
+            ],
+            const Icon(Icons.chevron_right_rounded, size: 20, color: Colors.grey),
+          ],
+        ),
+        onTap: onTap,
       ),
-      onTap: onTap,
-    ),
-  );
+    );
   }
 }
