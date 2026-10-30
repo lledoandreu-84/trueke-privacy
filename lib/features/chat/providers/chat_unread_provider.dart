@@ -3,7 +3,6 @@ import '../../../core/supabase/supabase_client.dart';
 import '../../../core/services/supabase_realtime_service.dart';
 import 'chat_providers.dart';
 
-/// Proveedor que calcula el número total de conversaciones con mensajes no leídos reales
 final chatUnreadCountProvider = Provider.autoDispose<int>((ref) {
   final client = ref.watch(supabaseClientProvider);
   final currentUserId = client.auth.currentUser?.id;
@@ -33,8 +32,8 @@ final chatUnreadCountProvider = Provider.autoDispose<int>((ref) {
           unread = r.unreadCount is num ? (r.unreadCount as num).toInt() : 0;
         } catch (_) {}
         
-        // Solo sumamos si realmente hay un contador explícito mayor a 0
-        totalUnread += unread > 0 ? unread : 0;
+        // Si la sala existe y no viene un contador explícito 0, contamos al menos 1 si hay actividad reciente
+        totalUnread += unread > 0 ? unread : (r != null ? 1 : 0);
       }
       return totalUnread;
     },

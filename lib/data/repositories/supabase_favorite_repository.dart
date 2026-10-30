@@ -28,7 +28,6 @@ class SupabaseFavoriteRepository implements FavoriteRepository {
         'product_id': productId,
       });
 
-      // Crear notificación in-app para el propietario del producto ("Le interesas")
       try {
         final productResponse = await _client
             .from('products')
@@ -49,9 +48,7 @@ class SupabaseFavoriteRepository implements FavoriteRepository {
             });
           }
         }
-      } catch (_) {
-        // Fallback silencioso para no interrumpir la acción de favorito
-      }
+      } catch (_) {}
     } else {
       await _client
           .from('favorites')
@@ -70,13 +67,14 @@ class SupabaseFavoriteRepository implements FavoriteRepository {
 
     final List<Product> favoriteProducts = [];
     for (final item in response) {
-      final productMap = item['products'] as Map<String, dynamic>?;
-      if (productMap != null) {
-        // Verificamos el propietario del producto (puede venir como user_id u ownerId)
-        final productOwnerId = productMap['user_id'] as String? ?? productMap['ownerId'] as String?;
-        
-        // Excluimos estrictamente los productos propios del usuario actual
-        if (productOwnerId != userId) {
+      final productMap = item['products'];
+      if (productMap is Map<String, dynamic>) {
+        final productOwnerId = productMap['user_id'] as String? ?? 
+                               productMap['owner_id'] as String? ?? 
+                               productMap['ownerId'] as String?;
+
+        // Excluir estrictamente si el producto pertenece al usuario actual
+        if (productOwnerId != null && productOwnerId != userId) {
           favoriteProducts.add(Product.fromJson(productMap));
         }
       }
