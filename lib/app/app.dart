@@ -58,20 +58,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-      home: StreamBuilder<AuthState>(
-          stream: Supabase.instance.client.auth.onAuthStateChange,
-          builder: (context, snapshot) {
-            final authState = snapshot.data;
-            if (authState?.event == AuthChangeEvent.signedOut) {
-              return const AuthPage();
-            }
-            final session = authState?.session ?? Supabase.instance.client.auth.currentSession;
-            if (session != null) {
-              return const MainShell();
-            }
-            return const AuthPage();
-          },
-        ),
+        home: const AuthRootWrapper(),
       onGenerateRoute: (settings) {
         if (settings.name == 'product' || settings.name == '/product') {
           final product = settings.arguments as Product;
@@ -91,5 +78,19 @@ class _MyAppState extends ConsumerState<MyApp> {
         return null;
       },
     );
+  }
+}
+
+
+class AuthRootWrapper extends ConsumerWidget {
+  const AuthRootWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final session = Supabase.instance.client.auth.currentSession;
+    if (session != null) {
+      return const MainShell();
+    }
+    return const AuthPage();
   }
 }
