@@ -30,11 +30,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    // Invalidamos el contador de no leídos al abrir la sala para limpiar el badge al instante
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final currentUserId = AuthService.currentUserId;
       if (currentUserId != null) {
-        ref.invalidate(userChatRoomsStreamProvider(currentUserId));
+        try {
+          await ref.read(chatRepositoryProvider).markChatAsRead(widget.roomId);
+          ref.invalidate(userChatRoomsStreamProvider(currentUserId));
+        } catch (_) {}
       }
     });
   }

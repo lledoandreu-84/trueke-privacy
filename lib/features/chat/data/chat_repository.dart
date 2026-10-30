@@ -3,6 +3,7 @@ import '../models/chat_room.dart';
 import '../models/chat_message.dart';
 
 abstract class ChatRepository {
+  Future<void> markChatAsRead(String conversationId);
   Future<void> deleteConversation(String conversationId);
   Future<List<ChatRoom>> getUserConversations();
   Stream<List<ChatMessage>> watchMessages(String conversationId);
@@ -36,6 +37,11 @@ abstract class ChatRepository {
 }
 
 class SupabaseChatRepository implements ChatRepository {
+  @override
+  Future<void> markChatAsRead(String conversationId) async {
+    if (conversationId.trim().isEmpty) return;
+    await _client.from('conversations').update({'unread_count': 0}).eq('id', conversationId);
+  }
   @override
   Future<void> deleteConversation(String conversationId) async {
     if (conversationId.trim().isEmpty) return;
