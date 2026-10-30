@@ -207,6 +207,23 @@ class SupabaseChatRepository implements ChatRepository {
       'content': finalContent.trim(),
     });
 
+    // 1.1 Incrementar el contador de no leídos de forma explícita
+    try {
+      final convoData = await _client
+          .from('conversations')
+          .select('unread_count')
+          .eq('id', targetId)
+          .maybeSingle();
+
+      if (convoData != null) {
+        final currentCount = (convoData['unread_count'] as num?)?.toInt() ?? 0;
+        await _client
+            .from('conversations')
+            .update({'unread_count': currentCount + 1})
+            .eq('id', targetId);
+      }
+    } catch (_) {}
+
     // 2. Crear la notificación in-app para el destinatario de forma automática
     try {
       final convo = await _client
