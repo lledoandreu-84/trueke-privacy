@@ -4,6 +4,8 @@ analyzer:
     - ".dart_tool/**"
     - "ios/**"
     - "backups/**"
+    - android/**
+    - web/**
 
 include: package:flutter_lints/flutter.yaml
 
