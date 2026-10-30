@@ -59,15 +59,19 @@ class _MyAppState extends ConsumerState<MyApp> {
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
       home: StreamBuilder<AuthState>(
-        stream: Supabase.instance.client.auth.onAuthStateChange,
-        builder: (context, snapshot) {
-          final session = Supabase.instance.client.auth.currentSession;
-          if (session != null) {
-            return const MainShell();
-          }
-          return const AuthPage();
-        },
-      ),
+          stream: Supabase.instance.client.auth.onAuthStateChange,
+          builder: (context, snapshot) {
+            final authState = snapshot.data;
+            if (authState?.event == AuthChangeEvent.signedOut) {
+              return const AuthPage();
+            }
+            final session = authState?.session ?? Supabase.instance.client.auth.currentSession;
+            if (session != null) {
+              return const MainShell();
+            }
+            return const AuthPage();
+          },
+        ),
       onGenerateRoute: (settings) {
         if (settings.name == 'product' || settings.name == '/product') {
           final product = settings.arguments as Product;
