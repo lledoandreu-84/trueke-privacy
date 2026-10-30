@@ -3,7 +3,7 @@ import '../../../core/supabase/supabase_client.dart';
 import '../../../core/services/supabase_realtime_service.dart';
 import 'chat_providers.dart';
 
-/// Proveedor que calcula el número total de conversaciones con mensajes no leídos
+/// Proveedor que calcula el número total de conversaciones con mensajes no leídos reales
 final chatUnreadCountProvider = Provider.autoDispose<int>((ref) {
   final client = ref.watch(supabaseClientProvider);
   final currentUserId = client.auth.currentUser?.id;
@@ -12,7 +12,6 @@ final chatUnreadCountProvider = Provider.autoDispose<int>((ref) {
     return 0;
   }
 
-  // Obtenemos e inyectamos el canal de escucha en caliente para nuevos mensajes
   final realtimeService = ref.watch(realtimeServiceProvider);
 
   realtimeService.subscribeToUserMessages(
@@ -34,7 +33,8 @@ final chatUnreadCountProvider = Provider.autoDispose<int>((ref) {
           unread = r.unreadCount is num ? (r.unreadCount as num).toInt() : 0;
         } catch (_) {}
         
-        totalUnread += (unread > 0 ? unread : (rooms.isNotEmpty ? 1 : 0));
+        // Solo sumamos si realmente hay un contador explícito mayor a 0
+        totalUnread += unread > 0 ? unread : 0;
       }
       return totalUnread;
     },
