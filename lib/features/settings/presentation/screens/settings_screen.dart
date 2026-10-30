@@ -69,30 +69,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (confirmed == true) {
       setState(() => _isLoading = true);
       try {
-        final user = Supabase.instance.client.auth.currentUser;
-        if (user != null) {
-          final userId = user.id;
+        // Llamar a la función RPC segura en Supabase que borra todo (Auth y Tablas)
+        await Supabase.instance.client.rpc('delete_user_account');
 
-          // 1. Eliminar productos publicados por el usuario
-          await Supabase.instance.client
-              .from('products')
-              .delete()
-              .eq('owner_id', userId);
-
-          // 2. Eliminar favoritos del usuario
-          await Supabase.instance.client
-              .from('favorites')
-              .delete()
-              .eq('user_id', userId);
-
-          // 3. Eliminar el perfil del usuario
-          await Supabase.instance.client
-              .from('profiles')
-              .delete()
-              .eq('id', userId);
-        }
-
-        // 4. Cerrar sesión localmente
+        // Cerrar sesión localmente en la app
         await ref.read(authServiceProvider).signOut();
 
         if (mounted) {
