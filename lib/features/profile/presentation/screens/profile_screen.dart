@@ -1,15 +1,16 @@
-import 'package:trueke/features/profile/providers/profile_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'my_published_products_screen.dart';
 
 import 'package:trueke/features/auth/auth_service.dart';
-import 'package:flutter/material.dart';
+import 'package:trueke/features/products/providers/products_provider.dart';
+import 'package:trueke/features/profile/providers/profile_provider.dart';
 import 'package:trueke/features/settings/presentation/screens/settings_screen.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:trueke/providers/app_providers.dart';
 import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:trueke/features/products/providers/products_provider.dart';
+import 'my_published_products_screen.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   final String? userId;
