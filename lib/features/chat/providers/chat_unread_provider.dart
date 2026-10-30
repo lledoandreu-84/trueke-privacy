@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/supabase/supabase_client.dart';
-import '../../../core/services/supabase_realtime_service.dart';
 import 'chat_providers.dart';
 
 final chatUnreadCountProvider = Provider.autoDispose<int>((ref) {
@@ -22,7 +21,6 @@ final chatUnreadCountProvider = Provider.autoDispose<int>((ref) {
           unread = r.unreadCount is num ? (r.unreadCount as num).toInt() : 0;
         } catch (_) {}
         
-        // Si no hay uncounter explícito pero la sala existe y tiene actividad, contamos 1 o el valor real
         totalUnread += unread > 0 ? unread : (r != null ? 1 : 0);
       }
       return totalUnread;
