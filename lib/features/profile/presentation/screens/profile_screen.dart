@@ -138,6 +138,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               onPressed: () async {
                 Navigator.of(context).pop();
                 try {
+                  FocusManager.instance.primaryFocus?.unfocus();
                   await ref.read(authServiceProvider).signOut();
                 } catch (e) {
                   if (context.mounted) {

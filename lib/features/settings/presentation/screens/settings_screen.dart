@@ -73,6 +73,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         await Supabase.instance.client.rpc('delete_user_account');
 
         // Cerrar sesión localmente en la app
+        FocusManager.instance.primaryFocus?.unfocus();
         await ref.read(authServiceProvider).signOut();
 
         if (mounted) {
