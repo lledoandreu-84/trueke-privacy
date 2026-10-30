@@ -68,9 +68,19 @@ class SupabaseFavoriteRepository implements FavoriteRepository {
         .select('products(*)')
         .eq('user_id', userId);
 
-    return response.map((item) {
-      final productMap = item['products'] as Map<String, dynamic>;
-      return Product.fromJson(productMap);
-    }).toList();
+    final List<Product> favoriteProducts = [];
+    for (final item in response) {
+      final productMap = item['products'] as Map<String, dynamic>?;
+      if (productMap != null) {
+        // Verificamos el propietario del producto (puede venir como user_id u ownerId)
+        final productOwnerId = productMap['user_id'] as String? ?? productMap['ownerId'] as String?;
+        
+        // Excluimos estrictamente los productos propios del usuario actual
+        if (productOwnerId != userId) {
+          favoriteProducts.add(Product.fromJson(productMap));
+        }
+      }
+    }
+    return favoriteProducts;
   }
 }
