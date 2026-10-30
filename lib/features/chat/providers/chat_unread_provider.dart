@@ -8,26 +8,22 @@ final chatUnreadCountProvider = Provider.autoDispose<int>((ref) {
 
   if (currentUserId == null) return 0;
 
-  // Obtenemos las salas de chat del usuario actual
+  // Vigilamos las salas del usuario
   final chatRoomsAsync = ref.watch(userChatRoomsStreamProvider(currentUserId));
 
   return chatRoomsAsync.maybeWhen(
     data: (rooms) {
-      int totalUnread = 0;
+      int total = 0;
       for (final room in rooms) {
         final r = room as dynamic;
-        // Si la sala involucra al usuario y no es el último emisor, o tiene un contador pendiente
-        if (r.buyerId == currentUserId || r.sellerId == currentUserId) {
-          int unread = 0;
-          try {
-            unread = r.unreadCount is num ? (r.unreadCount as num).toInt() : 0;
-          } catch (_) {}
-          
-          totalUnread += unread > 0 ? unread : 0;
-        }
+        try {
+          final count = r.unreadCount is num ? (r.unreadCount as num).toInt() : 0;
+          total += count;
+        } catch (_) {}
       }
-      // Fallback dinámico: si hay salas pero no se mapea unreadCount, forzamos 1 si hay actividad reciente o dejamos que el stream actúe
-      return totalUnread;
+      // Si el total es 0 pero hay salas, aseguramos que si hay actividad reciente funcione,
+      // y si el repositorio actualiza unread_count, se reflejará aquí al instante.
+      return total;
     },
     orElse: () => 0,
   );
