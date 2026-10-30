@@ -5,8 +5,8 @@ final authServiceProvider = Provider<AuthService>((ref) {
   return AuthService(Supabase.instance.client);
 });
 
-final currentUserProvider = StreamProvider<User?>((ref) {
-  return Supabase.instance.client.auth.onAuthStateChange.map((event) => event.session?.user);
+final currentUserProvider = Provider<User?>((ref) {
+  return Supabase.instance.client.auth.currentUser;
 });
 
 final authUserIdProvider = Provider<String?>((ref) {
@@ -27,6 +27,8 @@ class AuthService {
   Future<AuthResponse> signUp({
     required String email,
     required String password,
+    DateTime? termsAcceptedAt,
+    DateTime? privacyAcceptedAt,
   }) async {
     try {
       final response = await _supabase.auth.signUp(
