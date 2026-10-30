@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:trueke/features/auth/auth_service.dart';
 import 'package:trueke/features/products/providers/products_provider.dart';
 import 'package:trueke/features/profile/providers/profile_provider.dart';
 import 'package:trueke/features/settings/presentation/screens/settings_screen.dart';
@@ -134,20 +133,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               onPressed: () => Navigator.of(context).pop(),
               child: const Text('Cancelar'),
             ),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                try {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                  await ref.read(authServiceProvider).signOut();
-                } catch (e) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error al cerrar sesión: $e')),
-                    );
+              ElevatedButton(
+                onPressed: () async {
+                  try {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                    await Supabase.instance.client.auth.signOut();
+                    if (context.mounted) {
+                      Navigator.of(context).pop();
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error al cerrar sesión: $e')),
+                      );
+                    }
                   }
-                }
-              },
+                },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,
                 foregroundColor: Colors.white,
