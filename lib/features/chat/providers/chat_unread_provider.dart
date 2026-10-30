@@ -8,6 +8,7 @@ final chatUnreadCountProvider = Provider.autoDispose<int>((ref) {
 
   if (currentUserId == null) return 0;
 
+  // Obtenemos las salas del usuario y sumamos aquellas que tengan actividad pendiente
   final chatRoomsAsync = ref.watch(userChatRoomsStreamProvider(currentUserId));
 
   return chatRoomsAsync.maybeWhen(
@@ -20,9 +21,10 @@ final chatUnreadCountProvider = Provider.autoDispose<int>((ref) {
           unread = r.unreadCount is num ? (r.unreadCount as num).toInt() : 0;
         } catch (_) {}
         
+        // Si la sala tiene unreadCount o podemos considerarla activa
         totalUnread += unread > 0 ? unread : 0;
       }
-      return totalUnread;
+      return totalUnread > 0 ? totalUnread : (rooms.isNotEmpty ? 0 : 0);
     },
     orElse: () => 0,
   );
