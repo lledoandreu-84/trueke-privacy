@@ -140,7 +140,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 try {
                   await ref.read(authServiceProvider).signOut();
                   if (context.mounted) {
-                    Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+                    Navigator.of(context).popUntil((route) => false);
                   }
                 } catch (e) {
                   if (context.mounted) {
