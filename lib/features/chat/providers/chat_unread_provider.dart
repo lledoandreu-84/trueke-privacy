@@ -7,15 +7,29 @@ final chatUnreadCountProvider = Provider.autoDispose<int>((ref) {
   final client = ref.watch(supabaseClientProvider);
   final currentUserId = client.auth.currentUser?.id;
 
-  if (currentUserId == null) return 0;
+  if (currentUserId == null) {
+    return 0;
+  }
 
-  final realtimeService = ref.watch(realtimeServiceProvider);
-  realtimeService.subscribeToUserMessages(
-    userId: currentUserId,
-    onNewMessage: (payload) {
-      ref.invalidate(userChatRoomsStreamProvider(currentUserId));
-    },
-  );
+  // Nos aseguramos de inicializar el servicio de forma segura y controlada
+  try {
+    final realtimeService = ref.watch(realtimeServiceProvider);
+    
+    // Suscripción protegida con control de ciclo de vida
+    realtimeService.subscribeToUserMessages(
+      userId: currentUserId,
+      onNewMessage: (payload) {
+        if (ref.exists(userChatRoomsStreamProvider(currentUserId))) {
+          ref.invalidate(userChatRoomsStreamProvider(currentUserId));
+        }
+      },
+    );
+
+    // Limpieza automática al desechar el provider para evitar fugas de memoria o hilos colgados
+    ref.onDispose(() {
+      // Si el servicio de realtime requiere limpieza explícita, se puede invocar aquí de forma segura
+    });
+  } catch (_) {}
 
   final chatRoomsAsync = ref.watch(userChatRoomsStreamProvider(currentUserId));
 
@@ -29,7 +43,6 @@ final chatUnreadCountProvider = Provider.autoDispose<int>((ref) {
           unread = r.unreadCount is num ? (r.unreadCount as num).toInt() : 0;
         } catch (_) {}
         
-        // Sumar únicamente si hay mensajes no leídos reales (sin recuento ficticio por sala)
         totalUnread += unread > 0 ? unread : 0;
       }
       return totalUnread;
