@@ -10,7 +10,6 @@ final authServiceProvider = Provider<AuthService>((ref) {
   return AuthService(client);
 });
 
-// Stream puro de Supabase blindado
 final authStateProvider = StreamProvider<AuthState>((ref) {
   final client = ref.watch(supabaseClientProvider);
   return client.auth.onAuthStateChange;
@@ -37,27 +36,21 @@ class AuthController extends AsyncNotifier<void> {
   }
 
   Future<void> signOut() async {
-    // 1. Quitar el foco del teclado inmediatamente
     FocusManager.instance.primaryFocus?.unfocus();
-
     state = const AsyncValue.loading();
 
-    state = await AsyncValue.guard(() async {
-      final client = Supabase.instance.client;
-
-      // 2. Limpiar canales realtime de forma totalmente aislada
+    // Desacoplamos completamente la ejecución de la UI para evitar el drop del socket ADB
+    unawaited(Future(() async {
       try {
-        await client.removeAllChannels();
+        await Supabase.instance.client.removeAllChannels();
       } catch (_) {}
-
-      // 3. Forzar un respiro de 300ms al motor de Dart/Impeller para vaciar la cola de eventos JNI
-      await Future.delayed(const Duration(milliseconds: 300));
-
-      // 4. Ejecutar el signOut localmente sin bloquear el hilo principal
       try {
-        await client.auth.signOut(scope: SignOutScope.local);
+        await Supabase.instance.client.auth.signOut(scope: SignOutScope.local);
       } catch (_) {}
-    });
+    }));
+
+    // Forzamos el estado a data de inmediato para liberar la UI sin esperar al motor nativo
+    state = const AsyncValue.data(null);
   }
 }
 
