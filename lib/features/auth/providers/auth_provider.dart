@@ -36,19 +36,23 @@ class AuthController extends AsyncNotifier<void> {
   }
 
   Future<void> signOut() async {
-    // 1. Desenfocar el teclado para evitar colapsos de IME nativos al desmontar vistas
+    // 1. Desenfocar el teclado de forma segura
     FocusManager.instance.primaryFocus?.unfocus();
 
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final client = Supabase.instance.client;
       
-      // 2. Limpiar canales realtime activos
+      // 2. Limpiar canales realtime
       try {
         await client.removeAllChannels();
       } catch (_) {}
 
-      // 3. Cierre de sesión global en Supabase
+      // 3. Dar un respiro al motor de UI (microtask) para que los insets del teclado 
+      // terminen su animación antes de que Supabase anuncie el cierre de sesión global
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      // 4. Ejecutar el cierre de sesión global
       await client.auth.signOut(scope: SignOutScope.global);
     });
   }
