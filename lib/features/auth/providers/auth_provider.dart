@@ -37,15 +37,15 @@ class AuthController extends AsyncNotifier<void> {
   Future<void> signOut() async {
     state = const AsyncValue.loading();
     
-    // Diferir la ejecución al microtask para evitar colisión de hilos nativos en Android ARM64
     await Future.microtask(() async {
       try {
         await Supabase.instance.client.auth.signOut(scope: SignOutScope.local);
-      } catch (_) {
-        // Ignoramos cualquier fallo de canal nativo de JNI para proteger el socket ADB
-      }
+      } catch (_) {}
     });
 
+    // Limpiamos los estados de Riverpod para que no interfieran con el nuevo usuario
+    ref.invalidateSelf();
+    
     state = const AsyncValue.data(null);
   }
 }
