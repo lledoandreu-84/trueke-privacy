@@ -80,3 +80,5 @@ android/app/debug/
 *.jks
 **/android/app/src/main/jniLibs/
 **/android/app/src/main/libs/
+# Widget Preview related
+.widget_preview/
