@@ -34,7 +34,7 @@ void main() async {
   // Inicializar almacenamiento físico local de forma centralizada antes de arrancar Supabase
   final sharedPreferences = await SharedPreferences.getInstance();
 
-  // Inicializar Supabase blindando el almacenamiento de sesión para evitar conflictos de JNI en Android
+  // Inicializar Supabase con la firma correcta de la versión 2.18.3
   await Supabase.initialize(
     url: dotenv.get(
       'SUPABASE_URL',
@@ -45,9 +45,6 @@ void main() async {
       fallback: dotenv.get('NEXT_PUBLIC_SUPABASE_ANON_KEY', fallback: ''),
     ),
     httpClient: TelemetryClient(),
-    localStorage: SharedPreferencesLocalStorage(
-      persistSessionKey: 'sb-${dotenv.get('SUPABASE_URL', fallback: '').hashCode}-auth-token',
-    ),
   );
 
   // Desplegar el árbol de widgets envuelto en el contenedor global de estados
