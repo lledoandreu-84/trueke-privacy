@@ -30,15 +30,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final currentUserId = AuthService.currentUserId;
-      if (currentUserId != null) {
-        try {
-          await ref.read(chatRepositoryProvider).markChatAsRead(widget.roomId);
-          ref.invalidate(userChatRoomsStreamProvider(currentUserId));
-        } catch (_) {}
-      }
-    });
+    _markAsRead();
+  }
+
+  Future<void> _markAsRead() async {
+    final currentUserId = AuthService.currentUserId;
+    if (currentUserId != null) {
+      try {
+        await ref.read(chatRepositoryProvider).markChatAsRead(widget.roomId);
+        ref.invalidate(userChatRoomsStreamProvider(currentUserId));
+      } catch (_) {}
+    }
   }
 
   @override
@@ -581,6 +583,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final messagesAsync = ref.watch(chatMessagesStreamProvider(widget.roomId));
+    
+    ref.listen(chatMessagesStreamProvider(widget.roomId), (previous, next) {
+      if (next.hasValue && next.value!.isNotEmpty) {
+        _markAsRead();
+      }
+    });
     final currentUserId = AuthService.currentUserId ?? '';
 
     return Scaffold(
