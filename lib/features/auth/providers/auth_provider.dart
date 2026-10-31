@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/supabase/supabase_client.dart';
+import '../../main.dart';
 import '../auth_service.dart';
 
 final authServiceProvider = Provider<AuthService>((ref) {
@@ -36,20 +38,28 @@ class AuthController extends AsyncNotifier<void> {
   }
 
   Future<void> signOut() async {
+    // 1. Quitar el foco del teclado de forma segura
     FocusManager.instance.primaryFocus?.unfocus();
+
     state = const AsyncValue.loading();
 
-    // Desacoplamos completamente la ejecución de la UI para evitar el drop del socket ADB
-    unawaited(Future(() async {
-      try {
-        await Supabase.instance.client.removeAllChannels();
-      } catch (_) {}
-      try {
-        await Supabase.instance.client.auth.signOut(scope: SignOutScope.local);
-      } catch (_) {}
-    }));
+    // 2. Limpiar canales realtime activos
+    try {
+      await Supabase.instance.client.removeAllChannels();
+    } catch (_) {}
 
-    // Forzamos el estado a data de inmediato para liberar la UI sin esperar al motor nativo
+    // 3. Borrado directo y manual de la sesión en SharedPreferences (Evita el crash nativo de GoTrue)
+    try {
+      final prefs = ref.read(sharedPreferencesProvider);
+      final keys = prefs.getKeys();
+      for (final key in keys) {
+        if (key.contains('supabase') || key.contains('auth-token') || key.contains('sb-')) {
+          await prefs.remove(key);
+        }
+      }
+    } catch (_) {}
+
+    // 4. Forzar el estado de la UI a data limpia para transicionar al login al instante
     state = const AsyncValue.data(null);
   }
 }
