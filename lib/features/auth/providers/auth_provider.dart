@@ -37,17 +37,16 @@ class AuthController extends AsyncNotifier<void> {
   }
 
   Future<void> signOut() async {
-    // 1. Quitar el foco del teclado de forma segura
     FocusManager.instance.primaryFocus?.unfocus();
-
     state = const AsyncValue.loading();
 
-    // 2. Limpiar canales realtime activos
+    // Pausa crítica de estabilidad para evitar el crash del motor gráfico y el socket ADB en Android
+    await Future.delayed(const Duration(milliseconds: 500));
+
     try {
       await Supabase.instance.client.removeAllChannels();
     } catch (_) {}
 
-    // 3. Borrado directo y manual de la sesión en SharedPreferences de forma independiente
     try {
       final prefs = await SharedPreferences.getInstance();
       final keys = prefs.getKeys();
@@ -58,7 +57,6 @@ class AuthController extends AsyncNotifier<void> {
       }
     } catch (_) {}
 
-    // 4. Forzar el estado de la UI a data limpia para transicionar al login al instante
     state = const AsyncValue.data(null);
   }
 }
