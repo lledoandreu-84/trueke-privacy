@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/supabase/supabase_client.dart';
@@ -35,19 +36,22 @@ class AuthController extends AsyncNotifier<void> {
   }
 
   Future<void> signOut() async {
+    // 1. Desenfocar y ocultar el teclado para evitar el choque de IME con el desmonte de UI
+    FocusManager.instance.primaryFocus?.unfocus();
+    
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final client = Supabase.instance.client;
       
-      // 1. Desconectar todos los canales Realtime pendientes de inmediato
+      // 2. Desconectar canales Realtime pendientes
       try {
         await client.removeAllChannels();
       } catch (_) {}
 
-      // 2. Ejecutar el cierre de sesión global en Supabase
+      // 3. Cerrar sesión global en Supabase
       await client.auth.signOut(scope: SignOutScope.global);
 
-      // 3. Purgar y resetear todos los providers del contenedor para evitar estados zombis
+      // 4. Invalidar providers para purgar caché
       ref.invalidate(currentUserProvider);
       ref.invalidate(authStateProvider);
       ref.invalidate(authUserIdProvider);
