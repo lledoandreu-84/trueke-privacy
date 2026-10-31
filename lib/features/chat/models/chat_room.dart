@@ -1,5 +1,6 @@
 class ChatRoom {
-  final int unreadCount;
+  final int unreadBuyer;
+  final int unreadSeller;
   final String id;
   final String productId;
   final String buyerId;
@@ -9,7 +10,8 @@ class ChatRoom {
 
   const ChatRoom({
     required this.id,
-    this.unreadCount = 0,
+    this.unreadBuyer = 0,
+    this.unreadSeller = 0,
     required this.productId,
     required this.buyerId,
     required this.sellerId,
@@ -17,10 +19,17 @@ class ChatRoom {
     required this.updatedAt,
   });
 
+  int getUnreadCountForUser(String userId) {
+    if (userId == buyerId) return unreadBuyer;
+    if (userId == sellerId) return unreadSeller;
+    return 0;
+  }
+
   factory ChatRoom.fromJson(Map<String, dynamic> json) {
     return ChatRoom(
-      unreadCount: json['unread_count'] as int? ?? 0,
-        id: json['id'] as String? ?? '',
+      unreadBuyer: json['unread_buyer'] as int? ?? 0,
+      unreadSeller: json['unread_seller'] as int? ?? 0,
+      id: json['id'] as String? ?? '',
       productId: json['product_id'] as String? ?? '',
       buyerId: json['buyer_id'] as String? ?? '',
       sellerId: json['seller_id'] as String? ?? '',
