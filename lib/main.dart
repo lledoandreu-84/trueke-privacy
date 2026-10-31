@@ -31,7 +31,10 @@ void main() async {
   // Cargar variables de entorno del sistema de forma unificada
   await dotenv.load(fileName: '.env');
 
-  // Inicializar Supabase usando las claves del archivo .env e inyectando telemetría
+  // Inicializar almacenamiento físico local de forma centralizada antes de arrancar Supabase
+  final sharedPreferences = await SharedPreferences.getInstance();
+
+  // Inicializar Supabase blindando el almacenamiento de sesión para evitar conflictos de JNI en Android
   await Supabase.initialize(
     url: dotenv.get(
       'SUPABASE_URL',
@@ -42,10 +45,10 @@ void main() async {
       fallback: dotenv.get('NEXT_PUBLIC_SUPABASE_ANON_KEY', fallback: ''),
     ),
     httpClient: TelemetryClient(),
+    localStorage: SharedPreferencesLocalStorage(
+      persistSessionKey: 'sb-${dotenv.get('SUPABASE_URL', fallback: '').hashCode}-auth-token',
+    ),
   );
-
-  // Inicializar almacenamiento físico local de forma centralizada antes de arrancar la interfaz
-  final sharedPreferences = await SharedPreferences.getInstance();
 
   // Desplegar el árbol de widgets envuelto en el contenedor global de estados
   runApp(
