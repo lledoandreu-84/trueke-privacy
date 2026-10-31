@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/supabase/supabase_client.dart';
 import 'chat_providers.dart';
@@ -15,8 +16,8 @@ final chatUnreadCountProvider = Provider.autoDispose<int>((ref) {
     data: (rooms) {
       int total = 0;
       for (final room in rooms) {
-        // Accedemos a unreadCount, unread_count o a través del json si es necesario
-        final count = room.unreadCount; 
+        final count = room.unreadCount;
+        debugPrint('DEBUG_CHAT: Sala ${room.id} tiene $count mensajes no leídos');
         total += count;
       }
       // Si el total es 0 pero hay salas, aseguramos que si hay actividad reciente funcione,
