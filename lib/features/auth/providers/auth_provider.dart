@@ -36,34 +36,34 @@ class AuthController extends AsyncNotifier<void> {
   }
 
   Future<void> signOut() async {
-    // 1. Desenfocar el teclado de forma segura
+    // 1. Desenfocar el teclado de forma segura y Bloquear interacciones con los insets
     FocusManager.instance.primaryFocus?.unfocus();
 
     state = const AsyncValue.loading();
+    
+    // 2. Esperar a que el frame actual termine de renderizarse para evitar colisiones con Impeller
+    final completer = Completer<void>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      completer.complete();
+    });
+    await completer.future;
+
     state = await AsyncValue.guard(() async {
       final client = Supabase.instance.client;
       
-      // 2. Invalidar proveedores preventivamente
+      // 3. Invalidar providers de forma controlada
       try {
         ref.invalidate(currentUserProvider);
         ref.invalidate(authUserIdProvider);
       } catch (_) {}
 
-      // 3. Limpiar canales realtime
-      try {
-        await client.removeAllChannels();
-      } catch (_) {}
+      // 4. Pausa de seguridad para estabilizar el Isolate antes de limpiar almacenamiento
+      await Future.delayed(const Duration(milliseconds: 200));
 
-      // 4. Pausa de estabilidad para los insets de UI
-      await Future.delayed(const Duration(milliseconds: 100));
-
-      // 5. Limpieza directa de la sesión en el almacenamiento local sin invocar signOut nativo
-      // Esto evita por completo el cuelgue del socket de plataforma de C++ en Android.
+      // 5. Limpieza local de sesión aislada
       try {
         await client.auth.signOut(scope: SignOutScope.local);
-      } catch (_) {
-        // Fallback forzado de limpieza de storage si el cliente rechaza la llamada
-      }
+      } catch (_) {}
     });
   }
 }
