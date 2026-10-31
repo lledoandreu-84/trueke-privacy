@@ -7,7 +7,7 @@ import '../../main.dart';
 class FavoritesNotifier extends AsyncNotifier<List<Product>> {
   String get _favoritesKey {
     final userId = Supabase.instance.client.auth.currentUser?.id ?? 'guest';
-    return 'user_favorite_products_${userId}_v4';
+    return 'user_favorite_products_${userId}_v5';
   }
 
   @override
