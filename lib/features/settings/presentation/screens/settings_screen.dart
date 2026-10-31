@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:trueke/features/auth/auth_service.dart';
 import 'package:trueke/features/legal/presentation/screens/legal_text_viewer_screen.dart';
 import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import '../../../auth/providers/auth_provider.dart';
