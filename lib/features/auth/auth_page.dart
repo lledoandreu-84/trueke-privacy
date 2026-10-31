@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../legal/presentation/screens/legal_text_viewer_screen.dart';
 import 'auth_service.dart';
 
@@ -23,6 +24,9 @@ class _AuthPageState extends ConsumerState<AuthPage> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+
+    // 1. Forzamos a ocultar el teclado inmediatamente
+    FocusManager.instance.primaryFocus?.unfocus();
 
     if (_isSignUp) {
       if (!_termsAccepted || !_privacyAccepted) {
@@ -66,7 +70,9 @@ class _AuthPageState extends ConsumerState<AuthPage> {
               ),
             ),
           );
-          Navigator.pop(context);
+          // 2. Pequeña pausa para que el teclado baje antes de navegar
+          await Future.delayed(const Duration(milliseconds: 300));
+          if (mounted) Navigator.pop(context);
         }
       } else {
         await ref
@@ -76,7 +82,9 @@ class _AuthPageState extends ConsumerState<AuthPage> {
               password: _passwordController.text.trim(),
             );
         if (mounted) {
-          Navigator.pop(context);
+          // 2. Pequeña pausa para que el teclado baje antes de navegar
+          await Future.delayed(const Duration(milliseconds: 300));
+          if (mounted) Navigator.pop(context);
         }
       }
     } catch (e) {
@@ -104,10 +112,8 @@ class _AuthPageState extends ConsumerState<AuthPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => LegalTextViewerScreen(
-          title: title,
-          assetPath: assetPath,
-        ),
+        builder: (_) =>
+            LegalTextViewerScreen(title: title, assetPath: assetPath),
       ),
     );
   }
@@ -133,7 +139,12 @@ class _AuthPageState extends ConsumerState<AuthPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('assets/images/logo.png', width: 120, height: 120, fit: BoxFit.contain),
+                Image.asset(
+                  'assets/images/logo.png',
+                  width: 120,
+                  height: 120,
+                  fit: BoxFit.contain,
+                ),
                 const SizedBox(height: 20),
                 Text(
                   'Trueke',
@@ -163,14 +174,19 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                   ),
                   decoration: InputDecoration(
                     labelText: 'Correo electrónico',
-                    prefixIcon: Icon(Icons.email_outlined, color: theme.colorScheme.onSurfaceVariant),
+                    prefixIcon: Icon(
+                      Icons.email_outlined,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
                       borderSide: BorderSide(
-                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                        color: theme.colorScheme.outlineVariant.withValues(
+                          alpha: 0.5,
+                        ),
                       ),
                     ),
                   ),
@@ -194,10 +210,15 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                   ),
                   decoration: InputDecoration(
                     labelText: 'Contraseña',
-                    prefixIcon: Icon(Icons.lock_outline_rounded, color: theme.colorScheme.onSurfaceVariant),
+                    prefixIcon: Icon(
+                      Icons.lock_outline_rounded,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        _obscurePassword
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                       onPressed: () {
@@ -212,7 +233,9 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
                       borderSide: BorderSide(
-                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                        color: theme.colorScheme.outlineVariant.withValues(
+                          alpha: 0.5,
+                        ),
                       ),
                     ),
                   ),
@@ -227,7 +250,8 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                     children: [
                       Checkbox(
                         value: _termsAccepted,
-                        onChanged: (val) => setState(() => _termsAccepted = val ?? false),
+                        onChanged: (val) =>
+                            setState(() => _termsAccepted = val ?? false),
                       ),
                       Expanded(
                         child: GestureTextLink(
@@ -245,7 +269,8 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                     children: [
                       Checkbox(
                         value: _privacyAccepted,
-                        onChanged: (val) => setState(() => _privacyAccepted = val ?? false),
+                        onChanged: (val) =>
+                            setState(() => _privacyAccepted = val ?? false),
                       ),
                       Expanded(
                         child: GestureTextLink(
