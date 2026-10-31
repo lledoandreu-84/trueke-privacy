@@ -1,27 +1,25 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/supabase/supabase_client.dart';
-import 'chat_providers.dart';
+import 'package:trueke/features/auth/auth_service.dart';
+import 'package:trueke/features/chat/providers/chat_providers.dart';
 
-final chatUnreadCountProvider = Provider.autoDispose<int>((ref) {
-  final client = ref.watch(supabaseClientProvider);
-  final currentUserId = client.auth.currentUser?.id;
+final chatUnreadCountProvider = Provider<int>((ref) {
+  final user = ref.watch(currentUserProvider);
+  final userId = user?.id ?? '';
+  
+  if (userId.isEmpty) return 0;
 
-  if (currentUserId == null) return 0;
+  final roomsAsync = ref.watch(userChatRoomsStreamProvider(userId));
 
-  // Vigilamos las salas del usuario
-  final chatRoomsAsync = ref.watch(userChatRoomsStreamProvider(currentUserId));
-
-  return chatRoomsAsync.maybeWhen(
+  return roomsAsync.when(
     data: (rooms) {
       int total = 0;
       for (final room in rooms) {
-        final count = room.unreadCount;
-                total += count;
+        final count = room.getUnreadCountForUser(userId);
+        total += count;
       }
-      // Si el total es 0 pero hay salas, aseguramos que si hay actividad reciente funcione,
-      // y si el repositorio actualiza unread_count, se reflejará aquí al instante.
       return total;
     },
-    orElse: () => 0,
+    loading: () => 0,
+    error: (_, _) => 0,
   );
 });
