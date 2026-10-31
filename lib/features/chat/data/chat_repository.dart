@@ -40,7 +40,16 @@ class SupabaseChatRepository implements ChatRepository {
   @override
   Future<void> markChatAsRead(String conversationId) async {
     if (conversationId.trim().isEmpty) return;
-    await _client.from('conversations').update({'unread_count': 0}).eq('id', conversationId);
+    final userId = _client.auth.currentUser?.id;
+    if (userId == null) return;
+    final convo = await _client.from('conversations').select('buyer_id, seller_id').eq('id', conversationId).maybeSingle();
+    if (convo != null) {
+      if (userId == convo['buyer_id']) {
+        await _client.from('conversations').update({'unread_buyer': 0}).eq('id', conversationId);
+      } else if (userId == convo['seller_id']) {
+        await _client.from('conversations').update({'unread_seller': 0}).eq('id', conversationId);
+      }
+    }
   }
   @override
   Future<void> deleteConversation(String conversationId) async {
@@ -207,20 +216,27 @@ class SupabaseChatRepository implements ChatRepository {
       'content': finalContent.trim(),
     });
 
-    // 1.1 Incrementar el contador de no leídos de forma explícita
+    // 1.1 Incrementar el contador de no leídos para el destinatario
     try {
       final convoData = await _client
           .from('conversations')
-          .select('unread_count')
+          .select('buyer_id, seller_id, unread_buyer, unread_seller')
           .eq('id', targetId)
           .maybeSingle();
 
       if (convoData != null) {
-        final currentCount = (convoData['unread_count'] as num?)?.toInt() ?? 0;
-        await _client
-            .from('conversations')
-            .update({'unread_count': currentCount + 1})
-            .eq('id', targetId);
+        final buyerId = convoData['buyer_id'] as String?;
+        final sellerId = convoData['seller_id'] as String?;
+        
+        if (currentSenderId == buyerId) {
+          // Si envía el comprador, incrementa el del vendedor
+          final count = (convoData['unread_seller'] as num?)?.toInt() ?? 0;
+          await _client.from('conversations').update({'unread_seller': count + 1}).eq('id', targetId);
+        } else if (currentSenderId == sellerId) {
+          // Si envía el vendedor, incrementa el del comprador
+          final count = (convoData['unread_buyer'] as num?)?.toInt() ?? 0;
+          await _client.from('conversations').update({'unread_buyer': count + 1}).eq('id', targetId);
+        }
       }
     } catch (_) {}
 
