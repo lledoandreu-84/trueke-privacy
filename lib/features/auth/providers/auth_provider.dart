@@ -41,10 +41,15 @@ class AuthController extends AsyncNotifier<void> {
   Future<void> signOut() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      // 1. Cerrar sesión globalmente en Supabase
-      await Supabase.instance.client.auth.signOut(scope: SignOutScope.global);
+      final client = Supabase.instance.client;
       
-      // 2. Invalidar todos los providers de sesión para purgar cachés y streams zombis
+      // 1. Cancelar todos los canales Realtime activos para evitar zombis de red
+      await client.removeAllChannels();
+      
+      // 2. Cerrar sesión globalmente en Supabase
+      await client.auth.signOut(scope: SignOutScope.global);
+      
+      // 3. Invalidar todos los providers de sesión para purgar cachés
       ref.invalidate(currentUserProvider);
       ref.invalidate(authStateProvider);
       ref.invalidate(authUserIdProvider);
