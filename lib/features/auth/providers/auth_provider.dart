@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/supabase/supabase_client.dart';
 import '../auth_service.dart';
+import '../../../core/providers/favorites_provider.dart';
 
 final authServiceProvider = Provider<AuthService>((ref) {
   final client = ref.watch(supabaseClientProvider);
@@ -45,6 +46,7 @@ class AuthController extends AsyncNotifier<void> {
 
     // Limpiamos los estados de Riverpod para que no interfieran con el nuevo usuario
     ref.invalidateSelf();
+    ref.invalidate(favoritesProvider);
     
     state = const AsyncValue.data(null);
   }
