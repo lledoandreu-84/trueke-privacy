@@ -24,9 +24,9 @@ final currentUserProvider = Provider<User?>((ref) {
   );
 });
 
-final authUserIdProvider = Provider<String?>((ref) {
-  final user = ref.watch(currentUserProvider);
-  return user?.id;
+final authUserIdProvider = StreamProvider<String?>((ref) {
+  final client = ref.watch(supabaseClientProvider);
+  return client.auth.onAuthStateChange.map((event) => event.session?.user.id);
 });
 
 class AuthController extends AsyncNotifier<void> {
@@ -36,23 +36,22 @@ class AuthController extends AsyncNotifier<void> {
   }
 
   Future<void> signOut() async {
-    // 1. Desenfocar el teclado de forma segura
+    // 1. Desenfocar el teclado de forma segura antes del cierre
     FocusManager.instance.primaryFocus?.unfocus();
 
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final client = Supabase.instance.client;
       
-      // 2. Limpiar canales realtime
+      // 2. Limpiar canales realtime activos
       try {
         await client.removeAllChannels();
       } catch (_) {}
 
-      // 3. Dar un respiro al motor de UI (microtask) para que los insets del teclado 
-      // terminen su animación antes de que Supabase anuncie el cierre de sesión global
+      // 3. Dar un respiro a los insets del teclado
       await Future.delayed(const Duration(milliseconds: 100));
 
-      // 4. Ejecutar el cierre de sesión global
+      // 4. Cierre de sesión global en Supabase
       await client.auth.signOut(scope: SignOutScope.global);
     });
   }
