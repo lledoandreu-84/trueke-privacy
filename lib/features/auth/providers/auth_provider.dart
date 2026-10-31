@@ -37,16 +37,21 @@ class AuthController extends AsyncNotifier<void> {
   }
 
   Future<void> signOut() async {
+    // 1. Quitar el foco del teclado inmediatamente
     FocusManager.instance.primaryFocus?.unfocus();
-    state = const AsyncValue.loading();
 
-    // Pausa crítica de estabilidad para evitar el crash del motor gráfico y el socket ADB en Android
-    await Future.delayed(const Duration(milliseconds: 500));
+    // IMPORTANTE: NO ponemos state = loading aquí para evitar que el router 
+    // intente redirigir mientras el diálogo de confirmación sigue abierto en la UI.
 
+    // 2. Dar un respiro de 600ms para que el diálogo de la UI se desmonte limpiamente
+    await Future.delayed(const Duration(milliseconds: 600));
+
+    // 3. Limpiar canales realtime activos
     try {
       await Supabase.instance.client.removeAllChannels();
     } catch (_) {}
 
+    // 4. Borrado manual y seguro de la sesión en SharedPreferences
     try {
       final prefs = await SharedPreferences.getInstance();
       final keys = prefs.getKeys();
@@ -57,6 +62,7 @@ class AuthController extends AsyncNotifier<void> {
       }
     } catch (_) {}
 
+    // 5. Actualizar el estado al final de forma limpia para forzar la navegación al login
     state = const AsyncValue.data(null);
   }
 }
