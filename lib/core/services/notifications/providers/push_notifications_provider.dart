@@ -20,30 +20,31 @@ final pushNotificationsSyncProvider = Provider.autoDispose<void>((ref) {
   final tokensRepository = ref.watch(notificationTokensRepositoryProvider);
 
   userAsync.whenData((userId) async {
-    if (userId != null) {
-      // 1. El usuario está autenticado: Solicitar permisos nativos
-      final hasPermission = await notificationService.requestPermissions();
-      if (!hasPermission) return;
+    if (userId != null && userId.isNotEmpty) {
+      try {
+        // 1. El usuario está autenticado: Solicitar permisos nativos
+        final hasPermission = await notificationService.requestPermissions();
+        if (!hasPermission) return;
 
-      // 2. Capturar el token actual e impactarlo en Supabase
-      final token = await notificationService.getDeviceToken();
-      if (token != null) {
-        await tokensRepository.saveToken(userId: userId, token: token);
-      }
+        // 2. Capturar el token actual e impactarlo en Supabase
+        final token = await notificationService.getDeviceToken();
+        if (token != null) {
+          await tokensRepository.saveToken(userId: userId, token: token);
+        }
 
-      // 3. Escuchar reactivamente si el token se refresca en segundo plano
-      final subscription = notificationService.onTokenRefresh.listen((
-        newToken,
-      ) async {
-        await tokensRepository.saveToken(userId: userId, token: newToken);
-      });
-      ref.onDispose(subscription.cancel);
+        // 3. Escuchar reactivamente si el token se refresca en segundo plano
+        final subscription = notificationService.onTokenRefresh.listen((
+          newToken,
+        ) async {
+          try {
+            await tokensRepository.saveToken(userId: userId, token: newToken);
+          } catch (_) {}
+        });
+        ref.onDispose(subscription.cancel);
+      } catch (_) {}
     } else {
-      // 4. El usuario ha cerrado sesión: Intentar recuperar el token para darlo de baja
-      final token = await notificationService.getDeviceToken();
-      if (token != null) {
-        await tokensRepository.deleteToken(token: token);
-      }
+      // 4. El usuario ha cerrado sesión: Omitimos llamadas de red huérfanas 
+      // para evitar excepciones de socket no controladas al destruir el cliente.
     }
   });
 });
