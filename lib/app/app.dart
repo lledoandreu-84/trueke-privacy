@@ -87,10 +87,26 @@ class AuthRootWrapper extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(currentUserProvider);
-    if (user != null) {
-      return const MainShell();
-    }
-    return const AuthPage();
+    final authStateAsync = ref.watch(authStateProvider);
+
+    return authStateAsync.when(
+      data: (authState) {
+        final session = authState.session;
+        if (session != null && session.user.id.isNotEmpty) {
+          return const MainShell();
+        }
+        return const AuthPage();
+      },
+      loading: () => const Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: CircularProgressIndicator(
+            color: Color(0xFF1E88E5),
+            strokeWidth: 2.5,
+          ),
+        ),
+      ),
+      error: (e, st) => const AuthPage(),
+    );
   }
 }
