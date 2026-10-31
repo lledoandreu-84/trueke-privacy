@@ -10,6 +10,7 @@ final authServiceProvider = Provider<AuthService>((ref) {
   return AuthService(client);
 });
 
+// Stream puro de Supabase blindado
 final authStateProvider = StreamProvider<AuthState>((ref) {
   final client = ref.watch(supabaseClientProvider);
   return client.auth.onAuthStateChange;
@@ -36,31 +37,23 @@ class AuthController extends AsyncNotifier<void> {
   }
 
   Future<void> signOut() async {
-    // 1. Desenfocar el teclado de forma segura y Bloquear interacciones con los insets
+    // 1. Quitar el foco del teclado inmediatamente
     FocusManager.instance.primaryFocus?.unfocus();
 
     state = const AsyncValue.loading();
-    
-    // 2. Esperar a que el frame actual termine de renderizarse para evitar colisiones con Impeller
-    final completer = Completer<void>();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      completer.complete();
-    });
-    await completer.future;
 
     state = await AsyncValue.guard(() async {
       final client = Supabase.instance.client;
-      
-      // 3. Invalidar providers de forma controlada
+
+      // 2. Limpiar canales realtime de forma totalmente aislada
       try {
-        ref.invalidate(currentUserProvider);
-        ref.invalidate(authUserIdProvider);
+        await client.removeAllChannels();
       } catch (_) {}
 
-      // 4. Pausa de seguridad para estabilizar el Isolate antes de limpiar almacenamiento
-      await Future.delayed(const Duration(milliseconds: 200));
+      // 3. Forzar un respiro de 300ms al motor de Dart/Impeller para vaciar la cola de eventos JNI
+      await Future.delayed(const Duration(milliseconds: 300));
 
-      // 5. Limpieza local de sesión aislada
+      // 4. Ejecutar el signOut localmente sin bloquear el hilo principal
       try {
         await client.auth.signOut(scope: SignOutScope.local);
       } catch (_) {}
