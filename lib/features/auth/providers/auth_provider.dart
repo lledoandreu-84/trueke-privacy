@@ -43,26 +43,24 @@ class AuthController extends AsyncNotifier<void> {
     state = await AsyncValue.guard(() async {
       final client = Supabase.instance.client;
       
-      // 2. Invalidar preventivamente los proveedores dependientes del usuario
+      // 2. Invalidar preventivamente todos los proveedores de usuario y datos dependientes
       try {
         ref.invalidate(currentUserProvider);
         ref.invalidate(authUserIdProvider);
       } catch (_) {}
 
-      // 3. Limpiar canales realtime activos
+      // 3. Desconectar canales Realtime pendientes para evitar tráfico de socket huérfano
       try {
         await client.removeAllChannels();
       } catch (_) {}
 
-      // 4. Pausa de seguridad para estabilizar los insets del teclado
+      // 4. Pausa de seguridad para estabilizar los insets y la pila de renderizado
       await Future.delayed(const Duration(milliseconds: 150));
 
-      // 5. Cierre de sesión local/global protegido contra caídas de socket nativas
+      // 5. Cierre de sesión local protegido contra caídas de socket nativas
       try {
         await client.auth.signOut(scope: SignOutScope.local);
-      } catch (_) {
-        // Fallback defensivo por si el cliente ya está huérfano
-      }
+      } catch (_) {}
     });
   }
 }
