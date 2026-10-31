@@ -21,8 +21,9 @@ final userConversationsProvider = StreamProvider<List<ChatRoom>>((ref) {
   return repository.streamUserChatRooms();
 });
 
-final userChatRoomsStreamProvider = Provider.family<AsyncValue<List<ChatRoom>>, String?>((ref, userId) {
-  return ref.watch(userConversationsProvider);
+final userChatRoomsStreamProvider = StreamProvider.family<List<ChatRoom>, String?>((ref, userId) {
+  final repository = ref.watch(chatRepositoryProvider);
+  return repository.streamUserChatRooms();
 });
 
 final singleChatRoomProvider = StreamProvider.family<ChatRoom?, String>((ref, roomId) async* {
