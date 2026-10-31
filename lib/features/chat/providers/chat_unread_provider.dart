@@ -15,11 +15,9 @@ final chatUnreadCountProvider = Provider.autoDispose<int>((ref) {
     data: (rooms) {
       int total = 0;
       for (final room in rooms) {
-        final r = room as dynamic;
-        try {
-          final count = r.unreadCount is num ? (r.unreadCount as num).toInt() : 0;
-          total += count;
-        } catch (_) {}
+        // Accedemos a unreadCount, unread_count o a través del json si es necesario
+        final count = room.unreadCount; 
+        total += count;
       }
       // Si el total es 0 pero hay salas, aseguramos que si hay actividad reciente funcione,
       // y si el repositorio actualiza unread_count, se reflejará aquí al instante.
