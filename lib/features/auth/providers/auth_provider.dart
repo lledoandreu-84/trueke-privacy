@@ -40,30 +40,30 @@ class AuthController extends AsyncNotifier<void> {
     // 1. Quitar el foco del teclado inmediatamente
     FocusManager.instance.primaryFocus?.unfocus();
 
-    // IMPORTANTE: NO ponemos state = loading aquí para evitar que el router 
-    // intente redirigir mientras el diálogo de confirmación sigue abierto en la UI.
+    // 2. Ejecutar la limpieza de forma totalmente diferida tras el siguiente frame de la UI
+    // Esto evita por completo la colisión del WindowOnBackDispatcher con el ADB.
+    final completer = Completer<void>();
 
-    // 2. Dar un respiro de 600ms para que el diálogo de la UI se desmonte limpiamente
-    await Future.delayed(const Duration(milliseconds: 600));
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        await Supabase.instance.client.removeAllChannels();
+      } catch (_) {}
 
-    // 3. Limpiar canales realtime activos
-    try {
-      await Supabase.instance.client.removeAllChannels();
-    } catch (_) {}
-
-    // 4. Borrado manual y seguro de la sesión en SharedPreferences
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final keys = prefs.getKeys();
-      for (final key in keys) {
-        if (key.contains('supabase') || key.contains('auth-token') || key.contains('sb-')) {
-          await prefs.remove(key);
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final keys = prefs.getKeys();
+        for (final key in keys) {
+          if (key.contains('supabase') || key.contains('auth-token') || key.contains('sb-')) {
+            await prefs.remove(key);
+          }
         }
-      }
-    } catch (_) {}
+      } catch (_) {}
 
-    // 5. Actualizar el estado al final de forma limpia para forzar la navegación al login
-    state = const AsyncValue.data(null);
+      state = const AsyncValue.data(null);
+      completer.complete();
+    });
+
+    return completer.future;
   }
 }
 
