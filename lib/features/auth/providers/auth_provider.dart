@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/supabase/supabase_client.dart';
 import '../auth_service.dart';
 
@@ -37,33 +36,13 @@ class AuthController extends AsyncNotifier<void> {
   }
 
   Future<void> signOut() async {
-    // 1. Quitar el foco del teclado inmediatamente
-    FocusManager.instance.primaryFocus?.unfocus();
-
-    // 2. Ejecutar la limpieza de forma totalmente diferida tras el siguiente frame de la UI
-    // Esto evita por completo la colisión del WindowOnBackDispatcher con el ADB.
-    final completer = Completer<void>();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      try {
-        await Supabase.instance.client.removeAllChannels();
-      } catch (_) {}
-
-      try {
-        final prefs = await SharedPreferences.getInstance();
-        final keys = prefs.getKeys();
-        for (final key in keys) {
-          if (key.contains('supabase') || key.contains('auth-token') || key.contains('sb-')) {
-            await prefs.remove(key);
-          }
-        }
-      } catch (_) {}
-
+    state = const AsyncValue.loading();
+    try {
+      await Supabase.instance.client.auth.signOut();
       state = const AsyncValue.data(null);
-      completer.complete();
-    });
-
-    return completer.future;
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
   }
 }
 
