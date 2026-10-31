@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/supabase/supabase_client.dart';
-import '../../main.dart';
 import '../auth_service.dart';
 
 final authServiceProvider = Provider<AuthService>((ref) {
@@ -48,9 +47,9 @@ class AuthController extends AsyncNotifier<void> {
       await Supabase.instance.client.removeAllChannels();
     } catch (_) {}
 
-    // 3. Borrado directo y manual de la sesión en SharedPreferences (Evita el crash nativo de GoTrue)
+    // 3. Borrado directo y manual de la sesión en SharedPreferences de forma independiente
     try {
-      final prefs = ref.read(sharedPreferencesProvider);
+      final prefs = await SharedPreferences.getInstance();
       final keys = prefs.getKeys();
       for (final key in keys) {
         if (key.contains('supabase') || key.contains('auth-token') || key.contains('sb-')) {
