@@ -29,7 +29,8 @@ class MainShell extends ConsumerWidget {
     final currentIndex = ref.watch(shellIndexProvider);
     final user = ref.watch(currentUserProvider);
     final userId = user?.id ?? '';
-    final unreadChats = ref.watch(chatUnreadCountProvider);
+    // Solo leemos los chats no leídos si hay un usuario logueado
+    final unreadChats = userId.isNotEmpty ? ref.watch(chatUnreadCountProvider) : 0;
     final theme = Theme.of(context);
 
     final List<Widget> screens = [
