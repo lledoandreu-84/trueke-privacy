@@ -21,19 +21,16 @@ final currentUserProvider = Provider<User?>((ref) {
   final authStateAsync = ref.watch(authStateProvider);
   return authStateAsync.when(
     data: (state) => state.session?.user,
-    loading: () => null,
+    loading: () => Supabase.instance.client.auth.currentUser,
     error: (e, st) => null,
   );
 });
 
-// Proveedor reactivo de ID derivado limpiamente de authStateProvider (sin bucles asíncronos paralelos)
+// Proveedor reactivo de ID derivado limpiamente
 final authUserIdProvider = Provider<String?>((ref) {
   final user = ref.watch(currentUserProvider);
   return user?.id;
 });
-
-
-
 
 class AuthController extends AsyncNotifier<void> {
   @override
@@ -44,9 +41,13 @@ class AuthController extends AsyncNotifier<void> {
   Future<void> signOut() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
+      // 1. Cerrar sesión globalmente en Supabase
       await Supabase.instance.client.auth.signOut(scope: SignOutScope.global);
+      
+      // 2. Invalidar todos los providers de sesión para purgar cachés y streams zombis
       ref.invalidate(currentUserProvider);
       ref.invalidate(authStateProvider);
+      ref.invalidate(authUserIdProvider);
     });
   }
 }
