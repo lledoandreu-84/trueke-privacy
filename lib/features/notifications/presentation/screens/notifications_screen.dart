@@ -14,7 +14,7 @@ class NotificationsScreen extends ConsumerWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Notificaciones')),
+      appBar: AppBar(title: const Text('Notificaciones', style: TextStyle(fontWeight: FontWeight.bold))),
       body: Column(
         children: [
           truekesAsync.when(
@@ -64,7 +64,7 @@ class NotificationsScreen extends ConsumerWidget {
                       final otherProduct = trueke['truekeProduct']!;
                       
                       return ListTile(
-                        leading: const Icon(Icons.swap_horiz, color: Colors.green),
+                        leading: Image.asset('assets/images/logo.png', width: 24, height: 24),
                         title: Text('Trueke: ${myProduct.title} por ${otherProduct.title}'),
                         subtitle: const Text('Toca para chatear con el propietario.'),
                         onTap: () async {

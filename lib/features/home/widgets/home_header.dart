@@ -1,15 +1,15 @@
+import 'package:trueke/core/providers/notification_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../products/providers/trueke_provider.dart';
 
 class HomeHeader extends ConsumerWidget {
   const HomeHeader({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final matchesAsync = ref.watch(truekeProvider);
+        final notificationsAsync = ref.watch(truekeNotificationProvider);
 
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),
@@ -78,9 +78,9 @@ class HomeHeader extends ConsumerWidget {
                     Navigator.of(context).pushNamed('/notifications');
                   },
                 ),
-                matchesAsync.when(
-                  data: (matches) {
-                    if (matches.isEmpty) return const SizedBox.shrink();
+                notificationsAsync.when(
+                  data: (notifications) {
+                    if (notifications.isEmpty) return const SizedBox.shrink();
                     return Positioned(
                       right: 8,
                       top: 8,
@@ -91,7 +91,7 @@ class HomeHeader extends ConsumerWidget {
                           shape: BoxShape.circle,
                         ),
                         child: Text(
-                          '${matches.length}',
+                          '${notifications.length}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
