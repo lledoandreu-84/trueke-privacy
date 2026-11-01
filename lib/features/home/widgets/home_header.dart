@@ -2,18 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../products/providers/match_provider.dart';
 
 class HomeHeader extends ConsumerWidget {
   const HomeHeader({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final matchesAsync = ref.watch(matchProvider);
+
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),
       decoration: const BoxDecoration(color: AppColors.surface),
       child: Row(
         children: [
-          // Usamos Transform.scale para expandir el logo visualmente rellenando el espacio superior
           SizedBox(
             width: 52,
             height: 52,
@@ -75,6 +77,32 @@ class HomeHeader extends ConsumerWidget {
                   onPressed: () {
                     Navigator.of(context).pushNamed('/notifications');
                   },
+                ),
+                matchesAsync.when(
+                  data: (matches) {
+                    if (matches.isEmpty) return const SizedBox.shrink();
+                    return Positioned(
+                      right: 8,
+                      top: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          '${matches.length}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  loading: () => const SizedBox.shrink(),
+                  error: (_, _) => const SizedBox.shrink(),
                 ),
               ],
             ),
