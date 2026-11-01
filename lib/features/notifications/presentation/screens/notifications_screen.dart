@@ -41,10 +41,9 @@ class NotificationsScreen extends ConsumerWidget {
                             child: const Text('Cancelar'),
                           ),
                           TextButton(
-                            onPressed: () {
+                            onPressed: () async {
                               Navigator.of(ctx).pop();
-                              ref.read(hiddenTruekesProvider.notifier).hide(matchId);
-                              final _ = ref.refresh(truekeMatchesProvider);
+                              await ref.read(hiddenTruekesProvider.notifier).hide(matchId);
                             },
                             child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
                           ),

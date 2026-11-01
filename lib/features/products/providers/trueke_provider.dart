@@ -49,53 +49,40 @@ bool _matchTokens(String wanted, String title) {
   return false;
 }
 
-// Usamos un Provider simple que envuelve un ValueNotifier
-final hiddenTruekesProvider =
-    NotifierProvider<HiddenTruekesNotifier, List<String>>(() {
-      return HiddenTruekesNotifier();
-    });
+final hiddenTruekesProvider = AsyncNotifierProvider<HiddenTruekesNotifier, List<String>>(() {
+  return HiddenTruekesNotifier();
+});
 
-class HiddenTruekesNotifier extends Notifier<List<String>> {
+class HiddenTruekesNotifier extends AsyncNotifier<List<String>> {
   @override
-  List<String> build() {
-    load();
-    return [];
-  }
-
-  Future<void> load() async {
+  Future<List<String>> build() async {
     final prefs = await SharedPreferences.getInstance();
-    state = prefs.getStringList('hidden_truekes') ?? [];
+    return prefs.getStringList('hidden_truekes') ?? [];
   }
 
   Future<void> hide(String id) async {
-    if (!state.contains(id)) {
-      state = [...state, id];
+    final currentState = state.value ?? [];
+    if (!currentState.contains(id)) {
+      final newState = [...currentState, id];
+      state = AsyncValue.data(newState);
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setStringList('hidden_truekes', state);
+      await prefs.setStringList('hidden_truekes', newState);
     }
   }
 }
 
-final truekeMatchesProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((
-  ref,
-) {
+final truekeMatchesProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
   final productsAsync = ref.watch(productsProvider);
-  final hiddenNotifier = ref.watch(hiddenTruekesProvider);
-
-  // Forzamos la lectura del valor actual
-  final hiddenTruekes = hiddenNotifier;
-
+  final hiddenAsync = ref.watch(hiddenTruekesProvider);
   final currentUserId = Supabase.instance.client.auth.currentUser?.id;
 
   return productsAsync.whenData((products) {
     if (currentUserId == null) return [];
+    
+    final hiddenTruekes = hiddenAsync.value ?? [];
 
-    final myProducts = products
-        .where((p) => p.ownerId == currentUserId)
-        .toList();
-    final otherProducts = products
-        .where((p) => p.ownerId != currentUserId)
-        .toList();
+    final myProducts = products.where((p) => p.ownerId == currentUserId).toList();
+    final otherProducts = products.where((p) => p.ownerId != currentUserId).toList();
 
     List<Map<String, dynamic>> truekes = [];
 
