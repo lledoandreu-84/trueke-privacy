@@ -28,6 +28,7 @@ class NotificationsScreen extends ConsumerWidget {
 final isRead = match['isRead'] ?? false;
               return ListTile(
                 onTap: () async {
+                  await ref.read(hiddenTruekesProvider.notifier).markAsRead(matchId);
                   final chatRepo = SupabaseChatRepository(null);
                   final room = await chatRepo.getOrCreateConversation(
                     productId: match['truekeProduct'].id,
