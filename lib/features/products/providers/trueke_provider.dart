@@ -6,12 +6,15 @@ import 'products_provider.dart';
 String _normalize(String text) {
   if (text.isEmpty) return '';
   String normalized = text.toLowerCase().trim();
-  if (normalized.endsWith('s')) {
+  
+  if (normalized.endsWith('ces')) {
+    normalized = '${normalized.substring(0, normalized.length - 3)}z';
+  } else if (normalized.endsWith('es')) {
+    normalized = normalized.substring(0, normalized.length - 2);
+  } else if (normalized.endsWith('s')) {
     normalized = normalized.substring(0, normalized.length - 1);
   }
-  if (normalized.endsWith('e')) {
-    normalized = normalized.substring(0, normalized.length - 1);
-  }
+  
   return normalized;
 }
 
