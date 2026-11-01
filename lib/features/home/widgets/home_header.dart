@@ -10,7 +10,7 @@ class HomeHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final notificationsAsync = ref.watch(truekeNotificationProvider);
-    final truekesAsync = ref.watch(truekeProvider);
+    final truekesAsync = ref.watch(truekeMatchesProvider);
     
     final truekesCount = truekesAsync.when(data: (t) => t.length, loading: () => 0, error: (_, _) => 0);
     final notifCount = notificationsAsync.when(data: (n) => n.length, loading: () => 0, error: (_, _) => 0);

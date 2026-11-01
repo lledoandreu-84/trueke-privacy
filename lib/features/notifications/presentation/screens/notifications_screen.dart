@@ -11,7 +11,7 @@ class NotificationsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final truekesAsync = ref.watch(truekeProvider);
+    final truekesAsync = ref.watch(truekeMatchesProvider);
     final notificationsAsync = ref.watch(truekeNotificationProvider);
     final theme = Theme.of(context);
 
