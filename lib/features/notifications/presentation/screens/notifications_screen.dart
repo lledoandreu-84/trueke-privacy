@@ -11,7 +11,8 @@ class NotificationsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-  title: const Text('Notificaciones'),
+        title: const Text('Notificaciones'),
+      ),
   centerTitle: true,
   elevation: 0,
 ),
