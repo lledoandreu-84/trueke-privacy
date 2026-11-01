@@ -1,20 +1,26 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../models/product.dart';
 import 'products_provider.dart';
 
-class HiddenTruekesNotifier extends StateNotifier<List<String>> {
-  HiddenTruekesNotifier() : super([]);
-  void hide(String id) => state = [...state, id];
+class HiddenTruekesNotifier extends ChangeNotifier {
+  final List<String> _hiddenIds = [];
+  List<String> get hiddenIds => _hiddenIds;
+  
+  void hide(String id) {
+    _hiddenIds.add(id);
+    notifyListeners();
+  }
 }
 
-final truekeProvider = StateNotifierProvider<HiddenTruekesNotifier, List<String>>((ref) {
+final truekeProvider = ChangeNotifierProvider<HiddenTruekesNotifier>((ref) {
   return HiddenTruekesNotifier();
 });
 
 final truekeMatchesProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
   final productsAsync = ref.watch(productsProvider);
-  final hiddenTruekes = ref.watch(truekeProvider);
+  final hiddenNotifier = ref.watch(truekeProvider);
   final currentUserId = Supabase.instance.client.auth.currentUser?.id;
 
   return productsAsync.whenData((products) {
@@ -38,7 +44,7 @@ final truekeMatchesProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((
             (myTitle.contains(otherWanted) || otherWanted.contains(myTitle))) {
           
           final matchId = '${myProduct.id}-${otherProduct.id}';
-          if (!hiddenTruekes.contains(matchId)) {
+          if (!hiddenNotifier.hiddenIds.contains(matchId)) {
             truekes.add({
               'myProduct': myProduct,
               'truekeProduct': otherProduct,
