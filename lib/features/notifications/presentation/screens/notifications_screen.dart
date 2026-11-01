@@ -44,8 +44,7 @@ class NotificationsScreen extends ConsumerWidget {
                           TextButton(
                             onPressed: () {
                               Navigator.of(ctx).pop();
-                              final notifier = ref.read(hiddenTruekesProvider);
-                              notifier.value = [...notifier.value, matchId];
+                              ref.read(hiddenTruekesProvider.notifier).hide(matchId);
                               final _ = ref.refresh(truekeMatchesProvider);
                             },
                             child: const Text('Eliminar', style: TextStyle(color: Colors.red)),

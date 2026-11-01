@@ -1,5 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'products_provider.dart';
 
@@ -11,16 +11,38 @@ String _normalize(String text) {
 }
 
 // Usamos un Provider simple que envuelve un ValueNotifier
-final hiddenTruekesProvider = Provider<ValueNotifier<List<String>>>((ref) {
-  return ValueNotifier<List<String>>([]);
+final hiddenTruekesProvider = NotifierProvider<HiddenTruekesNotifier, List<String>>(() {
+  return HiddenTruekesNotifier();
 });
+
+class HiddenTruekesNotifier extends Notifier<List<String>> {
+  @override
+  List<String> build() {
+    load();
+    return [];
+  }
+
+  Future<void> load() async {
+    final prefs = await SharedPreferences.getInstance();
+    state = prefs.getStringList('hidden_truekes') ?? [];
+  }
+
+  Future<void> hide(String id) async {
+    if (!state.contains(id)) {
+      state = [...state, id];
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList('hidden_truekes', state);
+    }
+  }
+}
+
 
 final truekeMatchesProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
   final productsAsync = ref.watch(productsProvider);
   final hiddenNotifier = ref.watch(hiddenTruekesProvider);
   
   // Forzamos la lectura del valor actual
-  final hiddenTruekes = hiddenNotifier.value;
+  final hiddenTruekes = hiddenNotifier;
   
   final currentUserId = Supabase.instance.client.auth.currentUser?.id;
 
