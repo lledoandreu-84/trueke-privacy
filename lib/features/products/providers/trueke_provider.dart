@@ -82,36 +82,39 @@ class HiddenTruekesNotifier extends AsyncNotifier<List<String>> {
   }
 }
 
-final truekeMatchesProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
+final truekeMatchesProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
   final productsAsync = ref.watch(productsProvider);
   final hiddenAsync = ref.watch(hiddenTruekesProvider);
   final currentUserId = Supabase.instance.client.auth.currentUser?.id;
 
-  return productsAsync.whenData((products) {
-    if (currentUserId == null) return [];
-    
-    final hiddenTruekes = hiddenAsync.value ?? [];
+  if (currentUserId == null) return [];
+  
+  final products = productsAsync.value ?? [];
+  final hiddenTruekes = hiddenAsync.value ?? [];
+  
+  final prefs = await SharedPreferences.getInstance();
+  final readList = prefs.getStringList('read_truekes') ?? [];
 
-    final myProducts = products.where((p) => p.ownerId == currentUserId).toList();
-    final otherProducts = products.where((p) => p.ownerId != currentUserId).toList();
+  final myProducts = products.where((p) => p.ownerId == currentUserId).toList();
+  final otherProducts = products.where((p) => p.ownerId != currentUserId).toList();
 
-    List<Map<String, dynamic>> truekes = [];
+  List<Map<String, dynamic>> truekes = [];
 
-    for (var myProduct in myProducts) {
-      for (var otherProduct in otherProducts) {
-        if (_matchTokens(myProduct.wanted, otherProduct.title) &&
-            _matchTokens(otherProduct.wanted, myProduct.title)) {
-          final matchId = '${myProduct.id}-${otherProduct.id}';
-          if (!hiddenTruekes.contains(matchId)) {
-            truekes.add({
-              'myProduct': myProduct,
-              'truekeProduct': otherProduct,
-              'matchId': matchId,
-            });
-          }
+  for (var myProduct in myProducts) {
+    for (var otherProduct in otherProducts) {
+      if (_matchTokens(myProduct.wanted, otherProduct.title) &&
+          _matchTokens(otherProduct.wanted, myProduct.title)) {
+        final matchId = '${myProduct.id}-${otherProduct.id}';
+        if (!hiddenTruekes.contains(matchId)) {
+          truekes.add({
+            'myProduct': myProduct,
+            'truekeProduct': otherProduct,
+            'matchId': matchId,
+            'isRead': readList.contains(matchId),
+          });
         }
       }
     }
-    return truekes;
-  });
+  }
+  return truekes;
 });
