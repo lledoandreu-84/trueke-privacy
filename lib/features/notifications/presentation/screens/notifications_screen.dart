@@ -71,13 +71,13 @@ class NotificationsScreen extends ConsumerWidget {
                           try {
                             // Obtenemos o creamos la sala de chat usando el repositorio
                             final chatRepo = ref.read(chatRepositoryProvider);
-                            final roomId = await chatRepo.createOrGetChatRoom(
-                              otherUserId: otherProduct.ownerId,
+                            final chatRoom = await chatRepo.getOrCreateConversation(
+                              sellerId: otherProduct.ownerId,
                               productId: otherProduct.id,
                             );
                             
                             if (context.mounted) {
-                              Navigator.of(context).pushNamed('/chat', arguments: roomId);
+                              Navigator.of(context).pushNamed('/chat', arguments: chatRoom.id);
                             }
                           } catch (e) {
                             if (context.mounted) {
