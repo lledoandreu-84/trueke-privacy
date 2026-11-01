@@ -63,7 +63,10 @@ class NotificationsScreen extends ConsumerWidget {
                   ],
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator.adaptive()),
+              // Si está cargando pero ya tenemos el banner, mostramos vacío tras un instante
+              loading: () => Center(
+                child: Text('Tu bandeja de entrada está vacía', style: theme.textTheme.bodyMedium),
+              ),
               error: (e, _) => Center(child: Text('Error: $e')),
             ),
           ),
