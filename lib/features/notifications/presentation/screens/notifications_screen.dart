@@ -10,7 +10,11 @@ class NotificationsScreen extends ConsumerWidget {
     final matchesAsync = ref.watch(truekeMatchesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Notificaciones')),
+      appBar: AppBar(
+  title: const Text('Notificaciones', style: TextStyle(fontWeight: FontWeight.bold)),
+  centerTitle: true,
+  elevation: 0,
+),
       body: matchesAsync.when(
         data: (matches) {
           if (matches.isEmpty) {
