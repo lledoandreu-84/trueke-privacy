@@ -14,94 +14,49 @@ class NotificationsScreen extends ConsumerWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Notificaciones', style: TextStyle(fontFamily: 'Montserrat', fontWeight: FontWeight.bold))),
-      body: Column(
-        children: [
-          truekesAsync.when(
-            data: (truekes) {
-              if (truekes.isEmpty) return const SizedBox.shrink();
-              return Container(
-                margin: const EdgeInsets.all(16),
-                padding: const EdgeInsets.all(16),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: theme.colorScheme.primary, width: 1.5),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      '¡Hay Truekes disponibles!',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    Text('Tienes ${truekes.length} coincidencia(s) perfecta(s) esperando.'),
-                  ],
-                ),
-              );
-            },
-            loading: () => const SizedBox.shrink(),
-            error: (_, _) => const SizedBox.shrink(),
-          ),
-          Expanded(
-            child: truekesAsync.when(
-              data: (truekes) {
-                final notificationData = notificationsAsync.value ?? {};
-                final hasNotifications = notificationData.isNotEmpty;
+      appBar: AppBar(
+        title: Text('Notificaciones', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        centerTitle: false,
+      ),
+      body: truekesAsync.when(
+        data: (truekes) {
+          final notificationData = notificationsAsync.value ?? {};
+          final hasNotifications = notificationData.isNotEmpty;
 
-                if (truekes.isEmpty && !hasNotifications) {
-                  return Center(
-                    child: Text('Tu bandeja de entrada está vacía', style: theme.textTheme.bodyMedium),
-                  );
-                }
+          if (truekes.isEmpty && !hasNotifications) {
+            return Center(child: Text('Tu bandeja de entrada está vacía', style: theme.textTheme.bodyMedium));
+          }
 
-                return ListView(
-                  children: [
-                    ...truekes.map((trueke) {
-                      final myProduct = trueke['myProduct']!;
-                      final otherProduct = trueke['truekeProduct']!;
-                      
-                      return ListTile(
-                        leading: Image.asset('assets/images/logo.png', width: 24, height: 24),
-                        title: Text('Trueke: ${myProduct.title} por ${otherProduct.title}'),
-                        subtitle: const Text('Toca para chatear con el propietario.'),
-                        onTap: () async {
-                          try {
-                            // Obtenemos o creamos la sala de chat usando el repositorio
-                            final chatRepo = ref.read(chatRepositoryProvider);
-                            final chatRoom = await chatRepo.getOrCreateConversation(
-                              sellerId: otherProduct.ownerId,
-                              productId: otherProduct.id,
-                            );
-                            
-                            if (context.mounted) {
-                              Navigator.of(context).pushNamed('/chat', arguments: chatRoom.id);
-                            }
-                          } catch (e) {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Error al abrir el chat: $e')),
-                              );
-                            }
-                          }
-                        },
-                      );
-                    }),
-                    if (hasNotifications)
-                      ListTile(
-                        title: Text(notificationData['title']?.toString() ?? 'Notificación'),
-                        subtitle: Text(notificationData['message']?.toString() ?? ''),
-                      ),
-                  ],
+          return ListView.builder(
+            itemCount: truekes.length + (hasNotifications ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index < truekes.length) {
+                final trueke = truekes[index];
+                final myProduct = trueke['myProduct']!;
+                final otherProduct = trueke['truekeProduct']!;
+                
+                return ListTile(
+                  leading: const Icon(Icons.swap_horiz, color: Colors.green),
+                  title: Text('Trueke: ${myProduct.title} por ${otherProduct.title}'),
+                  subtitle: const Text('Toca para chatear con el propietario.'),
+                  onTap: () async {
+                    final chatRepo = ref.read(chatRepositoryProvider);
+                    final chatRoom = await chatRepo.getOrCreateConversation(sellerId: otherProduct.ownerId, productId: otherProduct.id);
+                    if (context.mounted) Navigator.of(context).pushNamed('/chat', arguments: chatRoom.id);
+                  },
                 );
-              },
-              loading: () => const Center(child: CircularProgressIndicator.adaptive()),
-              error: (e, _) => Center(child: Text('Error: $e')),
-            ),
-          ),
-        ],
+              } else {
+                return ListTile(
+                  leading: const Icon(Icons.notifications),
+                  title: Text(notificationData['title']?.toString() ?? 'Notificación'),
+                  subtitle: Text(notificationData['message']?.toString() ?? ''),
+                );
+              }
+            },
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator.adaptive()),
+        error: (e, _) => Center(child: Text('Error: $e')),
       ),
     );
   }
