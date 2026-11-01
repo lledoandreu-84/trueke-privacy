@@ -3,7 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../models/product.dart';
 import 'products_provider.dart';
 
-final matchProvider = Provider<AsyncValue<List<Map<String, Product>>>>((ref) {
+final truekeProvider = Provider<AsyncValue<List<Map<String, Product>>>>((ref) {
   final productsAsync = ref.watch(productsProvider);
   final currentUserId = Supabase.instance.client.auth.currentUser?.id;
 
@@ -13,26 +13,28 @@ final matchProvider = Provider<AsyncValue<List<Map<String, Product>>>>((ref) {
     final myProducts = products.where((p) => p.ownerId == currentUserId).toList();
     final otherProducts = products.where((p) => p.ownerId != currentUserId).toList();
 
-    List<Map<String, Product>> matches = [];
+    List<Map<String, Product>> truekes = [];
 
     for (var myProduct in myProducts) {
       for (var otherProduct in otherProducts) {
-        // Normalizamos a minúsculas para evitar problemas con mayúsculas
         final myWanted = myProduct.wanted.trim().toLowerCase();
-        final otherCategory = otherProduct.category.trim().toLowerCase();
+        final otherTitle = otherProduct.title.trim().toLowerCase();
         
         final otherWanted = otherProduct.wanted.trim().toLowerCase();
-        final myCategory = myProduct.category.trim().toLowerCase();
+        final myTitle = myProduct.title.trim().toLowerCase();
 
-        if (myWanted == otherCategory && otherWanted == myCategory) {
-          matches.add({
+        // Comprobamos si lo que busco está en el título del otro, y viceversa
+        if (myWanted.isNotEmpty && otherWanted.isNotEmpty &&
+            (otherTitle.contains(myWanted) || myWanted.contains(otherTitle)) &&
+            (myTitle.contains(otherWanted) || otherWanted.contains(myTitle))) {
+          truekes.add({
             'myProduct': myProduct,
-            'matchedProduct': otherProduct,
+            'truekeProduct': otherProduct,
           });
         }
       }
     }
 
-    return matches;
+    return truekes;
   });
 });

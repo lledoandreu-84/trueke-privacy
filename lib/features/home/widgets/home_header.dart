@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../products/providers/match_provider.dart';
+import '../../products/providers/trueke_provider.dart';
 
 class HomeHeader extends ConsumerWidget {
   const HomeHeader({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final matchesAsync = ref.watch(matchProvider);
+    final matchesAsync = ref.watch(truekeProvider);
 
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),
