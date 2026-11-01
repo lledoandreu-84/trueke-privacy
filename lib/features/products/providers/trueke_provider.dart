@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'products_provider.dart';
@@ -7,15 +8,22 @@ String _normalize(String text) {
     .replaceAll('á', 'a').replaceAll('é', 'e').replaceAll('í', 'i').replaceAll('ó', 'o').replaceAll('ú', 'u')
     .replaceAll('v', 'b')
     .replaceAll('h', '')
-    .replaceAll(RegExp(r'[^a-z0-9 ]'), '')
+    .replaceAll(RegExp(r'[^a-z0-9\s]'), '')
     .trim();
 }
 
-final hiddenTruekesProvider = StateProvider<List<String>>((ref) => []);
+// Usamos un Provider simple que envuelve un ValueNotifier
+final hiddenTruekesProvider = Provider<ValueNotifier<List<String>>>((ref) {
+  return ValueNotifier<List<String>>([]);
+});
 
 final truekeMatchesProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
   final productsAsync = ref.watch(productsProvider);
-  final hiddenTruekes = ref.watch(hiddenTruekesProvider);
+  final hiddenNotifier = ref.watch(hiddenTruekesProvider);
+  
+  // Forzamos la lectura del valor actual
+  final hiddenTruekes = hiddenNotifier.value;
+  
   final currentUserId = Supabase.instance.client.auth.currentUser?.id;
 
   return productsAsync.whenData((products) {
