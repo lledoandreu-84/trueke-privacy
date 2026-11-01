@@ -13,9 +13,6 @@ class NotificationsScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Notificaciones'),
       ),
-  centerTitle: true,
-  elevation: 0,
-),
       body: matchesAsync.when(
         data: (matches) {
           if (matches.isEmpty) {
