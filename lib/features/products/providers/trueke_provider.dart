@@ -1,12 +1,19 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'products_provider.dart';
 
 String _normalize(String text) {
   if (text.isEmpty) return '';
   String normalized = text.toLowerCase().trim();
-  
+
+  final withDiacritics = 'áéíóúüñ';
+  final withoutDiacritics = 'aeiouun';
+  for (int i = 0; i < withDiacritics.length; i++) {
+    normalized = normalized.replaceAll(withDiacritics[i], withoutDiacritics[i]);
+  }
+
   if (normalized.endsWith('ces')) {
     normalized = '${normalized.substring(0, normalized.length - 3)}z';
   } else if (normalized.endsWith('es')) {
@@ -14,15 +21,39 @@ String _normalize(String text) {
   } else if (normalized.endsWith('s')) {
     normalized = normalized.substring(0, normalized.length - 1);
   }
-  
+
   return normalized;
 }
 
+bool _matchTokens(String wanted, String title) {
+  if (wanted.isEmpty || title.isEmpty) return false;
+
+  final wantedTokens = wanted
+      .split(' ')
+      .map((t) => _normalize(t))
+      .where((t) => t.length > 2)
+      .toList();
+  final titleTokens = title
+      .split(' ')
+      .map((t) => _normalize(t))
+      .where((t) => t.length > 2)
+      .toList();
+
+  for (var wToken in wantedTokens) {
+    for (var tToken in titleTokens) {
+      if (tToken.contains(wToken) || wToken.contains(tToken)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 // Usamos un Provider simple que envuelve un ValueNotifier
-final hiddenTruekesProvider = NotifierProvider<HiddenTruekesNotifier, List<String>>(() {
-  return HiddenTruekesNotifier();
-});
+final hiddenTruekesProvider =
+    NotifierProvider<HiddenTruekesNotifier, List<String>>(() {
+      return HiddenTruekesNotifier();
+    });
 
 class HiddenTruekesNotifier extends Notifier<List<String>> {
   @override
@@ -45,36 +76,33 @@ class HiddenTruekesNotifier extends Notifier<List<String>> {
   }
 }
 
-
-final truekeMatchesProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
+final truekeMatchesProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((
+  ref,
+) {
   final productsAsync = ref.watch(productsProvider);
   final hiddenNotifier = ref.watch(hiddenTruekesProvider);
-  
+
   // Forzamos la lectura del valor actual
   final hiddenTruekes = hiddenNotifier;
-  
+
   final currentUserId = Supabase.instance.client.auth.currentUser?.id;
 
   return productsAsync.whenData((products) {
     if (currentUserId == null) return [];
-    
-    final myProducts = products.where((p) => p.ownerId == currentUserId).toList();
-    final otherProducts = products.where((p) => p.ownerId != currentUserId).toList();
-    
+
+    final myProducts = products
+        .where((p) => p.ownerId == currentUserId)
+        .toList();
+    final otherProducts = products
+        .where((p) => p.ownerId != currentUserId)
+        .toList();
+
     List<Map<String, dynamic>> truekes = [];
 
     for (var myProduct in myProducts) {
       for (var otherProduct in otherProducts) {
-        final myWanted = _normalize(myProduct.wanted);
-        final otherTitle = _normalize(otherProduct.title);
-        
-        final otherWanted = _normalize(otherProduct.wanted);
-        final myTitle = _normalize(myProduct.title);
-
-        if (myWanted.isNotEmpty && otherWanted.isNotEmpty &&
-            (otherTitle.contains(myWanted) || myWanted.contains(otherTitle)) &&
-            (myTitle.contains(otherWanted) || otherWanted.contains(myTitle))) {
-          
+        if (_matchTokens(myProduct.wanted, otherProduct.title) &&
+            _matchTokens(otherProduct.wanted, myProduct.title)) {
           final matchId = '${myProduct.id}-${otherProduct.id}';
           if (!hiddenTruekes.contains(matchId)) {
             truekes.add({
