@@ -11,7 +11,7 @@ class NotificationsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-  title: const Text('Notificaciones', style: TextStyle(fontWeight: FontWeight.bold)),
+  title: const Text('Notificaciones'),
   centerTitle: true,
   elevation: 0,
 ),
@@ -27,7 +27,7 @@ class NotificationsScreen extends ConsumerWidget {
               final matchId = match['matchId'] as String;
               
               return ListTile(
-                leading: const Icon(Icons.swap_horiz, color: Colors.green),
+                leading: Image.asset('assets/images/logo.png', width: 24, height: 24),
                 title: Text('Trueke: ${match['myProduct'].title} por ${match['truekeProduct'].title}'),
                 subtitle: const Text('Toca para chatear con el propietario.'),
                 trailing: IconButton(
