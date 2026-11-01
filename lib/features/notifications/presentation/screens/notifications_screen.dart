@@ -12,6 +12,8 @@ class NotificationsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notificaciones'),
+        centerTitle: false,
+        elevation: 0,
       ),
       body: matchesAsync.when(
         data: (matches) {

@@ -4,11 +4,17 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'products_provider.dart';
 
 String _normalize(String text) {
-  return text.toLowerCase()
-    .replaceAll('á', 'a').replaceAll('é', 'e').replaceAll('í', 'i').replaceAll('ó', 'o').replaceAll('ú', 'u')
-    .replaceAll(RegExp(r'[^a-z0-9\s]'), '')
-    .trim();
+  if (text.isEmpty) return '';
+  String normalized = text.toLowerCase().trim();
+  if (normalized.endsWith('s')) {
+    normalized = normalized.substring(0, normalized.length - 1);
+  }
+  if (normalized.endsWith('e')) {
+    normalized = normalized.substring(0, normalized.length - 1);
+  }
+  return normalized;
 }
+
 
 // Usamos un Provider simple que envuelve un ValueNotifier
 final hiddenTruekesProvider = NotifierProvider<HiddenTruekesNotifier, List<String>>(() {
