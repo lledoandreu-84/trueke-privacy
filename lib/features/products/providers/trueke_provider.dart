@@ -3,7 +3,14 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../models/product.dart';
 import 'products_provider.dart';
 
-final truekeProvider = StateProvider<List<String>>((ref) => []);
+class HiddenTruekesNotifier extends StateNotifier<List<String>> {
+  HiddenTruekesNotifier() : super([]);
+  void hide(String id) => state = [...state, id];
+}
+
+final truekeProvider = StateNotifierProvider<HiddenTruekesNotifier, List<String>>((ref) {
+  return HiddenTruekesNotifier();
+});
 
 final truekeMatchesProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
   final productsAsync = ref.watch(productsProvider);
