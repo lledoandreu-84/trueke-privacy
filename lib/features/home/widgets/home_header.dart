@@ -12,9 +12,9 @@ class HomeHeader extends ConsumerWidget {
     final notificationsAsync = ref.watch(truekeNotificationProvider);
     final truekesAsync = ref.watch(truekeProvider);
     
-    final hasTruekes = truekesAsync.when(data: (t) => t.isNotEmpty, loading: () => false, error: (_, _) => false);
-    final hasNotifications = notificationsAsync.when(data: (n) => n.isNotEmpty, loading: () => false, error: (_, _) => false);
-    final showBadge = hasTruekes || hasNotifications;
+    final truekesCount = truekesAsync.when(data: (t) => t.length, loading: () => 0, error: (_, _) => 0);
+    final notifCount = notificationsAsync.when(data: (n) => n.length, loading: () => 0, error: (_, _) => 0);
+    final totalCount = truekesCount + notifCount;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),
@@ -41,11 +41,18 @@ class HomeHeader extends ConsumerWidget {
               children: [
                 IconButton(
                   tooltip: 'Conversaciones y Notificaciones',
-                  icon: Icon(showBadge ? Icons.notifications_rounded : Icons.notifications_none_rounded, color: AppColors.petrolBlue, size: 23),
+                  icon: Icon(totalCount > 0 ? Icons.notifications_rounded : Icons.notifications_none_rounded, color: AppColors.petrolBlue, size: 23),
                   onPressed: () => Navigator.of(context).pushNamed('/notifications'),
                 ),
-                if (showBadge)
-                  Positioned(right: 8, top: 8, child: Container(width: 10, height: 10, decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle))),
+                if (totalCount > 0)
+                  Positioned(
+                    right: 8, top: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                      child: Text('$totalCount', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
               ],
             ),
           ),
