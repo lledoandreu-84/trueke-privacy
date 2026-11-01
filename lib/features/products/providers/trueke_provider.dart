@@ -27,8 +27,8 @@ final truekeMatchesProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((
   return productsAsync.whenData((products) {
     if (currentUserId == null) return [];
     
-    final myProducts = products.where((p) => p.ownerId == currentUserId && (p.isActive ?? true)).toList();
-    final otherProducts = products.where((p) => p.ownerId != currentUserId && (p.isActive ?? true)).toList();
+    final myProducts = products.where((p) => p.ownerId == currentUserId).toList();
+    final otherProducts = products.where((p) => p.ownerId != currentUserId).toList();
     
     List<Map<String, dynamic>> truekes = [];
 
