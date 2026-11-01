@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../products/providers/trueke_provider.dart';
 import '../../../../core/providers/notification_provider.dart';
+import '../../../chat/providers/chat_providers.dart';
 
 class NotificationsScreen extends ConsumerWidget {
   const NotificationsScreen({super.key});
@@ -16,13 +17,13 @@ class NotificationsScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('Notificaciones')),
       body: Column(
         children: [
-          // Banner de Truekes
           truekesAsync.when(
             data: (truekes) {
               if (truekes.isEmpty) return const SizedBox.shrink();
               return Container(
                 margin: const EdgeInsets.all(16),
                 padding: const EdgeInsets.all(16),
+                width: double.infinity,
                 decoration: BoxDecoration(
                   color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(16),
@@ -44,29 +45,59 @@ class NotificationsScreen extends ConsumerWidget {
             loading: () => const SizedBox.shrink(),
             error: (_, _) => const SizedBox.shrink(),
           ),
-
-          // Lista de Notificaciones normales
           Expanded(
-            child: notificationsAsync.when(
-              data: (notificationData) {
-                if (notificationData.isEmpty) {
+            child: truekesAsync.when(
+              data: (truekes) {
+                final notificationData = notificationsAsync.value ?? {};
+                final hasNotifications = notificationData.isNotEmpty;
+
+                if (truekes.isEmpty && !hasNotifications) {
                   return Center(
                     child: Text('Tu bandeja de entrada está vacía', style: theme.textTheme.bodyMedium),
                   );
                 }
+
                 return ListView(
                   children: [
-                    ListTile(
-                      title: Text(notificationData['title']?.toString() ?? 'Notificación'),
-                      subtitle: Text(notificationData['message']?.toString() ?? ''),
-                    ),
+                    ...truekes.map((trueke) {
+                      final myProduct = trueke['myProduct']!;
+                      final otherProduct = trueke['truekeProduct']!;
+                      
+                      return ListTile(
+                        leading: const Icon(Icons.swap_horiz, color: Colors.green),
+                        title: Text('Trueke: ${myProduct.title} por ${otherProduct.title}'),
+                        subtitle: const Text('Toca para chatear con el propietario.'),
+                        onTap: () async {
+                          try {
+                            // Obtenemos o creamos la sala de chat usando el repositorio
+                            final chatRepo = ref.read(chatRepositoryProvider);
+                            final roomId = await chatRepo.createOrGetChatRoom(
+                              otherUserId: otherProduct.ownerId,
+                              productId: otherProduct.id,
+                            );
+                            
+                            if (context.mounted) {
+                              Navigator.of(context).pushNamed('/chat', arguments: roomId);
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Error al abrir el chat: $e')),
+                              );
+                            }
+                          }
+                        },
+                      );
+                    }),
+                    if (hasNotifications)
+                      ListTile(
+                        title: Text(notificationData['title']?.toString() ?? 'Notificación'),
+                        subtitle: Text(notificationData['message']?.toString() ?? ''),
+                      ),
                   ],
                 );
               },
-              // Si está cargando pero ya tenemos el banner, mostramos vacío tras un instante
-              loading: () => Center(
-                child: Text('Tu bandeja de entrada está vacía', style: theme.textTheme.bodyMedium),
-              ),
+              loading: () => const Center(child: CircularProgressIndicator.adaptive()),
               error: (e, _) => Center(child: Text('Error: $e')),
             ),
           ),
