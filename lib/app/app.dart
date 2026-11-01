@@ -10,6 +10,7 @@ import 'package:trueke/core/services/notifications/providers/push_notifications_
 import 'package:trueke/app/shell/main_shell.dart';
 import 'package:trueke/features/chat/presentation/screens/chat_screen.dart';
 import 'package:trueke/core/theme/app_theme.dart';
+import 'package:trueke/features/notifications/presentation/screens/notifications_screen.dart';
 
 final appNotificationServiceProvider = Provider<NotificationService>((ref) {
   return ref.watch(notificationServiceProvider);
@@ -58,7 +59,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-        home: const AuthRootWrapper(),
+      home: const AuthRootWrapper(),
       onGenerateRoute: (settings) {
         if (settings.name == 'product' || settings.name == '/product') {
           final product = settings.arguments as Product;
@@ -75,12 +76,17 @@ class _MyAppState extends ConsumerState<MyApp> {
             settings: settings,
           );
         }
+        if (settings.name == '/notifications') {
+          return MaterialPageRoute(
+            builder: (_) => const NotificationsScreen(),
+            settings: settings,
+          );
+        }
         return null;
       },
     );
   }
 }
-
 
 class AuthRootWrapper extends ConsumerWidget {
   const AuthRootWrapper({super.key});
