@@ -1,8 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../models/product.dart';
 import 'products_provider.dart';
+
+// Función para normalizar texto (elimina acentos, pasa a minúsculas y quita caracteres especiales)
+String _normalize(String text) {
+  return text.toLowerCase()
+    .replaceAll('á', 'a').replaceAll('é', 'e').replaceAll('í', 'i').replaceAll('ó', 'o').replaceAll('ú', 'u')
+    .replaceAll('v', 'b') // Homologar b y v
+    .replaceAll('h', '')  // Ignorar h
+    .replaceAll(RegExp(r'[^a-z0-9 ]'), '')
+    .trim();
+}
 
 final hiddenTruekesProvider = Provider<ValueNotifier<List<String>>>((ref) {
   return ValueNotifier<List<String>>([]);
@@ -23,11 +32,11 @@ final truekeMatchesProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((
 
     for (var myProduct in myProducts) {
       for (var otherProduct in otherProducts) {
-        final myWanted = myProduct.wanted.trim().toLowerCase().replaceAll('s', '');
-        final otherTitle = otherProduct.title.trim().toLowerCase().replaceAll('s', '');
+        final myWanted = _normalize(myProduct.wanted);
+        final otherTitle = _normalize(otherProduct.title);
         
-        final otherWanted = otherProduct.wanted.trim().toLowerCase().replaceAll('s', '');
-        final myTitle = myProduct.title.trim().toLowerCase().replaceAll('s', '');
+        final otherWanted = _normalize(otherProduct.wanted);
+        final myTitle = _normalize(myProduct.title);
 
         if (myWanted.isNotEmpty && otherWanted.isNotEmpty &&
             (otherTitle.contains(myWanted) || myWanted.contains(otherTitle)) &&
