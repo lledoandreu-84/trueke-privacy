@@ -9,7 +9,7 @@ class HomeHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-        final notificationsAsync = ref.watch(truekeNotificationProvider);
+    final notificationsAsync = ref.watch(truekeNotificationProvider);
 
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),
@@ -31,11 +31,10 @@ class HomeHeader extends ConsumerWidget {
                 Text(
                   'Trueke',
                   style: TextStyle(
+                    fontFamily: 'Montserrat',
                     fontSize: 24,
-                    height: 1.1,
                     fontWeight: FontWeight.w800,
                     color: AppColors.primary,
-                    letterSpacing: -0.8,
                   ),
                 ),
                 SizedBox(height: 4),
@@ -60,23 +59,22 @@ class HomeHeader extends ConsumerWidget {
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: AppColors.border, width: 1),
             ),
-            child: Stack(
-              children: [
-                IconButton(
-                  tooltip: 'Conversaciones y Notificaciones',
-                  icon: const Icon(
-                    notifications.isEmpty ? Icons.notifications_none_rounded : Icons.notifications_rounded,
-                    color: AppColors.petrolBlue,
-                    size: 23,
+            child: notificationsAsync.when(
+              data: (notifications) => Stack(
+                children: [
+                  IconButton(
+                    tooltip: 'Conversaciones y Notificaciones',
+                    icon: Icon(
+                      notifications.isEmpty ? Icons.notifications_none_rounded : Icons.notifications_rounded,
+                      color: AppColors.petrolBlue,
+                      size: 23,
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pushNamed('/notifications');
+                    },
                   ),
-                  onPressed: () {
-                    Navigator.of(context).pushNamed('/notifications');
-                  },
-                ),
-                notificationsAsync.when(
-                  data: (notifications) {
-                    if (notifications.isEmpty) return const SizedBox.shrink();
-                    return Positioned(
+                  if (notifications.isNotEmpty)
+                    Positioned(
                       right: 8,
                       top: 8,
                       child: Container(
@@ -94,12 +92,17 @@ class HomeHeader extends ConsumerWidget {
                           ),
                         ),
                       ),
-                    );
-                  },
-                  loading: () => const SizedBox.shrink(),
-                  error: (_, _) => const SizedBox.shrink(),
-                ),
-              ],
+                    ),
+                ],
+              ),
+              loading: () => IconButton(
+                icon: const Icon(Icons.notifications_none_rounded, color: AppColors.petrolBlue, size: 23),
+                onPressed: () => Navigator.of(context).pushNamed('/notifications'),
+              ),
+              error: (_, _) => IconButton(
+                icon: const Icon(Icons.notifications_none_rounded, color: AppColors.petrolBlue, size: 23),
+                onPressed: () => Navigator.of(context).pushNamed('/notifications'),
+              ),
             ),
           ),
         ],
