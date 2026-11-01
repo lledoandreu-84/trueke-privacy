@@ -69,6 +69,17 @@ class HiddenTruekesNotifier extends AsyncNotifier<List<String>> {
       await prefs.setStringList('hidden_truekes', newState);
     }
   }
+
+  Future<void> markAsRead(String id) async {
+    final prefs = await SharedPreferences.getInstance();
+    final readList = prefs.getStringList('read_truekes') ?? [];
+    if (!readList.contains(id)) {
+      readList.add(id);
+      await prefs.setStringList('read_truekes', readList);
+      // Forzamos una reconstrucción para actualizar la UI
+      ref.notifyListeners();
+    }
+  }
 }
 
 final truekeMatchesProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
