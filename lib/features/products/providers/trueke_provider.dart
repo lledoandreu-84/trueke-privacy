@@ -6,8 +6,6 @@ import 'products_provider.dart';
 String _normalize(String text) {
   return text.toLowerCase()
     .replaceAll('á', 'a').replaceAll('é', 'e').replaceAll('í', 'i').replaceAll('ó', 'o').replaceAll('ú', 'u')
-    .replaceAll('v', 'b')
-    .replaceAll('h', '')
     .replaceAll(RegExp(r'[^a-z0-9\s]'), '')
     .trim();
 }
