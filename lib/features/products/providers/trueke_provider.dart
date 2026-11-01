@@ -23,10 +23,9 @@ final truekeProvider = Provider<AsyncValue<List<Map<String, Product>>>>((ref) {
         final otherWanted = otherProduct.wanted.trim().toLowerCase();
         final myTitle = myProduct.title.trim().toLowerCase();
 
-        // Comprobamos si lo que busco está en el título del otro, y viceversa
         if (myWanted.isNotEmpty && otherWanted.isNotEmpty &&
-            (otherTitle.contains(myWanted) || myWanted.contains(otherTitle)) &&
-            (myTitle.contains(otherWanted) || otherWanted.contains(myTitle))) {
+            (otherTitle.contains(myWanted) || myWanted.contains(otherTitle) || myWanted == otherTitle) &&
+            (myTitle.contains(otherWanted) || otherWanted.contains(myTitle) || otherWanted == myTitle)) {
           truekes.add({
             'myProduct': myProduct,
             'truekeProduct': otherProduct,
@@ -34,7 +33,6 @@ final truekeProvider = Provider<AsyncValue<List<Map<String, Product>>>>((ref) {
         }
       }
     }
-
     return truekes;
   });
 });
