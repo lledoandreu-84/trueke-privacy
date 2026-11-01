@@ -1,3 +1,5 @@
+import '../../../chat/presentation/screens/chat_screen.dart';
+import '../../../chat/data/chat_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,8 +25,24 @@ class NotificationsScreen extends ConsumerWidget {
               final match = matches[index];
               final matchId = match['matchId'] as String;
               
+final isRead = match['isRead'] ?? false;
               return ListTile(
-                leading: Image.asset('assets/images/logo.png', width: 24, height: 24),
+                onTap: () async {
+                  final chatRepo = SupabaseChatRepository(null);
+                  final room = await chatRepo.getOrCreateConversation(
+                    productId: match['truekeProduct'].id,
+                    sellerId: match['truekeProduct'].ownerId,
+                  );
+                  if (context.mounted) {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen(roomId: room.id)));
+                  }
+                },
+                leading: Stack(
+                  children: [
+                    Image.asset('assets/images/logo.png', width: 24, height: 24),
+                    if (!isRead) Positioned(right: 0, top: 0, child: Container(width: 8, height: 8, decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle))),
+                  ],
+                ),
                 title: Text('Trueke: ${match['myProduct'].title} por ${match['truekeProduct'].title}'),
                 subtitle: const Text('Toca para chatear con el propietario.'),
                 trailing: IconButton(
