@@ -14,7 +14,7 @@ class NotificationsScreen extends ConsumerWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Notificaciones', style: TextStyle(fontWeight: FontWeight.bold))),
+      appBar: AppBar(title: const Text('Notificaciones', style: TextStyle(fontFamily: 'Montserrat', fontWeight: FontWeight.bold))),
       body: Column(
         children: [
           truekesAsync.when(

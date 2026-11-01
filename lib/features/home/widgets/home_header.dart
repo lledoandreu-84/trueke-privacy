@@ -16,16 +16,11 @@ class HomeHeader extends ConsumerWidget {
       decoration: const BoxDecoration(color: AppColors.surface),
       child: Row(
         children: [
-          SizedBox(
-            width: 52,
-            height: 52,
-            child: Transform.scale(
-              scale: 1.35,
-              child: Image.asset(
-                'assets/images/logo.png',
-                fit: BoxFit.contain,
-              ),
-            ),
+          Image.asset(
+            'assets/images/logo.png',
+            width: 40,
+            height: 40,
+            fit: BoxFit.contain,
           ),
           const SizedBox(width: 14),
           const Expanded(
@@ -70,7 +65,7 @@ class HomeHeader extends ConsumerWidget {
                 IconButton(
                   tooltip: 'Conversaciones y Notificaciones',
                   icon: const Icon(
-                    Icons.notifications_none_rounded,
+                    notifications.isEmpty ? Icons.notifications_none_rounded : Icons.notifications_rounded,
                     color: AppColors.petrolBlue,
                     size: 23,
                   ),
