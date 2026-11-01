@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../products/providers/trueke_provider.dart';
 
@@ -10,11 +11,7 @@ class NotificationsScreen extends ConsumerWidget {
     final matchesAsync = ref.watch(truekeMatchesProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notificaciones'),
-        centerTitle: false,
-        elevation: 0,
-      ),
+      appBar: const CustomAppBar(titleText: 'Notificaciones'),
       body: matchesAsync.when(
         data: (matches) {
           if (matches.isEmpty) {
