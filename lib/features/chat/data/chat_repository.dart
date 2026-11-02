@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../models/chat_room.dart';
+
 import '../models/chat_message.dart';
+import '../models/chat_room.dart';
 
 abstract class ChatRepository {
   Future<void> markChatAsRead(String conversationId);
@@ -19,6 +20,7 @@ abstract class ChatRepository {
     required String productId,
     required String sellerId,
     String? buyerId,
+    String? otherProductId, // Añadido
   });
   Future<void> sendMessage({
     String? conversationId,
@@ -28,7 +30,7 @@ abstract class ChatRepository {
     String? message,
     bool isSystem = false,
   });
-    
+
   Future<String> uploadMessageImage({
     String? roomId,
     String? fileName,
@@ -43,20 +45,32 @@ class SupabaseChatRepository implements ChatRepository {
     if (conversationId.trim().isEmpty) return;
     final userId = _client.auth.currentUser?.id;
     if (userId == null) return;
-    final convo = await _client.from('conversations').select('buyer_id, seller_id').eq('id', conversationId).maybeSingle();
+    final convo = await _client
+        .from('conversations')
+        .select('buyer_id, seller_id')
+        .eq('id', conversationId)
+        .maybeSingle();
     if (convo != null) {
       if (userId == convo['buyer_id']) {
-        await _client.from('conversations').update({'unread_buyer': 0}).eq('id', conversationId);
+        await _client
+            .from('conversations')
+            .update({'unread_buyer': 0})
+            .eq('id', conversationId);
       } else if (userId == convo['seller_id']) {
-        await _client.from('conversations').update({'unread_seller': 0}).eq('id', conversationId);
+        await _client
+            .from('conversations')
+            .update({'unread_seller': 0})
+            .eq('id', conversationId);
       }
     }
   }
+
   @override
   Future<void> deleteConversation(String conversationId) async {
     if (conversationId.trim().isEmpty) return;
     await _client.from('conversations').delete().eq('id', conversationId);
   }
+
   final SupabaseClient? _supabase;
   final dynamic mockInsertInterceptor;
   final dynamic mockStreamMessagesInterceptor;
@@ -99,7 +113,7 @@ class SupabaseChatRepository implements ChatRepository {
           .select()
           .or('buyer_id.eq.$userId,seller_id.eq.$userId')
           .order('created_at', ascending: false);
-      
+
       yield (initialData as List)
           .map((json) => ChatRoom.fromJson(json as Map<String, dynamic>))
           .toList();
@@ -111,10 +125,12 @@ class SupabaseChatRepository implements ChatRepository {
         .from('conversations')
         .stream(primaryKey: ['id'])
         .order('created_at', ascending: false)
-        .map((data) => data
-            .map((json) => ChatRoom.fromJson(json))
-            .where((c) => c.buyerId == userId || c.sellerId == userId)
-            .toList());
+        .map(
+          (data) => data
+              .map((json) => ChatRoom.fromJson(json))
+              .where((c) => c.buyerId == userId || c.sellerId == userId)
+              .toList(),
+        );
   }
 
   @override
@@ -156,6 +172,7 @@ class SupabaseChatRepository implements ChatRepository {
     required String productId,
     required String sellerId,
     String? buyerId,
+    String? otherProductId, // Añadido
   }) async {
     final currentUserId = buyerId ?? _client.auth.currentUser?.id;
     if (currentUserId == null) {
@@ -181,6 +198,7 @@ class SupabaseChatRepository implements ChatRepository {
         .from('conversations')
         .insert({
           'product_id': productId,
+          'other_product_id': otherProductId, // Guardamos el segundo producto
           'buyer_id': currentUserId,
           'seller_id': sellerId,
         })
@@ -210,14 +228,12 @@ class SupabaseChatRepository implements ChatRepository {
       return;
     }
 
-    // 1. Insertar el mensaje en el chat
     await _client.from('messages').insert({
       'conversation_id': targetId,
       'sender_id': currentSenderId,
       'content': finalContent.trim(),
     });
 
-    // 1.1 Incrementar el contador de no leídos para el destinatario
     try {
       final convoData = await _client
           .from('conversations')
@@ -228,20 +244,23 @@ class SupabaseChatRepository implements ChatRepository {
       if (convoData != null) {
         final buyerId = convoData['buyer_id'] as String?;
         final sellerId = convoData['seller_id'] as String?;
-        
+
         if (currentSenderId == buyerId) {
-          // Si envía el comprador, incrementa el del vendedor
           final count = (convoData['unread_seller'] as num?)?.toInt() ?? 0;
-          await _client.from('conversations').update({'unread_seller': count + 1}).eq('id', targetId);
+          await _client
+              .from('conversations')
+              .update({'unread_seller': count + 1})
+              .eq('id', targetId);
         } else if (currentSenderId == sellerId) {
-          // Si envía el vendedor, incrementa el del comprador
           final count = (convoData['unread_buyer'] as num?)?.toInt() ?? 0;
-          await _client.from('conversations').update({'unread_buyer': count + 1}).eq('id', targetId);
+          await _client
+              .from('conversations')
+              .update({'unread_buyer': count + 1})
+              .eq('id', targetId);
         }
       }
     } catch (_) {}
 
-    // 2. Crear la notificación in-app para el destinatario de forma automática
     try {
       final convo = await _client
           .from('conversations')
@@ -252,7 +271,7 @@ class SupabaseChatRepository implements ChatRepository {
       if (convo != null) {
         final buyerId = convo['buyer_id'] as String?;
         final sellerId = convo['seller_id'] as String?;
-        
+
         final recipientId = (currentSenderId == buyerId) ? sellerId : buyerId;
 
         if (recipientId != null && recipientId != currentSenderId) {
@@ -264,9 +283,7 @@ class SupabaseChatRepository implements ChatRepository {
           });
         }
       }
-    } catch (_) {
-      // Fallback silencioso para no bloquear el flujo de chat
-    }
+    } catch (_) {}
   }
 
   @override
@@ -278,15 +295,20 @@ class SupabaseChatRepository implements ChatRepository {
   }) async {
     return '';
   }
+
   @override
   Future<void> deleteConversationsByProduct(String productId) async {
     if (productId.trim().isEmpty) return;
-    
+
     await _client.from('conversations').delete().eq('product_id', productId);
-    
+
     final userId = _client.auth.currentUser?.id;
     if (userId != null) {
-      await _client.from('conversations').delete().or('buyer_id.eq.$userId,seller_id.eq.$userId').eq('product_id', productId);
+      await _client
+          .from('conversations')
+          .delete()
+          .or('buyer_id.eq.$userId,seller_id.eq.$userId')
+          .eq('product_id', productId);
     }
   }
 }

@@ -16,19 +16,30 @@ class FakeChatRepository implements ChatRepository {
   Future<List<ChatRoom>> getUserConversations() async => [];
 
   @override
-  Stream<List<ChatMessage>> watchMessages(String conversationId) => Stream.value([]);
+  Stream<List<ChatMessage>> watchMessages(String conversationId) =>
+      Stream.value([]);
 
   @override
   Stream<List<ChatRoom>> streamUserChatRooms() => Stream.value([]);
 
   @override
-  Stream<List<ChatMessage>> streamMessages(String conversationId) => Stream.value([]);
+  Stream<List<ChatMessage>> streamMessages(String conversationId) =>
+      Stream.value([]);
 
   @override
-  Future<ChatRoom> getOrCreateChatRoom({required String buyerId, required String productId, required String sellerId}) async => throw UnimplementedError();
+  Future<ChatRoom> getOrCreateChatRoom({
+    required String buyerId,
+    required String productId,
+    required String sellerId,
+  }) async => throw UnimplementedError();
 
   @override
-  Future<ChatRoom> getOrCreateConversation({required String productId, required String sellerId, String? buyerId}) async => throw UnimplementedError();
+  Future<ChatRoom> getOrCreateConversation({
+    required String productId,
+    required String sellerId,
+    String? buyerId,
+    String? otherProductId, // Añadido para corregir el error de análisis
+  }) async => throw UnimplementedError();
 
   @override
   Future<void> sendMessage({
@@ -41,7 +52,12 @@ class FakeChatRepository implements ChatRepository {
   }) async {}
 
   @override
-  Future<String> uploadMessageImage({String? roomId, String? fileName, dynamic bytes, dynamic file}) async => '';
+  Future<String> uploadMessageImage({
+    String? roomId,
+    String? fileName,
+    dynamic bytes,
+    dynamic file,
+  }) async => '';
 }
 
 void main() {
@@ -49,6 +65,4 @@ void main() {
     final repo = FakeChatRepository();
     expect(repo, isNotNull);
   });
-    
-  
 }
