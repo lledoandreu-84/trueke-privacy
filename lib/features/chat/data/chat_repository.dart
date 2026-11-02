@@ -278,10 +278,15 @@ class SupabaseChatRepository implements ChatRepository {
   }) async {
     return '';
   }
-  
   @override
   Future<void> deleteConversationsByProduct(String productId) async {
     if (productId.trim().isEmpty) return;
+    
     await _client.from('conversations').delete().eq('product_id', productId);
+    
+    final userId = _client.auth.currentUser?.id;
+    if (userId != null) {
+      await _client.from('conversations').delete().or('buyer_id.eq.$userId,seller_id.eq.$userId').eq('product_id', productId);
+    }
   }
 }
