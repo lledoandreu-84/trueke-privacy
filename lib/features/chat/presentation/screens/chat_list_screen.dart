@@ -152,6 +152,7 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                                 try {
                                   await ref.read(chatRepositoryProvider).deleteConversation(room.id);
                                   Future.microtask(() {
+                                    if (mounted) ref.invalidate(userChatRoomsStreamProvider);
                                   });
                                   
                                   if (context.mounted) {
