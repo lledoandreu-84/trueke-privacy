@@ -1,11 +1,11 @@
-import 'package:trueke/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:trueke/core/theme/app_colors.dart';
-import 'package:trueke/features/chat/providers/chat_providers.dart';
 import 'package:trueke/features/chat/presentation/screens/chat_screen.dart';
+import 'package:trueke/features/chat/providers/chat_providers.dart';
 import 'package:trueke/features/products/presentation/screens/product_search_screen.dart';
+import 'package:trueke/shared/widgets/custom_app_bar.dart';
 
 class ChatListScreen extends ConsumerStatefulWidget {
   const ChatListScreen({super.key});
@@ -18,15 +18,15 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {});
   }
 
   @override
   Widget build(BuildContext context) {
     final currentUserId = Supabase.instance.client.auth.currentUser?.id ?? '';
-    final chatRoomsAsync = ref.watch(userChatRoomsStreamProvider(currentUserId));
+    final chatRoomsAsync = ref.watch(
+      userChatRoomsStreamProvider(currentUserId),
+    );
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -38,7 +38,10 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
         error: (err, stack) => Center(
           child: Text(
             'Error al cargar los chats: $err',
-            style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 13,
+            ),
           ),
         ),
         data: (rooms) {
@@ -84,7 +87,10 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -100,7 +106,10 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                       icon: const Icon(Icons.search_rounded, size: 18),
                       label: const Text(
                         'Explorar productos',
-                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   ],
@@ -111,38 +120,53 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
 
           return ListView.separated(
             itemCount: rooms.length,
-            separatorBuilder: (context, index) => const Divider(height: 1, color: Color(0xFFE2E8F0)),
+            separatorBuilder: (context, index) =>
+                const Divider(height: 1, color: Color(0xFFE2E8F0)),
             itemBuilder: (context, index) {
               final room = rooms[index];
-              
+
               return Consumer(
                 builder: (context, ref, child) {
-                  final productAsync = ref.watch(chatProductProvider(room.productId));
-                  
+                  final productAsync = ref.watch(
+                    chatProductProvider(room.productId),
+                  );
+
                   return productAsync.when(
                     data: (product) {
-                      if (product == null) return const SizedBox.shrink();
-                      
+                      if (product == null) {
+                        return const SizedBox.shrink();
+                      }
+
                       return Material(
                         color: Colors.transparent,
                         child: ListTile(
                           trailing: IconButton(
-                            icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
+                            icon: const Icon(
+                              Icons.delete_outline_rounded,
+                              color: Colors.redAccent,
+                            ),
                             onPressed: () async {
                               final confirm = await showDialog<bool>(
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
                                     title: const Text('Eliminar conversación'),
-                                    content: const Text('¿Estás seguro de que deseas eliminar este chat? Esta acción no se puede deshacer.'),
+                                    content: const Text(
+                                      '¿Estás seguro de que deseas eliminar este chat? Esta acción no se puede deshacer.',
+                                    ),
                                     actions: [
                                       TextButton(
-                                        onPressed: () => Navigator.of(context).pop(false),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(false),
                                         child: const Text('Cancelar'),
                                       ),
                                       TextButton(
-                                        onPressed: () => Navigator.of(context).pop(true),
-                                        child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(true),
+                                        child: const Text(
+                                          'Eliminar',
+                                          style: TextStyle(color: Colors.red),
+                                        ),
                                       ),
                                     ],
                                   );
@@ -150,20 +174,32 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                               );
                               if (confirm == true) {
                                 try {
-                                  await ref.read(chatRepositoryProvider).deleteConversation(room.id);
+                                  await ref
+                                      .read(chatRepositoryProvider)
+                                      .deleteConversation(room.id);
                                   Future.microtask(() {
-                                    if (mounted) ref.invalidate(userChatRoomsStreamProvider);
+                                    if (mounted) {
+                                      ref.invalidate(
+                                        userChatRoomsStreamProvider,
+                                      );
+                                    }
                                   });
-                                  
+
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Conversación eliminada correctamente')),
+                                      const SnackBar(
+                                        content: Text(
+                                          'Conversación eliminada correctamente',
+                                        ),
+                                      ),
                                     );
                                   }
                                 } catch (e) {
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Error al eliminar: $e')),
+                                      SnackBar(
+                                        content: Text('Error al eliminar: $e'),
+                                      ),
                                     );
                                   }
                                 }
@@ -174,25 +210,35 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ChatScreen(roomId: room.id),
+                                builder: (context) =>
+                                    ChatScreen(roomId: room.id),
                               ),
                             );
                           },
                           leading: const CircleAvatar(
                             backgroundColor: AppColors.surfaceMint,
-                            child: Icon(Icons.person_rounded, color: AppColors.primary),
+                            child: Icon(
+                              Icons.person_rounded,
+                              color: AppColors.primary,
+                            ),
                           ),
                           title: Text(
                             product.title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textPrimary,
+                            ),
                           ),
                           subtitle: const Text(
-                            'Chat activo de Trueke',
+                            'Toca para chatear',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                            style: TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                       );
