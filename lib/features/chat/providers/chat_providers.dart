@@ -31,6 +31,9 @@ final singleChatRoomProvider = StreamProvider.family<ChatRoom?, String>((ref, ro
 });
 
 final chatProductProvider = FutureProvider.family<Product?, String>((ref, productId) async {
+  ref.keepAlive();
+  // Forzamos a que no mantenga caché por mucho tiempo
+  Future.delayed(const Duration(seconds: 1), () => ref.invalidateSelf());
   if (productId.isEmpty) return null;
   try {
     // 1. Intentar buscar por ID exacto
