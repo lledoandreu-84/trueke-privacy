@@ -7,11 +7,24 @@ import 'package:trueke/features/chat/providers/chat_providers.dart';
 import 'package:trueke/features/chat/presentation/screens/chat_screen.dart';
 import 'package:trueke/features/products/presentation/screens/product_search_screen.dart';
 
-class ChatListScreen extends ConsumerWidget {
+class ChatListScreen extends ConsumerStatefulWidget {
   const ChatListScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ChatListScreen> createState() => _ChatListScreenState();
+}
+
+class _ChatListScreenState extends ConsumerState<ChatListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.invalidate(userChatRoomsStreamProvider);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final currentUserId = Supabase.instance.client.auth.currentUser?.id ?? '';
     final chatRoomsAsync = ref.watch(userChatRoomsStreamProvider(currentUserId));
 
