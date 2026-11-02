@@ -49,11 +49,13 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
               return productAsync.when(
                 data: (product) {
                   if (product == null) {
-                    // Si el producto no existe, borramos la conversación huérfana en segundo plano
                     WidgetsBinding.instance.addPostFrameCallback((_) async {
-                      await ref
-                          .read(chatRepositoryProvider)
-                          .deleteConversation(room.id);
+                      // Forzamos el borrado directo en Supabase
+                      await Supabase.instance.client
+                          .from('conversations')
+                          .delete()
+                          .eq('id', room.id);
+
                       ref.invalidate(
                         userChatRoomsStreamProvider(currentUserId),
                       );
