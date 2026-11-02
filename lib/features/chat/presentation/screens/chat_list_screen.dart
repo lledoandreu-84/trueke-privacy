@@ -104,6 +104,7 @@ class ChatListScreen extends ConsumerWidget {
               
               return Consumer(
                 builder: (context, ref, child) {
+                  ref.invalidate(chatProductProvider(room.productId));
                   final productAsync = ref.watch(chatProductProvider(room.productId));
                   
                   return productAsync.when(
