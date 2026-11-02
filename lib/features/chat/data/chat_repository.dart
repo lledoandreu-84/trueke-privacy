@@ -5,6 +5,7 @@ import '../models/chat_message.dart';
 abstract class ChatRepository {
   Future<void> markChatAsRead(String conversationId);
   Future<void> deleteConversation(String conversationId);
+  Future<void> deleteConversationsByProduct(String productId);
   Future<List<ChatRoom>> getUserConversations();
   Stream<List<ChatMessage>> watchMessages(String conversationId);
   Stream<List<ChatRoom>> streamUserChatRooms();
@@ -276,5 +277,11 @@ class SupabaseChatRepository implements ChatRepository {
     dynamic file,
   }) async {
     return '';
+  }
+  
+  @override
+  Future<void> deleteConversationsByProduct(String productId) async {
+    if (productId.trim().isEmpty) return;
+    await _client.from('conversations').delete().eq('product_id', productId);
   }
 }

@@ -10,6 +10,9 @@ class FakeChatRepository implements ChatRepository {
   Future<void> deleteConversation(String conversationId) async {}
 
   @override
+  Future<void> deleteConversationsByProduct(String productId) async {}
+
+  @override
   Future<List<ChatRoom>> getUserConversations() async => [];
 
   @override
@@ -46,4 +49,6 @@ void main() {
     final repo = FakeChatRepository();
     expect(repo, isNotNull);
   });
+    
+  
 }
