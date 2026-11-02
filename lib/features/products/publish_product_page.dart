@@ -148,6 +148,21 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
 
+    // VALIDACIONES PERSONALIZADAS
+    if (_isTrueque && _seekingController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Debes indicar qué buscas a cambio para el Trueke.'), backgroundColor: AppColors.textPrimary),
+      );
+      return;
+    }
+
+    if (!_isTrueque && (_priceController.text.trim().isEmpty || double.tryParse(_priceController.text.replaceAll(',', '.')) == null)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Debes indicar un precio válido en € para la venta.'), backgroundColor: AppColors.textPrimary),
+      );
+      return;
+    }
+
     final supabaseUser = Supabase.instance.client.auth.currentUser;
     final userId = supabaseUser?.id;
     String currentUsername = supabaseUser?.email?.split('@')[0] ?? 'Usuario';
@@ -273,7 +288,6 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
           children: [
-            // 1. BLOQUE DE DATOS PRINCIPALES
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -284,7 +298,6 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // TÍTULO
                   TextFormField(
                     controller: _titleController,
                     style: const TextStyle(fontSize: 13.5),
@@ -303,8 +316,6 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                     validator: (val) => val == null || val.trim().isEmpty ? 'Ingresa un título' : null,
                   ),
                   const SizedBox(height: 14),
-
-                  // DESCRIPCIÓN (4 líneas)
                   TextFormField(
                     controller: _descriptionController,
                     maxLines: 4,
@@ -325,8 +336,6 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                     validator: (val) => val == null || val.trim().isEmpty ? 'Ingresa una descripción' : null,
                   ),
                   const SizedBox(height: 14),
-
-                  // CATEGORÍA Y ESTADO CON ETIQUETAS EXTERNAS (IMPOSIBLE SOLAPAR)
                   Row(
                     children: [
                       Expanded(
@@ -335,14 +344,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                           children: [
                             const Padding(
                               padding: EdgeInsets.only(left: 4, bottom: 6),
-                              child: Text(
-                                'Categoría',
-                                style: TextStyle(
-                                  color: AppColors.textSecondary,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
+                              child: Text('Categoría', style: TextStyle(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w500)),
                             ),
                             DropdownButtonFormField<String>(
                               initialValue: _selectedCategory,
@@ -354,10 +356,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                 filled: true,
                                 fillColor: AppColors.background,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide.none,
-                                ),
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                               ),
                               items: ['Electrónica', 'Moda', 'Hogar', 'Deportes', 'Otros']
                                   .map((cat) => DropdownMenuItem(value: cat, child: Text(cat, overflow: TextOverflow.ellipsis)))
@@ -374,14 +373,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                           children: [
                             const Padding(
                               padding: EdgeInsets.only(left: 4, bottom: 6),
-                              child: Text(
-                                'Estado',
-                                style: TextStyle(
-                                  color: AppColors.textSecondary,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
+                              child: Text('Estado', style: TextStyle(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w500)),
                             ),
                             DropdownButtonFormField<String>(
                               initialValue: _selectedCondition,
@@ -393,10 +385,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                 filled: true,
                                 fillColor: AppColors.background,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide.none,
-                                ),
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                               ),
                               items: ['Nuevo', 'Como nuevo', 'Buen estado', 'Uso aceptable']
                                   .map((cond) => DropdownMenuItem(value: cond, child: Text(cond, overflow: TextOverflow.ellipsis)))
@@ -412,8 +401,6 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
               ),
             ),
             const SizedBox(height: 14),
-
-            // 2. FOTOS DEL ARTÍCULO (Diseño estándar armonizado con el formulario)
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -424,14 +411,7 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Fotos del artículo',
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  const Text('Fotos del artículo', style: TextStyle(color: AppColors.textSecondary, fontSize: 12.5, fontWeight: FontWeight.w500)),
                   const SizedBox(height: 10),
                   SizedBox(
                     height: 72,
@@ -446,86 +426,17 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
                             borderRadius: BorderRadius.circular(12),
                             child: Container(
                               width: 72,
-                              decoration: BoxDecoration(
-                                color: AppColors.background,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: const Color(0xFFCBD5E1), style: BorderStyle.solid),
-                              ),
-                              child: const Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.add_a_photo_outlined, color: AppColors.primary, size: 22),
-                                  SizedBox(height: 3),
-                                  Text(
-                                    'Añadir',
-                                    style: TextStyle(
-                                      color: AppColors.primary,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              decoration: BoxDecoration(color: AppColors.background, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFCBD5E1))),
+                              child: const Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.add_a_photo_outlined, color: AppColors.primary, size: 22), SizedBox(height: 3), Text('Añadir', style: TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.w600))]),
                             ),
                           );
                         }
-
                         final imgIndex = index - 1;
                         final bool isExisting = imgIndex < _existingImages.length;
-
                         return Stack(
                           children: [
-                            Container(
-                              width: 72,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: const Color(0xFFE2E8F0)),
-                              ),
-                              clipBehavior: Clip.antiAlias,
-                              child: isExisting
-                                  ? Image.network(
-                                      _existingImages[imgIndex],
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) => Container(
-                                        color: AppColors.surfaceMint,
-                                        child: const Icon(Icons.image_outlined, color: AppColors.primary, size: 20),
-                                      ),
-                                    )
-                                  : Image.file(
-                                      selectedFiles[imgIndex - _existingImages.length],
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) => Container(
-                                        color: AppColors.surfaceMint,
-                                        child: const Icon(Icons.image_outlined, color: AppColors.primary, size: 20),
-                                      ),
-                                    ),
-                            ),
-                            Positioned(
-                              top: 3,
-                              right: 3,
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    if (isExisting) {
-                                      _existingImages.removeAt(imgIndex);
-                                    } else {
-                                      final localIdx = imgIndex - _existingImages.length;
-                                      final updatedFiles = List<File>.from(selectedFiles);
-                                      updatedFiles.removeAt(localIdx);
-                                      ref.read(publishProductProvider.notifier).setImages(updatedFiles);
-                                    }
-                                  });
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.all(3),
-                                  decoration: const BoxDecoration(
-                                    color: Colors.black54,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(Icons.close_rounded, size: 12, color: Colors.white),
-                                ),
-                              ),
-                            ),
+                            Container(width: 72, decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFE2E8F0))), clipBehavior: Clip.antiAlias, child: isExisting ? Image.network(_existingImages[imgIndex], fit: BoxFit.cover) : Image.file(selectedFiles[imgIndex - _existingImages.length], fit: BoxFit.cover)),
+                            Positioned(top: 3, right: 3, child: GestureDetector(onTap: () { setState(() { if (isExisting) { _existingImages.removeAt(imgIndex); } else { final localIdx = imgIndex - _existingImages.length; final updatedFiles = List<File>.from(selectedFiles); updatedFiles.removeAt(localIdx); ref.read(publishProductProvider.notifier).setImages(updatedFiles); } }); }, child: Container(padding: const EdgeInsets.all(3), decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle), child: const Icon(Icons.close_rounded, size: 12, color: Colors.white)))),
                           ],
                         );
                       },
@@ -535,164 +446,31 @@ class _PublishProductPageState extends ConsumerState<PublishProductPage> {
               ),
             ),
             const SizedBox(height: 14),
-
-            // 3. MODALIDAD (Trueke / Venta)
             Container(
               padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
-              ),
+              decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFE2E8F0))),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => setState(() => _isTrueque = true),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            decoration: BoxDecoration(
-                              color: _isTrueque ? AppColors.surfaceMint : AppColors.background,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: _isTrueque ? AppColors.primary : Colors.transparent,
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Trueke',
-                                style: TextStyle(
-                                  color: _isTrueque ? AppColors.primary : AppColors.textSecondary,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                      Expanded(child: GestureDetector(onTap: () => setState(() => _isTrueque = true), child: Container(padding: const EdgeInsets.symmetric(vertical: 10), decoration: BoxDecoration(color: _isTrueque ? AppColors.surfaceMint : AppColors.background, borderRadius: BorderRadius.circular(10), border: Border.all(color: _isTrueque ? AppColors.primary : Colors.transparent)), child: Center(child: Text('Trueke', style: TextStyle(color: _isTrueque ? AppColors.primary : AppColors.textSecondary, fontSize: 13, fontWeight: FontWeight.w700)))))),
                       const SizedBox(width: 10),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => setState(() => _isTrueque = false),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            decoration: BoxDecoration(
-                              color: !_isTrueque ? AppColors.surfaceMint : AppColors.background,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: !_isTrueque ? AppColors.primary : Colors.transparent,
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Venta',
-                                style: TextStyle(
-                                  color: !_isTrueque ? AppColors.primary : AppColors.textSecondary,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                      Expanded(child: GestureDetector(onTap: () => setState(() => _isTrueque = false), child: Container(padding: const EdgeInsets.symmetric(vertical: 10), decoration: BoxDecoration(color: !_isTrueque ? AppColors.surfaceMint : AppColors.background, borderRadius: BorderRadius.circular(10), border: Border.all(color: !_isTrueque ? AppColors.primary : Colors.transparent)), child: Center(child: Text('Venta', style: TextStyle(color: !_isTrueque ? AppColors.primary : AppColors.textSecondary, fontSize: 13, fontWeight: FontWeight.w700)))))),
                     ],
                   ),
                   if (_isTrueque) ...[
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        controller: _seekingController,
-                        style: const TextStyle(fontSize: 13.5),
-                        decoration: InputDecoration(
-                          labelText: 'Buscador de trueque (¿Qué buscas a cambio?)',
-                          labelStyle: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary),
-                          hintText: 'Ej. Bicicleta, consola...',
-                          isDense: true,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                          filled: true,
-                          fillColor: AppColors.background,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                      ),
-                    ] else ...[
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        controller: _priceController,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        style: const TextStyle(fontSize: 13.5),
-                        decoration: InputDecoration(
-                          labelText: 'Precio de venta',
-                          labelStyle: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary),
-                          hintText: '0.00',
-                          suffixText: '€',
-                          prefixIcon: const Icon(Icons.euro_symbol, size: 18),
-                          isDense: true,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                          filled: true,
-                          fillColor: AppColors.background,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                        validator: (val) {
-                          if (!_isTrueque) {
-                            if (val == null || val.trim().isEmpty) {
-                              return 'Por favor, introduce un precio';
-                            }
-                            final price = double.tryParse(val.replaceAll(',', '.')) ?? -1;
-                            if (price < 0) {
-                              return 'Introduce un precio válido';
-                            }
-                            if (price > 5000) {
-                              return 'El precio máximo permitido es de 5000€';
-                            }
-                          }
-                          return null;
-                        },
-                      ),
-                    ],
+                    const SizedBox(height: 12),
+                    TextFormField(controller: _seekingController, style: const TextStyle(fontSize: 13.5), decoration: InputDecoration(labelText: 'Buscador de trueque (¿Qué buscas a cambio?)', labelStyle: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary), hintText: 'Ej. Bicicleta, consola...', isDense: true, contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12), filled: true, fillColor: AppColors.background, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none))),
+                  ] else ...[
+                    const SizedBox(height: 12),
+                    TextFormField(controller: _priceController, keyboardType: const TextInputType.numberWithOptions(decimal: true), style: const TextStyle(fontSize: 13.5), decoration: InputDecoration(labelText: 'Precio de venta', labelStyle: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary), hintText: '0.00', suffixText: '€', prefixIcon: const Icon(Icons.euro_symbol, size: 18), isDense: true, contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12), filled: true, fillColor: AppColors.background, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none))),
+                  ],
                 ],
               ),
             ),
             const SizedBox(height: 20),
-
-            // BOTÓN DE PUBLICAR
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: publishState.isPublishing ? null : _handleSubmit,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: publishState.isPublishing
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator.adaptive(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
-                      )
-                    : Text(
-                        isEditing ? 'Guardar Cambios' : 'Publicar Artículo',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14.5,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-              ),
-            ),
+            SizedBox(width: double.infinity, child: ElevatedButton(onPressed: publishState.isPublishing ? null : _handleSubmit, style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))), child: publishState.isPublishing ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator.adaptive(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white))) : Text(isEditing ? 'Guardar Cambios' : 'Publicar Artículo', style: const TextStyle(color: Colors.white, fontSize: 14.5, fontWeight: FontWeight.w700)))),
             const SizedBox(height: 20),
           ],
         ),
