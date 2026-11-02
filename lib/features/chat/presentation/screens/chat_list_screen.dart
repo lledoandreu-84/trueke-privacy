@@ -50,10 +50,13 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                 data: (product) {
                   if (product == null) {
                     // Si el producto no existe, borramos la conversación huérfana en segundo plano
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      ref
+                    WidgetsBinding.instance.addPostFrameCallback((_) async {
+                      await ref
                           .read(chatRepositoryProvider)
                           .deleteConversation(room.id);
+                      ref.invalidate(
+                        userChatRoomsStreamProvider(currentUserId),
+                      );
                     });
                     return const SizedBox.shrink();
                   }
