@@ -117,7 +117,6 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
               
               return Consumer(
                 builder: (context, ref, child) {
-                  ref.invalidate(chatProductProvider(room.productId));
                   final productAsync = ref.watch(chatProductProvider(room.productId));
                   
                   return productAsync.when(
@@ -153,7 +152,6 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                                 try {
                                   await ref.read(chatRepositoryProvider).deleteConversation(room.id);
                                   Future.microtask(() {
-                                    if (mounted) ref.invalidate(userChatRoomsStreamProvider);
                                   });
                                   
                                   if (context.mounted) {
