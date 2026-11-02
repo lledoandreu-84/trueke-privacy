@@ -1,3 +1,4 @@
+import '../../chat/data/chat_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../models/product.dart';
@@ -25,6 +26,8 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
   Future<void> deleteProduct(dynamic productOrId) async {
     final productId = productOrId is Product ? productOrId.id : productOrId.toString();
     try {
+      final chatRepo = SupabaseChatRepository(null);
+      await chatRepo.deleteConversationsByProduct(productId);
       await Supabase.instance.client
           .from('products')
           .delete()
