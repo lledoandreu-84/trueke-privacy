@@ -1,4 +1,3 @@
-import '../../chat/data/chat_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../models/product.dart';
