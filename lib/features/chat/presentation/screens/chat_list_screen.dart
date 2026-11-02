@@ -19,7 +19,7 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.invalidate(userChatRoomsStreamProvider);
+      
     });
   }
 
@@ -152,7 +152,10 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                               if (confirm == true) {
                                 try {
                                   await ref.read(chatRepositoryProvider).deleteConversation(room.id);
-                                  ref.invalidate(userChatRoomsStreamProvider);
+                                  Future.microtask(() {
+                                    if (mounted) ref.invalidate(userChatRoomsStreamProvider);
+                                  });
+                                  
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(content: Text('Conversación eliminada correctamente')),
