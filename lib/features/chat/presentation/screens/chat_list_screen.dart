@@ -77,7 +77,6 @@ class ChatListScreen extends ConsumerWidget {
                         ),
                       ),
                       onPressed: () {
-                        // Navegamos directamente a la pantalla de Explorar (ProductSearchScreen)
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -102,87 +101,90 @@ class ChatListScreen extends ConsumerWidget {
             separatorBuilder: (context, index) => const Divider(height: 1, color: Color(0xFFE2E8F0)),
             itemBuilder: (context, index) {
               final room = rooms[index];
-              return Material(
-                color: Colors.transparent,
-                child: ListTile(
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
-                      onPressed: () async {
-                        final confirm = await showDialog<bool>(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text('Eliminar conversación'),
-                              content: const Text('¿Estás seguro de que deseas eliminar este chat? Esta acción no se puede deshacer.'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.of(context).pop(false),
-                                  child: const Text('Cancelar'),
-                                ),
-                                TextButton(
-                                  onPressed: () => Navigator.of(context).pop(true),
-                                  child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
-                                ),
-                              ],
+              
+              return Consumer(
+                builder: (context, ref, child) {
+                  final productAsync = ref.watch(chatProductProvider(room.productId));
+                  
+                  return productAsync.when(
+                    data: (product) {
+                      if (product == null) return const SizedBox.shrink();
+                      
+                      return Material(
+                        color: Colors.transparent,
+                        child: ListTile(
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
+                            onPressed: () async {
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Eliminar conversación'),
+                                    content: const Text('¿Estás seguro de que deseas eliminar este chat? Esta acción no se puede deshacer.'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.of(context).pop(false),
+                                        child: const Text('Cancelar'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () => Navigator.of(context).pop(true),
+                                        child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                              if (confirm == true) {
+                                try {
+                                  await ref.read(chatRepositoryProvider).deleteConversation(room.id);
+                                  ref.invalidate(userChatRoomsStreamProvider);
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Conversación eliminada correctamente')),
+                                    );
+                                  }
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Error al eliminar: $e')),
+                                    );
+                                  }
+                                }
+                              }
+                            },
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ChatScreen(roomId: room.id),
+                              ),
                             );
                           },
-                        );
-                        if (confirm == true) {
-                          try {
-                            await ref.read(chatRepositoryProvider).deleteConversation(room.id);
-                            ref.invalidate(userChatRoomsStreamProvider);
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Conversación eliminada correctamente')),
-                              );
-                            }
-                          } catch (e) {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Error al eliminar: $e')),
-                              );
-                            }
-                          }
-                        }
-                      },
-                    ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ChatScreen(roomId: room.id),
-                      ),
-                    );
-                  },
-                  leading: const CircleAvatar(
-                    backgroundColor: AppColors.surfaceMint,
-                    child: Icon(Icons.person_rounded, color: AppColors.primary),
-                  ),
-                  title: Consumer(
-            builder: (context, ref, child) {
-              final productAsync = ref.watch(chatProductProvider(room.productId));
-              
-              final productTitle = productAsync.when(
-                data: (product) => product?.title ?? 'Negociación de Artículo',
-                loading: () => 'Cargando...',
-                error: (_, _) => 'Negociación de Artículo',
-              );
-
-              return Text(
-                productTitle,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.textPrimary),
-              );
-            },
-          ),
-                  subtitle: const Text(
-                    'Chat activo de Trueke',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
-                  ),
-                ),
+                          leading: const CircleAvatar(
+                            backgroundColor: AppColors.surfaceMint,
+                            child: Icon(Icons.person_rounded, color: AppColors.primary),
+                          ),
+                          title: Text(
+                            product.title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                          ),
+                          subtitle: const Text(
+                            'Chat activo de Trueke',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                          ),
+                        ),
+                      );
+                    },
+                    loading: () => const SizedBox.shrink(),
+                    error: (_, _) => const SizedBox.shrink(),
+                  );
+                },
               );
             },
           );
