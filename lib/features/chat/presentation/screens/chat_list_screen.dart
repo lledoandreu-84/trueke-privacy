@@ -18,14 +18,19 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
   @override
   Widget build(BuildContext context) {
     final currentUserId = Supabase.instance.client.auth.currentUser?.id ?? '';
-    final chatRoomsAsync = ref.watch(userChatRoomsStreamProvider(currentUserId));
+    final chatRoomsAsync = ref.watch(
+      userChatRoomsStreamProvider(currentUserId),
+    );
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const CustomAppBar(titleText: 'Mensajes'),
       body: chatRoomsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
-        error: (err, stack) => Center(child: Text('Error al cargar los chats: $err')),
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
+        error: (err, stack) =>
+            Center(child: Text('Error al cargar los chats: $err')),
         data: (rooms) {
           if (rooms.isEmpty) {
             return _buildEmptyState(context);
@@ -33,33 +38,62 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
 
           return ListView.separated(
             itemCount: rooms.length,
-            separatorBuilder: (context, index) => const Divider(height: 1, color: Color(0xFFE2E8F0)),
+            separatorBuilder: (context, index) =>
+                const Divider(height: 1, color: Color(0xFFE2E8F0)),
             itemBuilder: (context, index) {
               final room = rooms[index];
-              final productAsync = ref.watch(chatProductProvider(room.productId));
+              final productAsync = ref.watch(
+                chatProductProvider(room.productId),
+              );
 
               return productAsync.when(
                 data: (product) {
-                  if (product == null) return const SizedBox.shrink();
+                  if (product == null) {
+                    // Si el producto no existe, borramos la conversación huérfana en segundo plano
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      ref
+                          .read(chatRepositoryProvider)
+                          .deleteConversation(room.id);
+                    });
+                    return const SizedBox.shrink();
+                  }
 
                   return ListTile(
                     leading: const CircleAvatar(
                       backgroundColor: AppColors.surfaceMint,
-                      child: Icon(Icons.person_rounded, color: AppColors.primary),
+                      child: Icon(
+                        Icons.person_rounded,
+                        color: AppColors.primary,
+                      ),
                     ),
-                    title: Text(product.title, style: const TextStyle(fontWeight: FontWeight.w700)),
+                    title: Text(
+                      product.title,
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
                     subtitle: const Text('Toca para chatear'),
                     trailing: IconButton(
-                      icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
+                      icon: const Icon(
+                        Icons.delete_outline_rounded,
+                        color: Colors.redAccent,
+                      ),
                       onPressed: () async {
                         final confirm = await _showDeleteDialog(context);
                         if (confirm == true) {
-                          await ref.read(chatRepositoryProvider).deleteConversation(room.id);
-                          ref.invalidate(userChatRoomsStreamProvider(currentUserId));
+                          await ref
+                              .read(chatRepositoryProvider)
+                              .deleteConversation(room.id);
+                          ref.invalidate(
+                            userChatRoomsStreamProvider(currentUserId),
+                          );
                         }
                       },
                     ),
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen(roomId: room.id))),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChatScreen(roomId: room.id),
+                      ),
+                    ),
                   );
                 },
                 loading: () => const SizedBox.shrink(),
@@ -79,8 +113,14 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
         title: const Text('Eliminar conversación'),
         content: const Text('¿Estás seguro de que deseas eliminar este chat?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Eliminar', style: TextStyle(color: Colors.red))),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+          ),
         ],
       ),
     );
@@ -91,12 +131,24 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.chat_bubble_outline_rounded, size: 40, color: AppColors.primary),
+          const Icon(
+            Icons.chat_bubble_outline_rounded,
+            size: 40,
+            color: AppColors.primary,
+          ),
           const SizedBox(height: 16),
-          const Text('No tienes conversaciones activas', style: TextStyle(fontWeight: FontWeight.w800)),
+          const Text(
+            'No tienes conversaciones activas',
+            style: TextStyle(fontWeight: FontWeight.w800),
+          ),
           const SizedBox(height: 20),
           ElevatedButton.icon(
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ProductSearchScreen())),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ProductSearchScreen(),
+              ),
+            ),
             icon: const Icon(Icons.search_rounded),
             label: const Text('Explorar productos'),
           ),
