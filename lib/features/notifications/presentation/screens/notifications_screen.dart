@@ -47,7 +47,7 @@ final isRead = match['isRead'] ?? false;
                 title: Text('Trueke: ${match['myProduct'].title} por ${match['truekeProduct'].title}'),
                 subtitle: const Text('Toca para chatear con el propietario.'),
                 trailing: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
+                  icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
                   onPressed: () {
                     showDialog(
                       context: context,

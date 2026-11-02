@@ -106,7 +106,7 @@ class ChatListScreen extends ConsumerWidget {
                 color: Colors.transparent,
                 child: ListTile(
                     trailing: IconButton(
-                      icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                      icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
                       onPressed: () async {
                         final confirm = await showDialog<bool>(
                           context: context,
