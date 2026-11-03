@@ -1,5 +1,0 @@
-flutter_launcher_icons:
-  image_path: "assets/launcher/launcher_icon.png"
-  android: true
-  ios: false
-  min_sdk_android: 21
