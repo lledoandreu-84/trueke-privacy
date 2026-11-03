@@ -8,6 +8,9 @@ En **Trueke** protegemos tu privacidad. Esta política describe cómo recopilamo
 - **Datos de Registro:** Correo electrónico, nombre de perfil y marcas de tiempo de aceptación legal.
 - **Datos de Actividad:** Productos publicados, favoritos, historiales de chat en tiempo real y valoraciones.
 - **Datos Técnicos:** Tokens de notificaciones push (FCM) para alertas de campana.
+- **Ubicación y Fotos:** Ubicación aproximada para encontrar artículos cercanos y fotos de los productos que subes.
+- **Publicidad:** Uso de ID de publicidad para mostrar anuncios personalizados.
+
 
 ## 2. Uso de la Información
 La información recopilada se utiliza exclusivamente para:
