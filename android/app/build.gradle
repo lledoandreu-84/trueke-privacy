@@ -20,7 +20,7 @@ keystorePropertiesFile.withInputStream { stream ->
 
 
 android {
-    namespace = "com.davidlledo.truekev4"
+    namespace = "com.davidlledo.trueke"
     compileSdk flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -30,7 +30,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.davidlledo.truekev4"
+        applicationId "com.davidlledo.trueke"
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion 34
         versionCode 17
