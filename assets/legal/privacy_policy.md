@@ -20,3 +20,6 @@ La información recopilada se utiliza exclusivamente para:
 
 ## 3. Tus Derechos
 Puedes solicitar en cualquier momento la exportación o eliminación completa de tus datos y cuenta de usuario desde la sección de configuración del perfil.
+
+## Eliminación de Datos
+Puedes solicitar la eliminación de tu cuenta y datos asociados en cualquier momento enviando un correo a lledoandreu84@gmail.com.
