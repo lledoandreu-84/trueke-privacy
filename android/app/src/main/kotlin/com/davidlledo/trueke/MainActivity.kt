@@ -1,4 +1,4 @@
-package com.davidlledo.truekev4
+package com.davidlledo.trueke
 
 import io.flutter.embedding.android.FlutterActivity
 
